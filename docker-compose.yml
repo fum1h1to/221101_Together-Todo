@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    container_name: together-todo-postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=todoadmin
+      - POSTGRES_PASSWORD=hogehoge
+      - POSTGRES_DB=todo
+    restart: always
+
+  web:
+    tty: true
+    build: 
+      context: .
+      dockerfile: ./docker/python/Dockerfile
+    container_name: together-todo-python
+    volumes:
+      - .:/code
+    ports:
+      - 8888:8888
+    depends_on:
+      - db
