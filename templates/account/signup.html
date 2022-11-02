@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>G102<br>アカウント作成</p>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" name="submit">Submit</button>
+</form>
+{% endblock %}
