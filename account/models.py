@@ -117,7 +117,7 @@ class UserActivateTokensManager(models.Manager):
       expired_at=datetime.now()+timedelta(minutes=settings.ACTIVATION_EXPIRED_MINUTES),
     )
     subject = 'Please Activate Your Account'
-    message = f'URLにアクセスしてユーザーアクティベーション。\n {settings.DEVELOP_URL}user/{user_activate_token.activate_token}/activation/'
+    message = f'URLにアクセスしてユーザーアクティベーション。\n {settings.HOST_URL}user/{user_activate_token.activate_token}/activation/'
 
     CustomUser.objects.send_email(user.userid, subject, message)
 
