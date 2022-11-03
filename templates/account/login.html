@@ -1,5 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<p>G102<br>ログインページ</p>
+<p>G101<br>ログインページ</p>
+
+<form action="{% url 'login' %}" method="post">
+    <div>
+        <label for="name">メールアドレス</label>
+        <input type="text" id="mail" name="name">
+    </div>
+    <div>
+        <label for="email">パスワード</label>
+        <input type="mail" id="password" name="email">
+    </div>
+    
+    <input type="submit" value="ログインする">
+</form>
+
+<a href="{% url 'top' %}">アプリ紹介画面に戻る</a>
+
 {% endblock %}
