@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<p>(G201)</p>
+<p>こんにちは、ユーザ名:{{ user }}さん</p>
+<p>ログイン成功！ タスク一覧が表示されるよ</p>
+
+<p><a href="{% url 'logout_success' %}">ログアウト</a></p>
+
+
+
+{% endblock %}

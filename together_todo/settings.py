@@ -151,3 +151,7 @@ EMAIL_USE_TLS = True
 # auth settings
 AUTH_USER_MODEL = 'account.CustomUser'
 ACTIVATION_EXPIRED_MINUTES = 30
+
+LOGIN_URL='login'
+##ログイン成功後に行くサイトの名前
+LOGIN_REDIRECT_URL = 'login_success'    ### 追加
