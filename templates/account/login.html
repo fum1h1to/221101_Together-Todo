@@ -4,17 +4,12 @@
 <p>G101<br>ログインページ</p>
 
 <form action="{% url 'login' %}" method="post">
-    <div>
-        <label for="name">メールアドレス</label>
-        <input type="text" id="mail" name="name">
-    </div>
-    <div>
-        <label for="email">パスワード</label>
-        <input type="mail" id="password" name="email">
-    </div>
-    
-    <input type="submit" value="ログインする">
-</form>
+    {% csrf_token %}
+        {{ form.as_p }}
+       
+
+       <p><input type="hidden" name="next" value="{{next}}"></p> 
+        <p><input type="submit" value="ログイン"></p>
 
 <a href="{% url 'top' %}">アプリ紹介画面に戻る</a>
 

@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 from account.models import UserActivateTokens
 
@@ -23,3 +23,8 @@ class SignupForm(UserCreationForm):
             UserActivateTokens.objects.send_activate_url(user)
 
         return user
+
+
+##追加
+class LoginForm(AuthenticationForm):
+    pass
