@@ -25,6 +25,5 @@ class SignupForm(UserCreationForm):
         return user
 
 
-##追加
 class LoginForm(AuthenticationForm):
     pass

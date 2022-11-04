@@ -1,16 +1,10 @@
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
-
 from account.forms import SignupForm,LoginForm
-from together_todo.settings import LOGIN_REDIRECT_URL
 from .models import UserActivateTokens
-from django.http import HttpResponse
-
 
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from django.contrib.auth.models import User
 
 app_name = 'account'
 
@@ -27,8 +21,6 @@ class TopView(TemplateView):
     template_name = 'account/top.html'
 
 
-
-
 class Login_success(LoginRequiredMixin, TemplateView):
     template_name = 'account/login_success.html'
     
@@ -38,37 +30,19 @@ class Login_success(LoginRequiredMixin, TemplateView):
         return context
 
 
-
-class LoginView(LoginView):
-
-  
+class LoginView(LoginView):  
     form_class = LoginForm
     template_name = 'account/login.html'
-    
-
-
 
 
 class Logout(LogoutView):
     
     template_name='account/logout.html'
-    
-    
-
-##追加
-
-
-
-
 
 
 class SignupView(TemplateView):
     template_name = 'account/signup.html'
 
-     
-
-     
-    
     def get(self, request, *args, **kwargs):
         form = SignupForm()
         context = {
