@@ -27,4 +27,4 @@ class SignupForm(UserCreationForm):
 
 ##追加
 class LoginForm(AuthenticationForm):
- pass
+    pass

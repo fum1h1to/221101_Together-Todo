@@ -15,7 +15,7 @@ urlpatterns = [
 
    
    
-    path('logout_success/', views.Logout_success.as_view(), name='logout_success'),
+    path('logout/', views.Logout.as_view(), name='logout'),
     
     path('login_success/', views.Login_success.as_view(), name='login_success'),
     

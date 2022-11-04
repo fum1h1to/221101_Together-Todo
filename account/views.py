@@ -49,20 +49,13 @@ class LoginView(LoginView):
 
 
 
-class Logout_success(LogoutView):
+class Logout(LogoutView):
     
-    template_name='account/logout_success.html'
-    form_class = LoginForm
+    template_name='account/logout.html'
+    
     
 
 ##追加
-class OtherView(LoginRequiredMixin, TemplateView):
-    template_name = 'login_app/other.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = User.objects.exclude(username=self.request.user.username)
-        return context
 
 
 
