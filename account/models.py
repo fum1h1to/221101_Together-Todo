@@ -99,8 +99,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
   objects = UserManager()
   
   EMAIL_FIELD = 'email'
-  USERNAME_FIELD = 'username'
-  REQUIRED_FIELDS = ["email"]
+  USERNAME_FIELD = 'email'
+  REQUIRED_FIELDS = ["username"]
 
   class Meta:
     verbose_name = _("User") # 管理画面でuserと表示させるための処理
