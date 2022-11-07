@@ -1,9 +1,8 @@
 from django.db import models
 from datetime import datetime, timedelta
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
+from django.contrib.auth import login
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator, EmailValidator
@@ -12,9 +11,22 @@ from django.utils.translation import gettext_lazy as _
 import uuid
 
 class UserManager(UserManager):
+  '''
+  ユーザのデータベースを操作するためのクラス
+  ユーザに関わる詳細な処理はここに書いて行く
+
+  ※なお、views.pyなどの外部から扱う場合は、このクラスをimportするのではなく。
+  CustomUser.object.{関数名}とする。
+  ex) send_email()を使いたい場合、
+  CustomUser.object.send_email(userid, subject, message)
+  '''
+
   use_in_migrations = True
 
   def _create_user(self, username, email, password, **extra_fields):
+    '''
+    ユーザ作成の補助的な関数
+    '''
     username = self.model.normalize_username(username)
     email = self.normalize_email(email)
     user = self.model(username=username, email=email, **extra_fields)
@@ -23,11 +35,18 @@ class UserManager(UserManager):
     return user
 
   def create_user(self, username, email, password=None, **extra_fields):
+    '''
+    一般ユーザを作成する関数
+    '''
     extra_fields.setdefault("is_staff", False)
     extra_fields.setdefault("is_superuser", False)
     return self._create_user(username, email, password, **extra_fields)
 
   def create_superuser(self, username, email, password=None, **extra_fields):
+    '''
+    管理者ユーザを作成する関数
+    '''
+    extra_fields.setdefault("status", 1)
     extra_fields.setdefault("is_active", True)
     extra_fields.setdefault("is_staff", True)
     extra_fields.setdefault("is_superuser", True)
@@ -39,7 +58,16 @@ class UserManager(UserManager):
 
     return self._create_user(username, email, password, **extra_fields)
 
+  def login(self, request, user):
+    '''
+    ユーザをログインさせる。
+    '''
+    login(request, user)
+
   def send_email(self, userid, subject, message):
+    '''
+    ユーザに対して何かしらのメールを送る関数
+    '''
     subject = subject
     message = message
     from_email = settings.DEFAULT_FROM_EMAIL
@@ -49,6 +77,20 @@ class UserManager(UserManager):
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+  '''
+  ユーザのデータベース定義
+
+  ※djangoのデフォルトでUserというクラスがあるけど、それは扱わないので注意
+  このクラスを扱う
+
+  Attributes:
+    userid
+    username
+    email
+    status
+    is_staff
+    is_active
+  '''
 
   userid = models.UUIDField(
     default=uuid.uuid4,
@@ -109,9 +151,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 # ユーザアクティベート用データベースのmanager
 class UserActivateTokensManager(models.Manager):
+  '''
+  ユーザアクティベート用のデータベースを操作するためのクラス
+  ユーザアクティベートに関わる詳細な処理はここに書いて行く
 
-  # activate用のURLを発行、そして送信
+  ※なお、views.pyなどの外部から扱う場合は、このクラスをimportするのではなく。
+  UserActivateTokens.object.{関数名}とする。
+  '''
+
   def send_activate_url(self, user):
+    '''
+    activate用のURLを発行、そして送信
+    '''
+
     user_activate_token = UserActivateTokens.objects.create(
       user=user,
       expired_at=datetime.now()+timedelta(minutes=settings.ACTIVATION_EXPIRED_MINUTES),
@@ -121,8 +173,11 @@ class UserActivateTokensManager(models.Manager):
 
     CustomUser.objects.send_email(user.userid, subject, message)
 
-  # userをアクティベートする処理。
   def activate_user_by_token(self, activate_token):
+    '''
+    userをアクティベートする処理。
+    '''
+
     user_activate_token = self.filter(
       activate_token=activate_token,
       expired_at__gte=datetime.now() # __gte = greater than equal
@@ -132,10 +187,15 @@ class UserActivateTokensManager(models.Manager):
       user.status = 1
       user.is_active = True
       user.save()
+
+      self.send_activate_success(user)
       return user
   
-  # アクティベート成功のメール送信
   def send_activate_success(self, user):
+    '''
+    アクティベート成功のメール送信
+    '''
+
     subject = 'Activated! Your Account!'
     message = 'ユーザーが使用できるようになりました'
 
@@ -143,6 +203,16 @@ class UserActivateTokensManager(models.Manager):
 
 # ユーザアクティベート用のデータベース
 class UserActivateTokens(models.Model):
+  '''
+  ユーザアクティベート用のデータベース定義
+
+  Attributes:
+    token_id
+    user
+    activate_token
+    expired_at
+  '''
+
   token_id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
   user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
   activate_token = models.UUIDField(default=uuid.uuid4)

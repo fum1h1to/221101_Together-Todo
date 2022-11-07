@@ -2,19 +2,20 @@ from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from account.forms import SignupForm,LoginForm
 from .models import UserActivateTokens
-
+from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+from .models import CustomUser
 
 app_name = 'account'
 
 def activate_user(request, activate_token):
     activated_user = UserActivateTokens.objects.activate_user_by_token(
         activate_token)
-    if hasattr(activated_user, 'is_active'):
-        if activated_user.is_active:
-            UserActivateTokens.objects.send_activate_success(activated_user)
-            return render(request, 'account/activate_success.html')
+    if activated_user:
+        CustomUser.objects.login(request, activated_user)
+        return render(request, 'account/activate_success.html')
     return render(request, 'account/activate_failed.html')
    
 class TopView(TemplateView):
