@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import login
@@ -63,6 +64,17 @@ class UserManager(UserManager):
     ユーザをログインさせる。
     '''
     login(request, user)
+
+  def checkEmailValidate(self, email):
+    '''
+    メールアドレスのフォーマットチェック
+    '''
+    validate_email =EmailValidator(
+              _("メールアドレスのフォーマットが不正です。"),
+              code="invalid-email"
+            )
+
+    validate_email(email)
 
   def send_email(self, userid, subject, message):
     '''
@@ -149,7 +161,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     verbose_name_plural = _("Users") #上記と同じ
 
 
-# ユーザアクティベート用データベースのmanager
+
 class UserActivateTokensManager(models.Manager):
   '''
   ユーザアクティベート用のデータベースを操作するためのクラス
@@ -201,7 +213,7 @@ class UserActivateTokensManager(models.Manager):
 
     CustomUser.objects.send_email(user.userid, subject, message)
 
-# ユーザアクティベート用のデータベース
+
 class UserActivateTokens(models.Model):
   '''
   ユーザアクティベート用のデータベース定義
