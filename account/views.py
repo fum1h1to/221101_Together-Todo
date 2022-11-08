@@ -2,9 +2,7 @@ from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from account.forms import SignupForm,LoginForm
 from .models import UserActivateTokens
-from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import CustomUser
 
@@ -20,15 +18,6 @@ def activate_user(request, activate_token):
    
 class TopView(TemplateView):
     template_name = 'account/top.html'
-
-
-class Login_success(LoginRequiredMixin, TemplateView):
-    template_name = 'account/login_success.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
-        return context
 
 
 class LoginView(LoginView):  

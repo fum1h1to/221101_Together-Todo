@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'account.apps.AccountConfig',
+    'todo.apps.TodoConfig',
 ]
 
 MIDDLEWARE = [
@@ -154,4 +155,4 @@ ACTIVATION_EXPIRED_MINUTES = 30
 
 LOGIN_URL='login'
 ##ログイン成功後に行くサイトの名前
-LOGIN_REDIRECT_URL = 'login_success'
+LOGIN_REDIRECT_URL = 'home'
