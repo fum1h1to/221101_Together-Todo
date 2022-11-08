@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, User
 from django.utils.translation import gettext_lazy as _
 
 from account.models import UserActivateTokens
+from account.models import CustomUser
 
 User = get_user_model()
 
@@ -46,3 +47,11 @@ class LoginForm(AuthenticationForm):
             }
         ),
     )
+
+    def clean_username(self):
+        '''
+        usernameとなっているがemailのフォーマットチェック
+        '''
+        email = self.cleaned_data['username']
+        CustomUser.objects.checkEmailValidate(email)
+        return email
