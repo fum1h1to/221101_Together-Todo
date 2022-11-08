@@ -15,7 +15,7 @@
     そして、サーバを起動<br>
     ※```.env```ファイルがないと起動できません。
     ```
-    $ python manage.py makemigration
+    $ python manage.py makemigrations
     $ python manage.py migrate
     $ python manage.py runserver 0.0.0.0:8888
     ```
