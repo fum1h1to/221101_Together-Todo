@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'top/css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- ヘッダ -->
+    <div class="header text-center border-bottom pb-2 mt-3">
+        <h1>アプリ紹介画面</h1>
+    </div>
+
+    <!-- 真ん中の文字 -->
+    <div class="Apptext text-center" style="margin-top:15rem">
+        <h2>アプリ紹介画面(仮)</h2>
+    </div>
+
+    <!-- ログインorアカウント作成ボタン -->
+    <div class="loginButton text-center" style="margin-top:8rem">
+        <a href="{% url 'login' %}" class="btn btn-primary">ログイン</a>
+        <p class="or mt-3 mb-3">or</p>
+        <a href="{% url 'signup' %}" class="btn btn-primary">アカウントをお持ちでない方</a>
+    </div>
+</div>
+{% endblock %}
