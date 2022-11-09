@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator, EmailValidator
@@ -64,17 +64,12 @@ class UserManager(UserManager):
     ユーザをログインさせる。
     '''
     login(request, user)
-
-  def checkEmailValidate(self, email):
+  
+  def logout(self, request):
     '''
-    メールアドレスのフォーマットチェック
+    ユーザをログアウトさせる。
     '''
-    validate_email =EmailValidator(
-              _("メールアドレスのフォーマットが不正です。"),
-              code="invalid-email"
-            )
-
-    validate_email(email)
+    logout(request)
 
   def send_email(self, userid, subject, message):
     '''

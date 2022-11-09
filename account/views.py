@@ -12,8 +12,11 @@ def activate_user(request, activate_token):
     activated_user = UserActivateTokens.objects.activate_user_by_token(
         activate_token)
     if activated_user:
-        CustomUser.objects.login(request, activated_user)
-        return render(request, 'account/activate_success.html')
+        try:
+            CustomUser.objects.login(request, activated_user)
+            return render(request, 'account/activate_success.html')
+        except:
+            pass
     return render(request, 'account/activate_failed.html')
    
 class TopView(TemplateView):
@@ -25,9 +28,9 @@ class LoginView(LoginView):
     template_name = 'account/login.html'
 
 
-class Logout(LogoutView):
-    
-    template_name='account/logout.html'
+def logout(request):
+    CustomUser.objects.logout(request)
+    return redirect('top')
 
 
 class SignupView(TemplateView):
