@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator, EmailValidator
@@ -70,6 +70,10 @@ class UserManager(UserManager):
     ユーザをログアウトさせる。
     '''
     logout(request)
+
+  def checkPassword(self, user, password):
+    return user.check_password(password)
+
 
   def send_email(self, userid, subject, message):
     '''

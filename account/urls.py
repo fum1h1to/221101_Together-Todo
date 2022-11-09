@@ -9,5 +9,7 @@ urlpatterns = [
     path('not_activate', views.NotActivateView.as_view(), name='not_activate'),
     path('activate_success/', views.ActivateSuccessView.as_view(), name='activate_success'),
     path('activate_failed/', views.ActivateFailedView.as_view(), name='activate_failed'),
+
     path('user/<uuid:activate_token>/activation/', views.activate_user),
+    path('user/check_password', views.checkPassword, name='check_password')
 ]

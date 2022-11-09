@@ -1,8 +1,12 @@
+import json
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from account.forms import SignupForm,LoginForm
 from .models import UserActivateTokens
 from django.contrib.auth.views import LoginView, LogoutView
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth.decorators import login_required
 
 from .models import CustomUser
 
@@ -64,3 +68,26 @@ class ActivateFailedView(TemplateView):
 
 class NotActivateView(TemplateView):
     template_name = 'account/not_activate.html'
+
+
+##################################
+# ↓ APIのような挙動をするもの
+##################################
+
+@require_http_methods(['POST'])
+@login_required
+def checkPassword(request):
+    password = request.POST.get('password')
+
+    if password is not None:
+        result = CustomUser.objects.checkPassword(request.user, password)
+        
+        if result:
+            context = {
+                'result': True
+            }
+            return JsonResponse(context)
+    context = {
+        'result': False
+    }
+    return JsonResponse(context)
