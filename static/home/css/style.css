@@ -1,0 +1,103 @@
+
+.header { 
+    position: relative;
+}
+
+.iconLogo {
+    position: absolute;
+    top: 50%;
+    right: 7%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: solid 2px #000;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* ----------------------------
+accordion custom
+----------------------------- */
+.accordion-item:last-child {
+    border-bottom: none;
+}
+.accordion-body {
+    padding-bottom: 25px;
+}
+.accordion-button:not(.collapsed) {
+    color: #212529;
+    background-color: #fff;
+    box-shadow: none;
+}
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    transform: rotate(-180deg);
+}
+
+
+/* ----------------------------
+myTaskList
+----------------------------- */
+.no-click {
+    pointer-events: none!important;
+}
+.myTaskList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.myTaskListItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.myTaskListItem:not(:last-child) {
+    margin-bottom: 30px;
+}
+
+.myTaskListItem__icon {
+    width: 24px;
+}
+.myTaskListItem__text {
+    width: calc(80% - 50px);
+}
+.myTaskListItem__users {
+    width: 20%;
+    position: relative;
+}
+.myTaskList.myTaskList--1 .myTaskListItem__text {
+    width: calc(100% - 37px);
+}
+.myTaskList.myTaskList--3 .myTaskListItem__text {
+    text-decoration: line-through;
+}
+
+.myTaskListItem__user {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+}
+.myTaskListItem__user:nth-child(1) {
+    left: 0;
+    z-index: 4;
+}
+.myTaskListItem__user:nth-child(2) {
+    left: 13px;
+    z-index: 3;
+}
+.myTaskListItem__user:nth-child(3) {
+    left: 26px;
+    z-index: 2;
+
+}
+.myTaskListItem__user:nth-child(4) {
+    left: 39px;
+    z-index: 1;
+}
+.myTaskListItem__user:nth-child(n + 5) {
+    display: none
+}
