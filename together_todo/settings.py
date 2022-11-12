@@ -159,9 +159,9 @@ LOGIN_REDIRECT_URL = 'home'
 
 # mediaファイルの設定
 if DEBUG:
-    MEDIA_ROOT = '/usr/share/nginx/html/media'
-else:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    MEDIA_ROOT = '/usr/share/nginx/html/media'
 
 MEDIA_URL = '/media/'
     
