@@ -156,3 +156,12 @@ ACTIVATION_EXPIRED_MINUTES = 30
 LOGIN_URL='login'
 ##ログイン成功後に行くサイトの名前
 LOGIN_REDIRECT_URL = 'home'
+
+# mediaファイルの設定
+if DEBUG:
+    MEDIA_ROOT = '/usr/share/nginx/html/media'
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+    

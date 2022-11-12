@@ -1,17 +1,44 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block head %}
+<link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+{% endblock %}
 
+{% block content %}
 <p>(G201)</p>
 <p>こんにちは、ユーザ名:{{ user }}さん</p>
 <form id="form_checkPassword">
     {% csrf_token %}
     <input type="hidden" name="url" value="{% url 'check_password' %}">
     <div class="mb-3">
-        <label for="id_password" class="form-label">パスワード</label>
-        <input type="password" name="password" autocomplete="new-password" class="form-control" id="id_password">
+        <label class="form-label">パスワード</label>
+        <input type="password" name="password" autocomplete="new-password" class="form-control">
         <div class="form-text"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">確定</button>
+</form>
+<form id="form_userUpdate">
+    {% csrf_token %}
+    <input type="hidden" name="url" value="{% url 'user_update' %}">
+    <div class="mb-3">
+        <label class="form-label">Icon:</label>
+        <input class="form-control" type="file" name="icon" accept="image/*">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">ユーザ名</label>
+        <input type="text" name="username" autofocus class="form-control">
+        <div class="form-text">{{ form.username.errors.0 }}</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">メールアドレス</label>
+        <input type="email" name="email" autofocus class="form-control">
+        <div class="form-text">{{ form.email.errors.0 }}</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">パスワード</label>
+        <input type="password" name="password" autocomplete="new-password" class="form-control">
+        <div class="form-text">{{ form.password1.errors.0 }}</div>
     </div>
     <button type="submit" class="btn btn-primary">確定</button>
 </form>

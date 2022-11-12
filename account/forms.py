@@ -25,3 +25,16 @@ class SignupForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     pass
+
+class UserChangeForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['icon', 'username', 'email', 'password']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+
+        if commit:
+            user.save()
+            
+        return user

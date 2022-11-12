@@ -11,5 +11,6 @@ urlpatterns = [
     path('activate_failed/', views.ActivateFailedView.as_view(), name='activate_failed'),
 
     path('user/<uuid:activate_token>/activation/', views.activate_user),
-    path('user/check_password', views.checkPassword, name='check_password')
+    path('user/check_password', views.checkPassword, name='check_password'),
+    path('user/update', views.update, name='user_update')
 ]

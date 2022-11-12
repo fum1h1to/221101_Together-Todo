@@ -1,12 +1,13 @@
 import json
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
-from account.forms import SignupForm,LoginForm
+from account.forms import SignupForm, LoginForm, UserChangeForm
 from .models import UserActivateTokens
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 from .models import CustomUser
 
@@ -81,7 +82,7 @@ def checkPassword(request):
 
     if password is not None:
         result = CustomUser.objects.checkPassword(request.user, password)
-        
+
         if result:
             context = {
                 'result': True
@@ -91,3 +92,25 @@ def checkPassword(request):
         'result': False
     }
     return JsonResponse(context)
+
+@require_http_methods(['POST'])
+@login_required
+def update(request):
+    data = CustomUser.objects.get(userid=request.user.userid)
+    
+    user_data = UserChangeForm(request.POST, instance=data)
+    
+    if user_data.is_valid():
+        user_data.save()
+        context = {
+            'result': True
+        }
+        return JsonResponse(context)
+
+    else:
+        
+        context = {
+            'form': str(user_data)
+        }
+
+        return JsonResponse(context)

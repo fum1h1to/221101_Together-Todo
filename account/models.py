@@ -87,6 +87,12 @@ class UserManager(UserManager):
     send_mail(subject, message, from_email, to)
 
 
+def directory_path(instance, filename):
+  '''
+  mediaファイル内への画像保存先の指定
+  '''
+  return 'user_{0}/{1}'.format(instance.user.id, filename)
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
   '''
   ユーザのデータベース定義
@@ -124,7 +130,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #Emailであるかどうかのチェック。
   )
 
-  # icon=
+  icon = models.ImageField(upload_to=directory_path)
 
   status = models.IntegerField(
     _('status'),
@@ -158,7 +164,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
   class Meta:
     verbose_name = _("User") # 管理画面でuserと表示させるための処理
     verbose_name_plural = _("Users") #上記と同じ
-
 
 
 class UserActivateTokensManager(models.Manager):
