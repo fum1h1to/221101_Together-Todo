@@ -101,3 +101,80 @@ myTaskList
 .myTaskListItem__user:nth-child(n + 5) {
     display: none
 }
+
+/* ----------------------------
+footer
+----------------------------- */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+}
+.footer__inner {
+    max-width: 560px;
+    height: 100%;
+    margin: 0 auto;
+    border-top: solid 1px rgba(0, 0, 0, .25);
+}
+.footerTab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.footerTab__item {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.footerTab__item--home img {
+    width: 23px;
+    height: 26px;
+}
+.footerTab__item--other img {
+    width: 36px;
+    height: 25px;
+}
+.footerTab__item--other.is-new::before {
+    content: "";
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% + 17px);
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #FF0000;
+}
+
+/* ----------------------------
+taskPlusButton
+----------------------------- */
+.taskPlusButton {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.taskPlusButton__inner {
+    max-width: 560px;
+    margin: 0 auto;
+    position: relative;
+}
+.taskPlusButton__btn {
+    position: absolute;
+    bottom: 65px;
+    right: 4%;
+    width: 56px;
+    height: 56px;
+    background: #03DAC5;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, .25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
