@@ -6,24 +6,9 @@ from django.utils import timezone  # #時刻を使うときに必要なモジュ
 from django.core.validators import FileExtensionValidator##ファイルの型を指定する
 from account.models import CustomUser
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
-
-
-
-
-class TaskStatus(models.Model):
-    status= models.IntegerField(
-    primary_key=True,
-
-    
-   
-  ) 
-    ## 外部設計のデータモデル見たら主キーだったので。 primary_key=Trueを設定
-    
-
-
-
 
 
 class Task(models.Model):
@@ -57,7 +42,7 @@ class Task(models.Model):
 
     taskName=models.CharField(
 
-        verbose_name="タスクの名前",
+        verbose_name= _("タスクの名前"),
         blank=False, max_length=50,)##50文字までの文字の入力が可能
 
     deadline = models.DateTimeField(default=timezone.now,)##締切日 
@@ -68,22 +53,22 @@ class Task(models.Model):
     
      
     note=models.TextField(
-        verbose_name="メモ欄",
+        verbose_name= _("メモ欄"),
         max_length=300,)
 
     
-    isBocchi=models.BooleanField(verbose_name="ぼっち",default=False)
+    isBocchi=models.BooleanField(verbose_name= _("ぼっち"),default=False)
 
-    img = models.ImageField(upload_to='',validators=[FileExtensionValidator(['jpg','png', ],imagefile_size)],verbose_name='画像',)  ###画像ファイル
+    img = models.ImageField(upload_to='',validators=[FileExtensionValidator(['jpg','png', ],imagefile_size)],verbose_name= _("画像"),)  ###画像ファイル
     
-    movie=models.FileField( upload_to='',verbose_name='動画',validators=[FileExtensionValidator(['mp4','MPEG4','MOV', ],moviefile_size)],)
+    movie=models.FileField( upload_to='',verbose_name= _("動画"),validators=[FileExtensionValidator(['mp4','MPEG4','MOV', ],moviefile_size)],)
     #動画ファイル 動画の時間を制限する方法を探してみたけどなかなか見つからなかったのでまた探してみます。
 
     
     
-    description=models.TextField( verbose_name="説明",)
+    description=models.TextField( verbose_name= _("説明"),)
 
-    status=models.ForeignKey(TaskStatus,on_delete=models.CASCADE)##TaskStatusからもらう
+    status=models.IntegerField()
     
 
     
