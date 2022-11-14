@@ -17,13 +17,17 @@
     background: #eee;
 }
 
+.table-res-form tr .error{
+    word-break: keep-all;
+}
+
 /*thとtd内の余白指定*/
 .table-res-form th, .table-res-form td {
-    padding: 1em;
+    padding: 0.7em;
 }
-/*th（項目欄）は30%幅、テキストを右寄せ*/
+/*th（項目欄）は30%幅、テキストを左寄せ*/
 .table-res-form th {
-    width: 30%;
+    width: 25%;
     text-align: left;
 }
 
@@ -40,6 +44,17 @@
 
 /* メモ入力フォーム */
 .input-memo{
+    margin-top: 1rem;
     border-radius: 3px;
 }
 
+@media (max-width: 480px) {
+    table {
+        width: 100%;
+    }
+ 
+    table th,
+    table td {
+        display: block;
+    }
+}
