@@ -1,0 +1,45 @@
+
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+.table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+.table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+.table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+.table-res-form tr:nth-child(2n+1) {
+    background: #eee;
+}
+
+/*thとtd内の余白指定*/
+.table-res-form th, .table-res-form td {
+    padding: 1em;
+}
+/*th（項目欄）は30%幅、テキストを右寄せ*/
+.table-res-form th {
+    width: 30%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+.date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+.table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+.input-memo{
+    border-radius: 3px;
+}
+
