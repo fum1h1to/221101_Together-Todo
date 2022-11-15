@@ -78,6 +78,14 @@ class UserManager(UserManager):
     '''
     return user.check_password(password)
 
+  def delete(self, user):
+    '''
+    ユーザを削除する。(ユーザのステータスを2にする。)
+    '''
+    user.status = 2
+    user.is_active = False
+    user.save()
+
   def send_email(self, userid, subject, message):
     '''
     ユーザに対して何かしらのメールを送る関数

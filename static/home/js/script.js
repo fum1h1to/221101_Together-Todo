@@ -74,6 +74,45 @@ form_userUpdate.addEventListener("submit", function (e) {
 
     fetch(form_userUpdate.url.value, sendOption)
         .then(res => {
-            console.log(res.json());
-        });
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                modal_accountEdit.hide();
+                modal_accountSetting.show();
+            } else {
+
+            }
+        })
+});
+
+const form_userDelete = document.querySelector("#form_userDelete");
+form_userDelete.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    let collect_username = form_userDelete.collect_username.value;
+    let username = form_userDelete.username.value;
+    if(collect_username === username) {
+        const sendOption = {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            },
+        };
+    
+        fetch(form_userDelete.url.value, sendOption)
+            .then(res => {
+                return res.json();
+            })
+            .then((res) => {
+                if (res.result) {
+                    window.location.href = '/';
+                } else {
+    
+                }
+            })
+    }
+
 });

@@ -12,5 +12,6 @@ urlpatterns = [
 
     path('user/<uuid:activate_token>/activation/', views.activate_user),
     path('user/check_password', views.checkPassword, name='check_password'),
-    path('user/update', views.update, name='user_update')
+    path('user/update', views.update, name='user_update'),
+    path('user/delete', views.delete, name='user_delete'),
 ]

@@ -96,36 +96,54 @@ def checkPassword(request):
 @require_http_methods(['POST'])
 @login_required
 def update(request):
-    user = CustomUser.objects.get(userid=request.user.userid)
+    context = {
+        'result': True,
+        'message': 'アカウント編集は保留'
+    }
+    return JsonResponse(context)
+    # user = CustomUser.objects.get(userid=request.user.userid)
     
-    user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
+    # user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
     
-    if user_data.is_valid():
+    # if user_data.is_valid():
         
-        if user_data.cleaned_data["icon"] is not None:
-            user.icon = user_data.cleaned_data["icon"]
-        if user_data.cleaned_data["username"] != '':
-            user.username = user_data.cleaned_data["username"]
-        if user_data.cleaned_data["email"] != '':
-            user.email = user_data.cleaned_data["email"]
-        if user_data.cleaned_data["password"] != '':
-            user.set_password(user_data.cleaned_data["password"])
-        user.save()
+    #     if user_data.cleaned_data["icon"] is not None:
+    #         user.icon = user_data.cleaned_data["icon"]
+    #     if user_data.cleaned_data["username"] != '':
+    #         user.username = user_data.cleaned_data["username"]
+    #     if user_data.cleaned_data["email"] != '':
+    #         user.email = user_data.cleaned_data["email"]
+    #     if user_data.cleaned_data["password"] != '':
+    #         user.set_password(user_data.cleaned_data["password"])
+    #     user.save()
 
+    #     context = {
+    #         'result': True
+    #     }
+    #     return JsonResponse(context)
+
+    # else:
+        
+    #     context = {
+    #         'result': False,
+    #         'error': dict(user_data.errors.items())
+    #     }
+
+    #     return JsonResponse(context)
+
+@require_http_methods(['POST'])
+@login_required
+def delete(request):
+    try:
+        CustomUser.objects.delete(request.user)
         context = {
             'result': True
         }
+        print('context')
         return JsonResponse(context)
-
-    else:
-        
+    except:
         context = {
             'result': False,
-            'error': dict(user_data.errors.items())
+            'message': 'エラーが発生しました。'
         }
-
         return JsonResponse(context)
-
-# @require_http_methods(['POST'])
-# @login_required
-# def user_icon_update(request):
