@@ -96,12 +96,22 @@ def checkPassword(request):
 @require_http_methods(['POST'])
 @login_required
 def update(request):
-    data = CustomUser.objects.get(userid=request.user.userid)
+    user = CustomUser.objects.get(userid=request.user.userid)
     
-    user_data = UserChangeForm(request.POST, instance=data)
+    user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
     
     if user_data.is_valid():
-        user_data.save()
+        
+        if user_data.cleaned_data["icon"] is not None:
+            user.icon = user_data.cleaned_data["icon"]
+        if user_data.cleaned_data["username"] != '':
+            user.username = user_data.cleaned_data["username"]
+        if user_data.cleaned_data["email"] != '':
+            user.email = user_data.cleaned_data["email"]
+        if user_data.cleaned_data["password"] != '':
+            user.set_password(user_data.cleaned_data["password"])
+        user.save()
+
         context = {
             'result': True
         }
@@ -110,7 +120,12 @@ def update(request):
     else:
         
         context = {
-            'form': str(user_data)
+            'result': False,
+            'error': dict(user_data.errors.items())
         }
 
         return JsonResponse(context)
+
+# @require_http_methods(['POST'])
+# @login_required
+# def user_icon_update(request):

@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
@@ -72,8 +73,10 @@ class UserManager(UserManager):
     logout(request)
 
   def checkPassword(self, user, password):
+    '''
+    ユーザのパスワードが合っているかチェックする。
+    '''
     return user.check_password(password)
-
 
   def send_email(self, userid, subject, message):
     '''
@@ -86,12 +89,6 @@ class UserManager(UserManager):
     to = [ user.email ]
     send_mail(subject, message, from_email, to)
 
-
-def directory_path(instance, filename):
-  '''
-  mediaファイル内への画像保存先の指定
-  '''
-  return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
   '''
@@ -108,6 +105,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff
     is_active
   '''
+
+  def get_image_path(self, filename):
+    """カスタマイズした画像パスを取得する.
+
+    :param self: インスタンス (models.Model)
+    :param filename: 元ファイル名
+    :return: カスタマイズしたファイル名を含む画像パス
+    """
+    prefix = 'user/'
+    name = str(uuid.uuid4()).replace('-', '')
+    extension = os.path.splitext(filename)[-1]
+    return prefix + name + extension
 
   userid = models.UUIDField(
     default=uuid.uuid4,
@@ -130,7 +139,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #Emailであるかどうかのチェック。
   )
 
-  icon = models.ImageField(upload_to=directory_path)
+  icon = models.ImageField(upload_to=get_image_path, blank=True)
 
   status = models.IntegerField(
     _('status'),
@@ -164,6 +173,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
   class Meta:
     verbose_name = _("User") # 管理画面でuserと表示させるための処理
     verbose_name_plural = _("Users") #上記と同じ
+
+
 
 
 class UserActivateTokensManager(models.Manager):

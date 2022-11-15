@@ -1,20 +1,14 @@
-function getCookie(name) {
-    let cookieValue = null;
+const getCookie = (name) => {
     if (document.cookie && document.cookie !== '') {
-        let cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            let cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+        for (const cookie of document.cookie.split(';')) {
+            const [key, value] = cookie.trim().split('=')
+            if (key === name) {
+                return decodeURIComponent(value)
             }
         }
     }
-    return cookieValue;
 }
-
-const csrftoken = getCookie('csrftoken');
+const csrftoken = getCookie('csrftoken')
 
 const modalOption = {
     keyboard: false
@@ -27,7 +21,7 @@ const modal_accountLogout = new bootstrap.Modal(document.getElementById('modal_a
 
 
 const form_ceckPassword = document.querySelector("#form_checkPassword");
-form_ceckPassword.addEventListener("submit", function(e) {
+form_ceckPassword.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const body = new URLSearchParams()
@@ -43,26 +37,26 @@ form_ceckPassword.addEventListener("submit", function(e) {
         body: body
     };
 
-    fetch( form_ceckPassword.url.value, sendOption )
-    .then(res => { 
-        return res.json();
-    })
-    .then((res) => {
-        if(res.result) {
-            modal_checkPassword.hide();
-            modal_accountEdit.show();
-        } else {
+    fetch(form_ceckPassword.url.value, sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                modal_checkPassword.hide();
+                modal_accountEdit.show();
+            } else {
 
-        }
-    })
+            }
+        })
 });
 
 const form_userUpdate = document.querySelector("#form_userUpdate");
-form_userUpdate.addEventListener("submit", function(e) {
+form_userUpdate.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const body = new URLSearchParams()
-    body.append('icon', form_userUpdate.icon.value)
+    const body = new FormData()
+    body.append('icon', form_userUpdate.icon.files[0])
     body.append('username', form_userUpdate.username.value)
     body.append('email', form_userUpdate.email.value)
     body.append('password', form_userUpdate.password.value)
@@ -72,13 +66,14 @@ form_userUpdate.addEventListener("submit", function(e) {
         credentials: 'same-origin',
         headers: {
             'X-CSRFToken': csrftoken,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+            'Content-Type': 'multipart/form-data',
         },
         body: body
     };
+    delete sendOption.headers['Content-Type'];
 
-    fetch( form_userUpdate.url.value, sendOption )
-    .then(res => { 
-        console.log(res.json());
-    });
+    fetch(form_userUpdate.url.value, sendOption)
+        .then(res => {
+            console.log(res.json());
+        });
 });
