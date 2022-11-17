@@ -1,11 +1,293 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static 'home/css/style.css' %}">
+{% endblock %}
 
 {% block content %}
-
-<p>(G201)</p>
+<!-- <p>(G201)</p>
 <p>こんにちは、ユーザ名:{{ user }}さん</p>
+
 <p>ログイン成功！ タスク一覧が表示されるよ</p>
 
-<p><a href="{% url 'logout' %}">ログアウト</a></p>
+<p><a href="{% url 'logout' %}">ログアウト</a></p> -->
 
+<div class="header text-center border-bottom pb-2 pt-3">
+    <h1>自分のタスク</h1>
+    <div class="iconLogo" data-bs-toggle="modal" data-bs-target="#modal_accountSetting">
+        <img src="{% static 'home/images/icon_human.jpeg' %}" alt="">
+    </div>
+</div>
+
+<!-- modal_accountSetting -->
+<div class="modal fade" id="modal_accountSetting" tabindex="-1" aria-labelledby="modal_accountSettingLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_accountSettingLabel">アカウント設定</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_checkPassword" data-bs-dismiss="modal">
+                        アカウント設定
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_accountDelete" data-bs-dismiss="modal">
+                        アカウントを削除
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_accountLogout" data-bs-dismiss="modal">
+                        ログアウト
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_checkPassword -->
+<div class="modal fade" id="modal_checkPassword" tabindex="-1" aria-labelledby="modal_checkPasswordLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_checkPasswordLabel">パスワード入力</h5>
+            </div>
+            <div class="modal-body">
+                <form id="form_checkPassword">
+                    {% csrf_token %}
+                    <input type="hidden" name="url" value="{% url 'check_password' %}">
+                    <div class="mb-3">
+                        <label class="form-label">パスワード</label>
+                        <input type="password" name="password" autocomplete="new-password" class="form-control">
+                        <div class="form-text"></div>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                    <button type="submit" class="btn btn-primary">確定</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_accountEdit -->
+<div class="modal fade" id="modal_accountEdit" tabindex="-1" aria-labelledby="modal_accountEditLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_accountEditLabel">アカウント編集</h5>
+            </div>
+            <div class="modal-body">
+                <p>よく分からないエラーが出てくるため、まだ実装できていない。(確定を押しても何もされない）</p>
+                <form id="form_userUpdate">
+                    {% csrf_token %}
+                    <input type="hidden" name="url" value="{% url 'user_update' %}">
+                    <div class="mb-3">
+                        <label class="form-label">アイコン</label>
+                        <input class="form-control" type="file" name="icon" accept="image/*">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ユーザ名</label>
+                        <input type="text" name="username" autofocus class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">メールアドレス</label>
+                        <input type="email" name="email" autofocus class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">パスワード</label>
+                        <input type="password" name="password" autocomplete="new-password" class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                    <button type="submit" class="btn btn-primary">確定</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_accountDelete -->
+<div class="modal fade" id="modal_accountDelete" tabindex="-1" aria-labelledby="modal_accountDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_accountDeleteLabel">アカウント削除</h5>
+            </div>
+            <div class="modal-body">
+                <form id="form_userDelete">
+                    {% csrf_token %}
+                    <input type="hidden" name="url" value="{% url 'user_delete' %}">
+                    <input type="hidden" name="collect_username" value="{{ request.user.username }}">
+                    <p>「{{ request.user.username }}」と入力してください。</p>
+                    <div class="mb-3">
+                        <label class="form-label">ユーザ名</label>
+                        <input type="text" name="username" autofocus class="form-control">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                    <button type="submit" class="btn btn-primary">削除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_accountLogout -->
+<div class="modal fade" id="modal_accountLogout" tabindex="-1" aria-labelledby="modal_accountLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal_accountLogoutLabel">ログアウト</h5>
+            </div>
+            <div class="modal-body">
+                ログアウトしますか
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">キャンセル</button>
+                <a class="btn btn-primary" href="{% url 'logout' %}">ログアウト</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- メイン画面 -->
+<div class="accordion" id="accordion-myTaskList">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="myTaskList-headingOne">
+            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseOne"
+                aria-expanded="true" aria-controls="myTaskList-collapseOne">
+                作成済みのタスク(2)
+            </div>
+        </h2>
+        <div id="myTaskList-collapseOne" class="accordion-collapse collapse show no-click"
+            aria-labelledby="myTaskList-headingOne">
+            <div class="accordion-body">
+                <ul class="myTaskList myTaskList--1">
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_noncheck.svg' %}"
+                                alt=""></div>
+                        <div class="myTaskListItem__text">動画作成</div>
+                    </li>
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_noncheck.svg' %}"
+                                alt=""></div>
+                        <div class="myTaskListItem__text">依頼動画作成</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="myTaskList-headingTwo">
+            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseTwo"
+                aria-expanded="true" aria-controls="myTaskList-collapseTwo">
+                一次チェック済み(2)
+            </div>
+        </h2>
+        <div id="myTaskList-collapseTwo" class="accordion-collapse collapse show"
+            aria-labelledby="myTaskList-headingTwo">
+            <div class="accordion-body">
+                <ul class="myTaskList myTaskList--2">
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_send.svg' %}" alt="">
+                        </div>
+                        <div class="myTaskListItem__text">予定のメール送信</div>
+                        <div class="myTaskListItem__users">
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                        </div>
+                    </li>
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_send.svg' %}" alt="">
+                        </div>
+                        <div class="myTaskListItem__text">絵コンテを書ききる</div>
+                        <div class="myTaskListItem__users">
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="myTaskList-headingThree">
+            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseThree"
+                aria-expanded="true" aria-controls="myTaskList-collapseThree">
+                完了済み(3)
+            </div>
+        </h2>
+        <div id="myTaskList-collapseThree" class="accordion-collapse collapse show"
+            aria-labelledby="myTaskList-headingThree">
+            <div class="accordion-body">
+                <ul class="myTaskList myTaskList--3">
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_check.svg' %}" alt="">
+                        </div>
+                        <div class="myTaskListItem__text">掃除を終わらせる</div>
+                        <div class="myTaskListItem__users">
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                        </div>
+                    </li>
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_check.svg' %}" alt="">
+                        </div>
+                        <div class="myTaskListItem__text">ポートフォリオ作成</div>
+                        <div class="myTaskListItem__users">
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                        </div>
+                    </li>
+                    <li class="myTaskListItem">
+                        <div class="myTaskListItem__icon"><img src="{% static 'home/images/icon_check.svg' %}" alt="">
+                        </div>
+                        <div class="myTaskListItem__text">確定申告</div>
+                        <div class="myTaskListItem__users">
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                            <div class="myTaskListItem__user"><img src="{% static 'home/images/icon_human.jpeg' %}"
+                                    alt=""></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="taskPlusButton">
+    <div class="taskPlusButton__inner">
+        <div class="taskPlusButton__btn"><img src="{% static 'home/images/icon_plus.svg' %}" alt=""></div>
+    </div>
+</div>
+<div class="footer">
+    <div class="footer__inner">
+        <div class="footerTab">
+            <div class="footerTab__item footerTab__item--home"><img
+                    src="{% static 'home/images/icon_home_active.svg' %}" alt=""></div>
+            <div class="footerTab__item footerTab__item--other is-new"><img
+                    src="{% static 'home/images/icon_other.svg' %}" alt=""></div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block foot %}
+<script type="text/javascript" src="{% static 'home/js/script.js' %}"></script>
 {% endblock %}
