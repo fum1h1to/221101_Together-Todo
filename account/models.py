@@ -1,9 +1,10 @@
+import os
 from django.db import models
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator, EmailValidator
@@ -64,17 +65,26 @@ class UserManager(UserManager):
     ユーザをログインさせる。
     '''
     login(request, user)
-
-  def checkEmailValidate(self, email):
+  
+  def logout(self, request):
     '''
-    メールアドレスのフォーマットチェック
+    ユーザをログアウトさせる。
     '''
-    validate_email =EmailValidator(
-              _("メールアドレスのフォーマットが不正です。"),
-              code="invalid-email"
-            )
+    logout(request)
 
-    validate_email(email)
+  def checkPassword(self, user, password):
+    '''
+    ユーザのパスワードが合っているかチェックする。
+    '''
+    return user.check_password(password)
+
+  def delete(self, user):
+    '''
+    ユーザを削除する。(ユーザのステータスを2にする。)
+    '''
+    user.status = 2
+    user.is_active = False
+    user.save()
 
   def send_email(self, userid, subject, message):
     '''
@@ -104,6 +114,18 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active
   '''
 
+  def get_image_path(self, filename):
+    """カスタマイズした画像パスを取得する.
+
+    :param self: インスタンス (models.Model)
+    :param filename: 元ファイル名
+    :return: カスタマイズしたファイル名を含む画像パス
+    """
+    prefix = 'user/'
+    name = str(uuid.uuid4()).replace('-', '')
+    extension = os.path.splitext(filename)[-1]
+    return prefix + name + extension
+
   userid = models.UUIDField(
     default=uuid.uuid4,
     primary_key=True,
@@ -125,7 +147,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #Emailであるかどうかのチェック。
   )
 
-  # icon=
+  icon = models.ImageField(upload_to=get_image_path, blank=True)
 
   status = models.IntegerField(
     _('status'),
@@ -159,6 +181,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
   class Meta:
     verbose_name = _("User") # 管理画面でuserと表示させるための処理
     verbose_name_plural = _("Users") #上記と同じ
+
 
 
 

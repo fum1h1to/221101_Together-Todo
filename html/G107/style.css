@@ -1,0 +1,85 @@
+
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+.table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+.table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+.table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+.table-res-form tr:nth-child(2n+1) {
+    background: #eee;
+}
+
+.table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+.table-res-form th, .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+.table-res-form th {
+    width: 25%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+.date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+.table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+.input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+    table {
+        width: 100%;
+    }
+ 
+    table th,
+    table td {
+        display: block;
+    }
+}
+
+button {
+    /* ブラウザ特有のスタイルを無効に */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+  
+    /* 整える */
+    margin: 1em 0; /* 前後の隙間 */
+    padding: 0.6em 1em; /* 塗りの余白 */
+    font-size: 1em; /* フォントサイズ */
+    background-color: #FFF; /* 背景色 */
+    color: #000; /* テキストカラー */
+    cursor: pointer; /* カーソルを指マークに */
+    border-radius: 3px; /* 角の丸み */
+    border: 0; /* 枠線を消す */
+    transition: 0.3s; /* ホバーの変化を滑らかに */
+    margin-left: auto;
+  }
+  
+  /* ホバー時（カーソルをのせた時）の見た目 */
+  button:hover {
+    background-color: #064fda; /* 背景色 */
+    color: #FFF; /* テキストカラー */
+  }

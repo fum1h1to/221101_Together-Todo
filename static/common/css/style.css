@@ -1,0 +1,11 @@
+img {
+    max-width: 100%;
+}
+
+.sp-limit {
+    max-width: 560px;
+    margin: 0 auto;
+    border-left: solid 1px #333;
+    border-right: solid 1px #333;
+    min-height: 100vh;
+}
