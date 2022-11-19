@@ -44,20 +44,24 @@ def create(request):
         isBocchi = False
     elif 0 < bocchi and bocchi <= 10:
         isBocchi = True
-        randomUsers = CustomUser.objects.choiceUserRandom(bocchi)
+        randomUsers = CustomUser.objects.choiceUserRandom(user, bocchi)
         requestUsers = []
         for user in randomUsers:
             requestUsers.append(user.username)
     else:
         bocchi_valid = False
     
+    requestUser_valid = False
+    if len(requestUsers) > 10:
+        requestUser_valid = False
+    
     task_data=TaskCreateForm(data=request.POST)
 
-    if task_data.is_valid() and bocchi_valid: ##フォーマットをチェックする
+    if task_data.is_valid() and bocchi_valid and requestUser_valid: ##フォーマットをチェックする
     # if False:
     
         ###タスクを作成する処理  無理ならエラーを返す。
-        # Task.objects.create(user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
+        Task.objects.create(user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
         
         context = {
             'result':True,
@@ -68,6 +72,9 @@ def create(request):
         error = dict(task_data.errors.items())
         if not bocchi_valid:
             error['bocchi'] = '人数が不正です。'
+        
+        if not requestUser_valid:
+            error['requestUsers'] = '依頼者は10人までです。'
 
         context = {
             'result':False,

@@ -147,3 +147,19 @@ def delete(request):
             'message': 'エラーが発生しました。'
         }
         return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def find(request):
+    searchname = request.POST.get('searchname')
+    finduser = CustomUser.objects.findByUsername(request.user, searchname)
+
+    result = []
+    for user in finduser:
+        result.append(user.username)
+
+    context = {
+        'finduser': result
+    }
+    return JsonResponse(context)

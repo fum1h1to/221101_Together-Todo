@@ -25,6 +25,7 @@ const modal_accountDelete = new bootstrap.Modal(document.getElementById('modal_a
 const modal_accountLogout = new bootstrap.Modal(document.getElementById('modal_accountLogout'), modalOption);
 
 const modal_todoCreate = new bootstrap.Modal(document.getElementById('modal_todoCreate'), modalOption);
+const modal_todoSelectRequest = new bootstrap.Modal(document.getElementById('modal_todoSelectRequest'), modalOption);
 const modal_todoSelectBocchi = new bootstrap.Modal(document.getElementById('modal_todoSelectBocchi'), modalOption);
 
 const modal_todoCreate_success = new bootstrap.Modal(document.getElementById('modal_todoCreate_success'), modalOption);
@@ -36,9 +37,14 @@ const modal_todoCreate_failed = new bootstrap.Modal(document.getElementById('mod
 const form_ceckPassword = document.getElementById("form_checkPassword");
 const form_userUpdate = document.getElementById("form_userUpdate");
 const form_userDelete = document.getElementById("form_userDelete");
+const form_accountFind = document.getElementById("form_accountFind");
 
 const form_todoCreate = document.getElementById("form_todoCreate");
 const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
+
+// このページ内で使う変数
+const todoCreate_requestUsers = new Set();
+
 
 // passwordチェックフォームの初期化処理
 const passwordCheckFormReset = () => {
@@ -54,6 +60,8 @@ const userDeleteFormReset = () => {
 const todoCreateFormReset = () => {
     form_todoCreate.reset();
     form_todoSelectBocchi.reset();
+    form_accountFind.reset();
+    todoCreate_requestUsers.clear();
 }
 
 document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
@@ -172,10 +180,85 @@ form_userDelete.addEventListener("submit", function (e) {
 
 
 /* ----------------------------
+依頼者選択画面での処理
+----------------------------- */
+form_accountFind.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const body = new URLSearchParams()
+    body.append('searchname', form_accountFind.searchname.value)
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: body
+    };
+
+    // ユーザがクリックされたときの処理
+    const clickFindUser = (e) => {
+        todoCreate_requestUsers.add(e.target.dataset.username);
+    }
+
+    fetch(form_accountFind.url.value, sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            const userListElement = document.querySelector('#modal_todoSelectRequest section ol');
+            userListElement.innerHTML = '';
+            if(res.finduser) {
+                if(res.finduser.length != 0){
+                    for(let user in res.finduser) {
+                        userListElement.innerHTML += '<li class="add_finduser cursor-pointer" data-username=' + res.finduser[user] + '>' + res.finduser[user] + '<img src="/static/home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+                    }
+                    const finduserElements = document.querySelectorAll('#modal_todoSelectRequest section ol .add_finduser')
+                    finduserElements.forEach((ele) => {
+                        ele.addEventListener('click', clickFindUser);
+                    })
+                } else {
+                    userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
+                }
+            } else {
+                userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
+            }
+        })
+});
+
+
+/* ----------------------------
+依頼者一覧画面での処理
+----------------------------- */
+document.getElementById('btn_todoRequestUserList').addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // ユーザがクリックされたときの処理
+    const clickUser = (e) => {
+        todoCreate_requestUsers.delete(e.target.dataset.username);
+    }
+
+    const userlistElement = document.querySelector('#modal_todoListRequest section ol');
+    userlistElement.innerHTML = '';
+    if(todoCreate_requestUsers.size != 0) {
+        for(let user of todoCreate_requestUsers) {
+            userlistElement.innerHTML += '<li class="remove_finduser cursor-pointer" data-username=' + user + '>' + user + '<img src="/static/home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+        }
+        const userElements = document.querySelectorAll('#btn_todoRequestUserList section ol .remove_finduser')
+        userElements.forEach((ele) => {
+            ele.addEventListener('click', clickUser);
+        })
+    } else {
+        userlistElement.innerHTML = '<p>依頼者はまだ選択されていません。</p>';
+    }
+});
+
+
+/* ----------------------------
 タスク作成処理
 ----------------------------- */
-const btn_todoSelectBocchi = document.getElementById('btn_todoSelectBocchi');
-
 (function () {
     // 期限日の処理
     let optionLoop, this_day, this_month, this_year, today;
@@ -209,10 +292,7 @@ const btn_todoSelectBocchi = document.getElementById('btn_todoSelectBocchi');
 
 })();
 
-// ボッチモードの場合
-btn_todoSelectBocchi.addEventListener("click", function(e) {
-    e.preventDefault();
-
+const todoCreate_sendData = (isBocchi) => {
     const body = new URLSearchParams()
 
     let taskName = form_todoCreate.taskName.value;
@@ -236,7 +316,11 @@ btn_todoSelectBocchi.addEventListener("click", function(e) {
     body.append('note', note);
     
     let bocchi = form_todoSelectBocchi.bocchi.value;
-    body.append('bocchi', bocchi);
+    body.append('bocchi', isBocchi ? bocchi : 0);
+
+    for(let user of todoCreate_requestUsers) {
+        body.append('requestUsers', user);
+    }
 
     const sendOption = {
         method: 'POST',
@@ -255,32 +339,48 @@ btn_todoSelectBocchi.addEventListener("click", function(e) {
         .then((res) => {
             if (res.result) {
                 modal_todoSelectBocchi.hide();
+                modal_todoSelectRequest.hide();
+                modal_todoCreate_numCheck.hide();
                 modal_todoCreate_success.show();
                 todoCreateFormReset();
             } else {
                 modal_todoSelectBocchi.hide();
+                modal_todoSelectRequest.hide();
+                modal_todoCreate_numCheck.hide();
                 modal_todoCreate_failed.show();
-                inputError(res.error);
+                todoCreate_inputError(res.error);
             }
         })
     
-    const inputError = (error) => {
+    const todoCreate_inputError = (error) => {
         error.taskName ? form_todoCreate.querySelector('.task-error').textContent = error.taskName : form_todoCreate.querySelector('.task-error').textContent = "";
         error.deadline ? form_todoCreate.querySelector('.deadline-error').textContent = error.deadline : form_todoCreate.querySelector('.deadline-error').textContent = "";
         error.importance ? form_todoCreate.querySelector('.importance-error').textContent = error.importance : form_todoCreate.querySelector('.importance-error').textContent = "";
         error.note ? form_todoCreate.querySelector('.note-error').textContent = error.note : form_todoCreate.querySelector('.note-error').textContent = "";
         error.bocchi ? form_todoSelectBocchi.querySelector('.bocchi-error').textContent = error.bocchi : form_todoSelectBocchi.querySelector('.bocchi-error').textContent = "";
+        error.requestUsers ? document.querySelector('#modal_todoSelectRequest .requestUsers-error p').textContent = error.requestUsers : document.querySelector('#modal_todoSelectRequest .requestUsers-error p').textContent = "";
     }
+}
+
+// ボッチモードの場合
+document.getElementById('btn_todoSelectBocchi').addEventListener("click", function(e) {
+    e.preventDefault();
+
+    todoCreate_sendData(isBochi=true);
 })
 
 // 依頼者を選択する場合
-btn_todoSelectBocchi.addEventListener("click", function(e) {
+document.getElementById('btn_todoSelectRequest').addEventListener("click", function(e) {
     e.preventDefault();
 
-    
-    
-    
-    body.append('bocchi', 0);
+    if(todoCreate_requestUsers.size == 0) {
+        modal_todoCreate_numCheck.show();
+    } else {
+        todoCreate_sendData(isBochi=false);
+    }
+})
+document.getElementById('btn_todoSelectRequest_numCollect').addEventListener("click", function(e) {
+    e.preventDefault();
 
-    
+    todoCreate_sendData(isBochi=false);
 })
