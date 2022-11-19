@@ -16,7 +16,7 @@
 
 <div class="header text-center border-bottom pb-2 pt-3">
     <h1>自分のタスク</h1>
-    <div class="iconLogo" data-bs-toggle="modal" data-bs-target="#modal_accountSetting">
+    <div id="btn_iconLogo" class="iconLogo" data-bs-toggle="modal" data-bs-target="#modal_accountSetting">
         <img src="{% static 'home/images/icon_human.jpeg' %}" alt="">
     </div>
 </div>
@@ -26,25 +26,27 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
+                <div style="margin-right: auto; width: 1rem;"></div>
                 <h5 class="modal-title" id="modal_accountSettingLabel">アカウント設定</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_checkPassword" data-bs-dismiss="modal">
-                        アカウント設定
-                    </button>
-                </div>
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_accountDelete" data-bs-dismiss="modal">
-                        アカウントを削除
-                    </button>
-                </div>
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_accountLogout" data-bs-dismiss="modal">
-                        ログアウト
-                    </button>
-                </div>
+                <!-- アカウントの編集 -->
+                <ul class="account_edit">
+                    <div class="accountEdit__icon cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_checkPassword" data-bs-dismiss="modal">
+                        <img src="{% static 'home/images/settings_image.svg' %}" alt="">アカウントの編集
+                    </div>
+                </ul>
+                <hr>
+                <ul class="account_delete">
+                    <div class="accountDelete__icon cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_accountDelete" data-bs-dismiss="modal">
+                        <img src="{% static 'home/images/error_image.svg' %}" alt="">
+                        <span style="color: red">アカウントを削除</span>
+                    </div>
+                </ul>
+            </div>
+            <div class="modal-footer d-flex justify-content-center cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_accountLogout" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-primary">ログアウト</button>
             </div>
         </div>
     </div>
@@ -54,20 +56,20 @@
 <div class="modal fade" id="modal_checkPassword" tabindex="-1" aria-labelledby="modal_checkPasswordLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="modal_checkPasswordLabel">パスワード入力</h5>
             </div>
             <div class="modal-body">
                 <form id="form_checkPassword">
-                    {% csrf_token %}
                     <input type="hidden" name="url" value="{% url 'check_password' %}">
-                    <div class="mb-3">
-                        <label class="form-label">パスワード</label>
-                        <input type="password" name="password" autocomplete="new-password" class="form-control">
+                    <div class="mb-4">
+                        <input type="password" name="password" autocomplete="new-password" class="form-control" placeholder="password">
                         <div class="form-text"></div>
                     </div>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
-                    <button type="submit" class="btn btn-primary">確定</button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                        <button type="submit" class="btn btn-primary">確定</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -78,13 +80,12 @@
 <div class="modal fade" id="modal_accountEdit" tabindex="-1" aria-labelledby="modal_accountEditLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="modal_accountEditLabel">アカウント編集</h5>
             </div>
             <div class="modal-body">
-                <p>よく分からないエラーが出てくるため、まだ実装できていない。(確定を押しても何もされない）</p>
+                <p>よく分からないエラーが出てくるため、まだ実装できていない。<br>(確定を押しても何もされない）</p>
                 <form id="form_userUpdate">
-                    {% csrf_token %}
                     <input type="hidden" name="url" value="{% url 'user_update' %}">
                     <div class="mb-3">
                         <label class="form-label">アイコン</label>
@@ -114,21 +115,21 @@
 <div class="modal fade" id="modal_accountDelete" tabindex="-1" aria-labelledby="modal_accountDeleteLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="modal_accountDeleteLabel">アカウント削除</h5>
             </div>
             <div class="modal-body">
                 <form id="form_userDelete">
-                    {% csrf_token %}
                     <input type="hidden" name="url" value="{% url 'user_delete' %}">
                     <input type="hidden" name="collect_username" value="{{ request.user.username }}">
-                    <p>「{{ request.user.username }}」と入力してください。</p>
-                    <div class="mb-3">
-                        <label class="form-label">ユーザ名</label>
-                        <input type="text" name="username" autofocus class="form-control">
+                    <p style="color:gray">本当に削除しますか？<br>削除する場合は「{{ request.user.username }}」と入力してください。</p>
+                    <div class="mb-4">
+                        <input type="text" name="username" autofocus class="form-control" placeholder="ユーザ名">
                     </div>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
-                    <button type="submit" class="btn btn-primary">削除</button>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                        <button type="submit" class="btn btn-primary">削除</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -139,20 +140,296 @@
 <div class="modal fade" id="modal_accountLogout" tabindex="-1" aria-labelledby="modal_accountLogoutLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header justify-content-center">
                 <h5 class="modal-title" id="modal_accountLogoutLabel">ログアウト</h5>
             </div>
             <div class="modal-body">
-                ログアウトしますか
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">キャンセル</button>
-                <a class="btn btn-primary" href="{% url 'logout' %}">ログアウト</a>
+                <p style="color:gray">ログアウトしますか？</p>
+                <div class="modal-body d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">キャンセル</button>
+                    <a class="btn btn-primary" href="{% url 'logout' %}">ログアウト</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- modal_todoCreate -->
+<div class="modal fade" id="modal_todoCreate" tabindex="-1" aria-labelledby="modal_todoCreateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoCreateLabel">タスクの作成</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form id="form_todoCreate">
+                    <input type="hidden" name="url" value="{% url 'todo_create' %}">
+                    <table class="table-res-form mb-4">
+                        <!-- タスク名 -->
+                        <tr>
+                            <th>タスク名</th>
+                            <!-- 入力フォーム -->
+                            <td><input type="text" class="form-control" name="taskName"></td>
+                        </tr>
+                        <!-- エラーダイアログ -->
+                        <tr>
+                            <th class="error task-error"></th>
+                        </tr>
+
+                        <!-- 期限日 -->
+                        <tr>
+                            <th>期限日</th>
+                            <td>
+                                <div class="btn-group d-flex justify-content-between mt-2">
+                                    <!-- 年 -->
+                                    <div class="dropdown">
+                                        <select class="year btn btn-light" name="year">
+                                        </select>
+                                    </div>
+                                    <p class="date">年</p>
+
+                                    <!-- 月 -->
+                                    <div class="dropdown">
+                                        <select class="month btn btn-light" name="month">
+                                        </select>
+                                    </div>
+                                    <p class="date">月</p>
+
+                                    <!-- 日 -->
+                                    <div class="dropdown">
+                                        <select class="day btn btn-light" name="day">
+                                        </select>
+                                    </div>
+                                    <p class="date">日</p>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- エラーダイアログ -->
+                        <tr>
+                            <th class="error deadline-error"></th>
+                        </tr>
+
+                        <!-- 重要度 -->
+                        <tr>
+                            <th>重要度</th>
+                            <td>
+                                <!-- それぞれラジオボタンで実装 -->
+                                <div class="d-flex justify-content-between">
+                                    <div class="form-check form-check-inline" style="justify-content:start;">
+                                        <input class="form-check-input" type="radio" name="importance">
+                                        <label class="form-check-label">高</label>
+                                    </div>
+                                    <div class="form-check form-check-inline" style="justify-content: center;">
+                                        <input class="form-check-input" type="radio" name="importance" checked>
+                                        <label class="form-check-label">中</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="importance">
+                                        <label class="form-check-label">低</label>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <!-- エラーダイアログ 重要度にエラーはないので空白-->
+                        <tr>
+                            <th class="error importance-error"></th>
+                        </tr>
+
+                        <!-- メモ -->
+                        <tr>
+                            <th>メモ</th>
+                            <!-- 入力フォーム -->
+                            <td>
+                                <textarea class="input-memo" cols="35" rows="10" name="note"></textarea>
+                                <!-- 文字数制限 -->
+                                <p class="note-limit">あと<span class="num">300</span>文字まで入力できます</p>
+                            </td>
+                        </tr>
+                        <!-- エラーダイアログ -->
+                        <tr>
+                            <th class="error note-error"></th>
+                        </tr>
+
+                        <!-- 依頼者 -->
+                        <tr>
+                            <th>依頼者</th>
+                            <!-- 入力フォーム -->
+                            <td>
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_todoSelectRequest" data-bs-dismiss="modal">依頼者を選択する</button>
+                                <button type="button" class="btn btn-primary" style="margin-left: 1rem;" data-bs-toggle="modal" data-bs-target="#modal_todoSelectBocchi" data-bs-dismiss="modal">ぼっちモード</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_todoSelectRequest -->
+<div class="modal fade" id="modal_todoSelectRequest" tabindex="-1" aria-labelledby="modal_todoSelectRequestLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoSelectRequestLabel">依頼者選択</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modal_todoCreate" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="container-fluid p-1 m-4 mb-0"
+                style="background-color:rgb(228, 228, 228,0.3); height: 40rem; width: auto; overflow-y: scroll;">
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="ユーザID">
+                        <button class="btn btn-outline-primary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
+                    </div>
+
+                    <section>
+                        <ol>
+                            <li>リストのテスト1<img src="{% static 'home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png' %}" class="addPlus"></li>
+                            <li>リストのテスト1<img src="{% static 'home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png' %}" class="addPlus"></li>
+                            <li>リストのテスト1<img src="{% static 'home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png' %}" class="addPlus"></li>
+                            <li>リストのテスト1<img src="{% static 'home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png' %}" class="addPlus"></li>
+                            <li>リストのテスト1<img src="{% static 'home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png' %}" class="addPlus"></li>
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <!-- エラーダイアログ -->
+            <div class="error">
+                <p>エラーダイアログ</p>
+            </div>
+
+            <div class="modal-buttons d-flex justify-content-between">
+                <!-- 依頼者一覧表示ボタン -->
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoListRequest" data-bs-dismiss="modal">依頼者一覧</button>
+
+                <!-- 依頼決定ボタン -->
+                <button type="button" class="btn btn-primary">依頼する</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_todoListRequest -->
+<div class="modal fade" id="modal_todoListRequest" tabindex="-1" aria-labelledby="modal_modal_todoListRequestLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_modal_todoListRequestLabel">依頼者選択</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modal_todoSelectRequest" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="container-fluid p-1 m-4"
+                style="background-color:rgb(228, 228, 228,0.3); height: 40rem; width: auto; overflow-y: scroll;">
+                <div class="modal-body" style="padding: 1.5rem;">
+
+                    <!-- 依頼者一覧リスト -->
+                    <section>
+                        <ol>
+                            <li>リストのテスト1<input type="image"
+                                    src="{% static 'home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png' %}"
+                                    class="addPlus"></img></li>
+                            <li>リストのテスト1<input type="image"
+                                    src="{% static 'home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png' %}"
+                                    class="addPlus"></img></li>
+                            <li>リストのテスト1<input type="image"
+                                    src="{% static 'home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png' %}"
+                                    class="addPlus"></img></li>
+                            <li>リストのテスト1<input type="image"
+                                    src="{% static 'home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png' %}"
+                                    class="addPlus"></img></li>
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <!-- 閉じるボタン -->
+            <div class="modal-buttons d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoSelectRequest" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_todoSelectBocchi -->
+<div class="modal fade" id="modal_todoSelectBocchi" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-body" style="background-color:rgba(208, 208, 208, 0.5)">
+                <div class="dialog-text">
+                    依頼人数を選択してください
+                </div>
+
+                <form id="form_todoSelectBocchi" class="mt-2 px-5">
+                    <input class="form-control" type="number" name="bocchi" min="1" max="10" value="1">
+                    <div class="error bocchi-error"></div>
+                </form>
+            </div>
+
+            <!-- ボタン -->
+            <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem;padding-right: 2rem;">
+                <!-- 戻るボタン -->
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoCreate" data-bs-dismiss="modal">戻る</button>
+                
+                <!-- 進むボタン -->
+                <button id="btn_todoSelectBocchi" type="button" class="btn btn-primary">依頼する</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- modal_todoCreate_success -->
+<div class="modal fade" id="modal_todoCreate_success" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    タスクが作成されました
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">閉じる</button>     
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoCreate_numCheck -->
+<div class="modal fade" id="modal_todoCreate_numCheck" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    依頼者が一人もいません。よろしいですか？
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_todoCreate" data-bs-dismiss="modal">閉じる</button>     
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoCreate_failed -->
+<div class="modal fade" id="modal_todoCreate_failed" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    登録内容が不正です
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_todoCreate" data-bs-dismiss="modal">閉じる</button>     
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- メイン画面 -->
 <div class="accordion" id="accordion-myTaskList">
@@ -271,7 +548,7 @@
         </div>
     </div>
 </div>
-<div class="taskPlusButton">
+<div id="btn_taskPlusButton" class="taskPlusButton cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_todoCreate">
     <div class="taskPlusButton__inner">
         <div class="taskPlusButton__btn"><img src="{% static 'home/images/icon_plus.svg' %}" alt=""></div>
     </div>

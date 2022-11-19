@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from todo.forms import TaskCreateForm
 from .models import Task
+from account.models import CustomUser
 
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
@@ -35,20 +36,28 @@ def create(request):
     deadline = request.POST.get('deadline')
     importance = request.POST.get('importance')
     note = request.POST.get('note')
-    if request.POST.get('isBocchi') == 'on':
-        isBocchi = True
-    else:
-        isBocchi = False
-    requestUsers=request.POST.getlist('requestUsers') # useridを渡す
+    requestUsers = request.POST.getlist('requestUsers') # useridを渡す
 
+    bocchi_valid = True # formではチェックできないvalidチェックに関して。
+    bocchi = int(request.POST.get('bocchi'))
+    if bocchi == 0:
+        isBocchi = False
+    elif 0 < bocchi and bocchi <= 10:
+        isBocchi = True
+        randomUsers = CustomUser.objects.choiceUserRandom(bocchi)
+        requestUsers = []
+        for user in randomUsers:
+            requestUsers.append(user.username)
+    else:
+        bocchi_valid = False
     
     task_data=TaskCreateForm(data=request.POST)
 
-    if task_data.is_valid(): ##フォーマットをチェックする 
+    if task_data.is_valid() and bocchi_valid: ##フォーマットをチェックする
+    # if False:
     
-   ###タスクを作成する処理  無理ならエラーを返す。
-   ##TaskManager()の関数名だけを書く。
-        Task.objects.create(user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
+        ###タスクを作成する処理  無理ならエラーを返す。
+        # Task.objects.create(user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
         
         context = {
             'result':True,
@@ -56,12 +65,13 @@ def create(request):
         return JsonResponse(context)
         
     else:
+        error = dict(task_data.errors.items())
+        if not bocchi_valid:
+            error['bocchi'] = '人数が不正です。'
+
         context = {
             'result':False,
-            'error': dict(task_data.errors.items())
+            'error': error
         }
 
         return JsonResponse(context)
-
-
-        ##sudo 

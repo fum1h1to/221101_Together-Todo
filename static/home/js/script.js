@@ -1,3 +1,7 @@
+/* ----------------------------
+共通の処理
+----------------------------- */
+// cookieの取得
 const getCookie = (name) => {
     if (document.cookie && document.cookie !== '') {
         for (const cookie of document.cookie.split(';')) {
@@ -10,6 +14,7 @@ const getCookie = (name) => {
 }
 const csrftoken = getCookie('csrftoken')
 
+// modalの要素取得
 const modalOption = {
     keyboard: false
 }
@@ -19,8 +24,50 @@ const modal_accountEdit = new bootstrap.Modal(document.getElementById('modal_acc
 const modal_accountDelete = new bootstrap.Modal(document.getElementById('modal_accountDelete'), modalOption);
 const modal_accountLogout = new bootstrap.Modal(document.getElementById('modal_accountLogout'), modalOption);
 
+const modal_todoCreate = new bootstrap.Modal(document.getElementById('modal_todoCreate'), modalOption);
+const modal_todoSelectBocchi = new bootstrap.Modal(document.getElementById('modal_todoSelectBocchi'), modalOption);
 
-const form_ceckPassword = document.querySelector("#form_checkPassword");
+const modal_todoCreate_success = new bootstrap.Modal(document.getElementById('modal_todoCreate_success'), modalOption);
+const modal_todoCreate_numCheck = new bootstrap.Modal(document.getElementById('modal_todoCreate_numCheck'), modalOption);
+const modal_todoCreate_failed = new bootstrap.Modal(document.getElementById('modal_todoCreate_failed'), modalOption);
+
+
+// formの要素取得
+const form_ceckPassword = document.getElementById("form_checkPassword");
+const form_userUpdate = document.getElementById("form_userUpdate");
+const form_userDelete = document.getElementById("form_userDelete");
+
+const form_todoCreate = document.getElementById("form_todoCreate");
+const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
+
+// passwordチェックフォームの初期化処理
+const passwordCheckFormReset = () => {
+    form_ceckPassword.reset();
+}
+
+// ユーザ削除フォームの初期化処理
+const userDeleteFormReset = () => {
+    form_userDelete.reset();
+}
+
+// todoのフォーム初期化処理
+const todoCreateFormReset = () => {
+    form_todoCreate.reset();
+    form_todoSelectBocchi.reset();
+}
+
+document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
+    passwordCheckFormReset();
+    userDeleteFormReset();
+})
+
+document.getElementById('btn_taskPlusButton').addEventListener('click', function(e) {
+    todoCreateFormReset();
+})
+
+/* ----------------------------
+パスワードのチェック処理
+----------------------------- */
 form_ceckPassword.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -51,7 +98,10 @@ form_ceckPassword.addEventListener("submit", function (e) {
         })
 });
 
-const form_userUpdate = document.querySelector("#form_userUpdate");
+
+/* ----------------------------
+ユーザ編集の処理（未完成）
+----------------------------- */
 form_userUpdate.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -86,7 +136,10 @@ form_userUpdate.addEventListener("submit", function (e) {
         })
 });
 
-const form_userDelete = document.querySelector("#form_userDelete");
+
+/* ----------------------------
+ユーザ削除の処理
+----------------------------- */
 form_userDelete.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -116,3 +169,118 @@ form_userDelete.addEventListener("submit", function (e) {
     }
 
 });
+
+
+/* ----------------------------
+タスク作成処理
+----------------------------- */
+const btn_todoSelectBocchi = document.getElementById('btn_todoSelectBocchi');
+
+(function () {
+    // 期限日の処理
+    let optionLoop, this_day, this_month, this_year, today;
+    today = new Date();
+    this_year = today.getFullYear();
+    this_month = today.getMonth() + 1;
+    this_day = today.getDate();
+
+    optionLoop = function (start, end, d_class, this_day) {
+        var i, opt;
+
+        opt = null;
+        for (i = start; i <= end; i++) {
+            if (i === this_day) {
+                opt += "<option value='" + i + "' selected>" + i + "</option>";
+            } else {
+                opt += "<option value='" + i + "'>" + i + "</option>";
+            }
+        }
+        return form_todoCreate.querySelector(d_class).innerHTML = opt;
+    };
+
+    optionLoop(2022, this_year + 10, '.year', this_year);
+    optionLoop(1, 12, '.month', this_month);
+    optionLoop(1, 31, '.day', this_day);
+
+    // メモ欄の文字制限
+    form_todoCreate.note.addEventListener('keyup', function() {
+        form_todoCreate.querySelector('.note-limit .num').textContent = 300 - form_todoCreate.note.value.length
+    });
+
+})();
+
+// ボッチモードの場合
+btn_todoSelectBocchi.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const body = new URLSearchParams()
+
+    let taskName = form_todoCreate.taskName.value;
+    body.append('taskName', taskName);
+
+    let year = form_todoCreate.year.value;
+    let month = form_todoCreate.month.value;
+    let day = form_todoCreate.day.value;
+    let deadline = year + '-' + month + '-' + day + ' 00:00:00';
+    body.append('deadline', deadline);
+
+    let importance = 1;
+    for(var i=0; i < form_todoCreate.importance.length-1; i++){
+        if(form_todoCreate.importance[i].checked){
+            importance = i
+        }
+    }
+    body.append('importance', importance);
+
+    let note = form_todoCreate.note.value;
+    body.append('note', note);
+    
+    let bocchi = form_todoSelectBocchi.bocchi.value;
+    body.append('bocchi', bocchi);
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: body
+    };
+
+    fetch(form_todoCreate.url.value, sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                modal_todoSelectBocchi.hide();
+                modal_todoCreate_success.show();
+                todoCreateFormReset();
+            } else {
+                modal_todoSelectBocchi.hide();
+                modal_todoCreate_failed.show();
+                inputError(res.error);
+            }
+        })
+    
+    const inputError = (error) => {
+        error.taskName ? form_todoCreate.querySelector('.task-error').textContent = error.taskName : form_todoCreate.querySelector('.task-error').textContent = "";
+        error.deadline ? form_todoCreate.querySelector('.deadline-error').textContent = error.deadline : form_todoCreate.querySelector('.deadline-error').textContent = "";
+        error.importance ? form_todoCreate.querySelector('.importance-error').textContent = error.importance : form_todoCreate.querySelector('.importance-error').textContent = "";
+        error.note ? form_todoCreate.querySelector('.note-error').textContent = error.note : form_todoCreate.querySelector('.note-error').textContent = "";
+        error.bocchi ? form_todoSelectBocchi.querySelector('.bocchi-error').textContent = error.bocchi : form_todoSelectBocchi.querySelector('.bocchi-error').textContent = "";
+    }
+})
+
+// 依頼者を選択する場合
+btn_todoSelectBocchi.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    
+    
+    
+    body.append('bocchi', 0);
+
+    
+})

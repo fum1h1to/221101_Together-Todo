@@ -86,6 +86,19 @@ class UserManager(UserManager):
     user.is_active = False
     user.save()
 
+  def choiceUserRandom(self, limit):
+    '''
+    ユーザをランダムに選択する。
+    '''
+    all_user_num = CustomUser.objects.all().count()
+    if limit <= all_user_num:
+      users = CustomUser.objects.order_by("?")[:limit]
+    else:
+      users = CustomUser.objects.order_by("?")[:all_user_num]
+
+    return list(users)
+
+
   def send_email(self, userid, subject, message):
     '''
     ユーザに対して何かしらのメールを送る関数

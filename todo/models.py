@@ -55,7 +55,7 @@ class Task(models.Model):
     
     note=models.TextField(
         verbose_name= _("メモ欄"),
-        max_length=300,)
+        max_length=300, blank=True)
     
     isBocchi=models.BooleanField(verbose_name= _("ぼっち"),default=False)
 
