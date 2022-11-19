@@ -1,7 +1,9 @@
+import json
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_http_methods
+from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from todo.forms import TaskCreateForm
@@ -19,19 +21,10 @@ class Home(LoginRequiredMixin, TemplateView):
 ##処理内容 
 ##viewsはhtmlからもらったあとどうするかの処理を書いている。
 
-
-@require_http_methods(['GET'])
-@login_required
-def test_create(request):
-    form = TaskCreateForm()
-    context = { 'form': form }
-    return render(request, 'test/create_test.html', context)
-
-
 @require_http_methods(['POST'])
 @login_required
 def create(request):
-    user=request.user
+    create_user=request.user
     taskName = request.POST.get('taskName')
     deadline = request.POST.get('deadline')
     importance = request.POST.get('importance')
@@ -44,14 +37,14 @@ def create(request):
         isBocchi = False
     elif 0 < bocchi and bocchi <= 10:
         isBocchi = True
-        randomUsers = CustomUser.objects.choiceUserRandom(user, bocchi)
+        randomUsers = CustomUser.objects.choiceUserRandom(create_user, bocchi)
         requestUsers = []
         for user in randomUsers:
             requestUsers.append(user.username)
     else:
         bocchi_valid = False
     
-    requestUser_valid = False
+    requestUser_valid = True
     if len(requestUsers) > 10:
         requestUser_valid = False
     
@@ -61,7 +54,7 @@ def create(request):
     # if False:
     
         ###タスクを作成する処理  無理ならエラーを返す。
-        Task.objects.create(user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
+        Task.objects.create(create_user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
         
         context = {
             'result':True,
@@ -82,3 +75,29 @@ def create(request):
         }
 
         return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def show(request):
+
+    user = request.user
+
+    tasks = Task.objects.showUserTasks(user)
+    json_tasks = json.loads(serializers.serialize("json", tasks))
+    return_data = []
+    for task in json_tasks:
+        return_data.append({
+            'taskName': task['fields']['taskName'],
+            'deadline': task['fields']['deadline'],
+            'importance': task['fields']['importance'],
+            'note': task['fields']['note'],
+            'status': task['fields']['status'],
+        })
+
+    context = {
+        'result': True,
+        'tasks': return_data
+    }
+
+    return JsonResponse(context)

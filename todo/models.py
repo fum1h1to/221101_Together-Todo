@@ -25,6 +25,10 @@ class TaskManager(models.Manager):
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
+        
+    def showUserTasks(self, user):
+        tasks = Task.objects.filter(userid=user).all()
+        return list(tasks)
 
 class Task(models.Model):
     

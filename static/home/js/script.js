@@ -43,8 +43,8 @@ const form_todoCreate = document.getElementById("form_todoCreate");
 const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
 
 // このページ内で使う変数
-const todoCreate_requestUsers = new Set();
-
+const todoCreate_requestUsers = new Set(); // 選択した依頼者を一次的に格納するもの
+const myTaskList = [] // タスクを保持する配列
 
 // passwordチェックフォームの初期化処理
 const passwordCheckFormReset = () => {
@@ -72,6 +72,94 @@ document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
 document.getElementById('btn_taskPlusButton').addEventListener('click', function(e) {
     todoCreateFormReset();
 })
+
+
+/* ----------------------------
+タスクの表示処理
+----------------------------- */
+const getMyTaskList_and_disp = () => {
+    const body = new URLSearchParams()
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+    };
+
+    fetch('/todo/show/', sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                myTaskList.splice(0);
+                for(let task in res.tasks) {
+                    myTaskList.push(res.tasks[task])
+                }
+                taskDisp();
+            } else {
+
+            }
+        })
+    
+    const taskDisp = () => {
+        const myTaskList_1 = document.querySelector('#myTaskList-collapseOne .myTaskList');
+        const myTaskList_2 = document.querySelector('#myTaskList-collapseTwo .myTaskList');
+        const myTaskList_3 = document.querySelector('#myTaskList-collapseThree .myTaskList');
+        myTaskList_1.innerHTML = '';
+        myTaskList_2.innerHTML = '';
+        myTaskList_3.innerHTML = '';
+        
+        let task1count = 0;
+        let task2count = 0;
+        let task3count = 0;
+
+        myTaskList.forEach(task => {
+            if(task['status'] == 0) {
+                data = '<li class="myTaskListItem">';
+                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_noncheck.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+                data += '</li>';
+                myTaskList_1.innerHTML += data;
+                task1count += 1;
+            } else if(task['status'] == 1) {
+                data = '<li class="myTaskListItem">';
+                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_send.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+                data += '<div class="myTaskListItem__users">';
+                // for()
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '</div>';
+                data += '</li>';
+                myTaskList_2.innerHTML += data;
+                task2count += 1;
+            } else if(task['status'] == 2) {
+                data = '<li class="myTaskListItem">';
+                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_send.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+                data += '<div class="myTaskListItem__users">';
+                // for()
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                data += '</div>';
+                data += '</li>';
+                myTaskList_3.innerHTML += data;
+                task3count += 1;
+            }
+        })
+
+        document.querySelector('#myTaskList-headingOne .task-num').innerHTML = task1count;
+        document.querySelector('#myTaskList-headingTwo .task-num').innerHTML = task2count;
+        document.querySelector('#myTaskList-headingThree .task-num').innerHTML = task3count;
+    }
+}
+getMyTaskList_and_disp();
 
 /* ----------------------------
 パスワードのチェック処理
@@ -337,12 +425,14 @@ const todoCreate_sendData = (isBocchi) => {
             return res.json();
         })
         .then((res) => {
+            console.log(res);
             if (res.result) {
                 modal_todoSelectBocchi.hide();
                 modal_todoSelectRequest.hide();
                 modal_todoCreate_numCheck.hide();
                 modal_todoCreate_success.show();
                 todoCreateFormReset();
+                getMyTaskList_and_disp();
             } else {
                 modal_todoSelectBocchi.hide();
                 modal_todoSelectRequest.hide();
