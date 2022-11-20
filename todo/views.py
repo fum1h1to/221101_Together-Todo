@@ -9,13 +9,15 @@ from django.http import JsonResponse
 from todo.forms import TaskCreateForm
 from .models import Task
 from account.models import CustomUser
+from django.conf import settings
 
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
     
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user'] = self.request.user
+        context = {
+            'MEDIA_URL': settings.MEDIA_URL
+        }
         return context
 
 ##処理内容 

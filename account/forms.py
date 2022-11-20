@@ -28,10 +28,10 @@ class LoginForm(AuthenticationForm):
 
 class UserChangeForm(forms.ModelForm):
     icon = forms.ImageField(required=False)
-    username = forms.CharField(required=False)
-    email = forms.EmailField(required=False)
-    password = forms.CharField(required=False)
+    # username = forms.CharField(required=False)
+    # email = forms.EmailField(required=False)
+    # password = forms.CharField(required=False)
 
     class Meta:
         model = User
-        fields = ['icon', 'username', 'email', 'password']
+        fields = ['icon',] #'username', 'email', 'password']

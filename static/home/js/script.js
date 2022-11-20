@@ -43,7 +43,7 @@ const form_todoCreate = document.getElementById("form_todoCreate");
 const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
 
 // このページ内で使う変数
-const todoCreate_requestUsers = new Set(); // 選択した依頼者を一次的に格納するもの
+let todoCreate_requestUsers = {} // 選択した依頼者のiconを管理する。
 const myTaskList = [] // タスクを保持する配列
 
 // passwordチェックフォームの初期化処理
@@ -61,7 +61,7 @@ const todoCreateFormReset = () => {
     form_todoCreate.reset();
     form_todoSelectBocchi.reset();
     form_accountFind.reset();
-    todoCreate_requestUsers.clear();
+    todoCreate_requestUsers = {};
 }
 
 document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
@@ -189,7 +189,7 @@ form_ceckPassword.addEventListener("submit", function (e) {
                 modal_checkPassword.hide();
                 modal_accountEdit.show();
             } else {
-
+                form_ceckPassword.querySelector('.form-text').textContent = 'パスワードが一致しませんでした。';
             }
         })
 });
@@ -198,6 +198,25 @@ form_ceckPassword.addEventListener("submit", function (e) {
 /* ----------------------------
 ユーザ編集の処理（未完成）
 ----------------------------- */
+// アイコンを取得してくる。
+
+// formでアイコンが選択されたら表示する処理
+document.getElementById('account_iconUpload').addEventListener('change', (e) => {
+    let fileList = e.target.files;
+    let imageOutputElement = form_userUpdate.querySelector('.account-icon')
+    let fileReader = new FileReader();
+    let file = fileList[0];
+
+    fileReader.onload = function(e) {
+
+        imageOutputElement.src = e.target.result;
+        
+        console.log(e.target.result)
+    }
+    fileReader.readAsDataURL( file );
+});
+
+// formの処理
 form_userUpdate.addEventListener("submit", function (e) {
     e.preventDefault();
 
@@ -224,8 +243,7 @@ form_userUpdate.addEventListener("submit", function (e) {
         })
         .then((res) => {
             if (res.result) {
-                modal_accountEdit.hide();
-                modal_accountSetting.show();
+                location.reload();
             } else {
 
             }
@@ -288,7 +306,7 @@ form_accountFind.addEventListener("submit", function (e) {
 
     // ユーザがクリックされたときの処理
     const clickFindUser = (e) => {
-        todoCreate_requestUsers.add(e.target.dataset.username);
+        todoCreate_requestUsers[e.target.dataset.username] = e.target.dataset.iconpath;
     }
 
     fetch(form_accountFind.url.value, sendOption)
@@ -300,12 +318,18 @@ form_accountFind.addEventListener("submit", function (e) {
             userListElement.innerHTML = '';
             if(res.finduser) {
                 if(res.finduser.length != 0){
-                    for(let user in res.finduser) {
-                        userListElement.innerHTML += '<li class="add_finduser cursor-pointer" data-username=' + res.finduser[user] + '>' + res.finduser[user] + '<img src="/static/home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
-                    }
+                    res.finduser.forEach(finduser => {
+                        userListElement.innerHTML += '<li class="add_finduser cursor-pointer" data-username=' + finduser['username'] + ' data-iconpath=' + finduser['iconpath'] + '>' + finduser['username'] + '<img src="/static/home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+                    })
                     const finduserElements = document.querySelectorAll('#modal_todoSelectRequest section ol .add_finduser')
                     finduserElements.forEach((ele) => {
                         ele.addEventListener('click', clickFindUser);
+
+                        iconpath = '/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png'
+                        if(ele.dataset.iconpath !== '') {
+                            iconpath = ele.dataset.iconpath;
+                        }
+                        ele.style.cssText = 'background-image: url(' + iconpath + ')'
                     })
                 } else {
                     userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
@@ -322,25 +346,35 @@ form_accountFind.addEventListener("submit", function (e) {
 ----------------------------- */
 document.getElementById('btn_todoRequestUserList').addEventListener('click', (e) => {
     e.preventDefault();
-
+    
     // ユーザがクリックされたときの処理
     const clickUser = (e) => {
-        todoCreate_requestUsers.delete(e.target.dataset.username);
+        delete todoCreate_requestUsers[e.target.dataset.username];
+        disp();
+    }
+    const disp = () => {
+        const userlistElement = document.querySelector('#modal_todoListRequest section ol');
+        userlistElement.innerHTML = '';
+        if(Object.keys(todoCreate_requestUsers).length != 0) {
+            for(let user in todoCreate_requestUsers) {
+                userlistElement.innerHTML += '<li class="remove_finduser cursor-pointer" data-username=' + user + ' data-iconpath=' + todoCreate_requestUsers[user] + '>' + user + '<img src="/static/home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+            }
+            const userElements = document.querySelectorAll('#modal_todoListRequest section ol .remove_finduser')
+            userElements.forEach((ele) => {
+                ele.addEventListener('click', clickUser);
+                iconpath = '/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png'
+                if(ele.dataset.iconpath !== '') {
+                    iconpath = ele.dataset.iconpath;
+                }
+                ele.style.cssText = 'background-image: url(' + iconpath + ')';
+            })
+        } else {
+            userlistElement.innerHTML = '<p>依頼者はまだ選択されていません。</p>';
+        }
     }
 
-    const userlistElement = document.querySelector('#modal_todoListRequest section ol');
-    userlistElement.innerHTML = '';
-    if(todoCreate_requestUsers.size != 0) {
-        for(let user of todoCreate_requestUsers) {
-            userlistElement.innerHTML += '<li class="remove_finduser cursor-pointer" data-username=' + user + '>' + user + '<img src="/static/home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
-        }
-        const userElements = document.querySelectorAll('#btn_todoRequestUserList section ol .remove_finduser')
-        userElements.forEach((ele) => {
-            ele.addEventListener('click', clickUser);
-        })
-    } else {
-        userlistElement.innerHTML = '<p>依頼者はまだ選択されていません。</p>';
-    }
+    disp();
+
 });
 
 
@@ -406,7 +440,7 @@ const todoCreate_sendData = (isBocchi) => {
     let bocchi = form_todoSelectBocchi.bocchi.value;
     body.append('bocchi', isBocchi ? bocchi : 0);
 
-    for(let user of todoCreate_requestUsers) {
+    for(let user in todoCreate_requestUsers) {
         body.append('requestUsers', user);
     }
 
@@ -463,7 +497,7 @@ document.getElementById('btn_todoSelectBocchi').addEventListener("click", functi
 document.getElementById('btn_todoSelectRequest').addEventListener("click", function(e) {
     e.preventDefault();
 
-    if(todoCreate_requestUsers.size == 0) {
+    if(Object.keys(todoCreate_requestUsers).length == 0) {
         modal_todoCreate_numCheck.show();
     } else {
         todoCreate_sendData(isBochi=false);

@@ -70,27 +70,45 @@
                 <h5 class="modal-title" id="modal_accountEditLabel">アカウント編集</h5>
             </div>
             <div class="modal-body">
-                <p>よく分からないエラーが出てくるため、まだ実装できていない。<br>(確定を押しても何もされない）</p>
+                <p>よく分からないエラーが出てくるため、まだ実装できていない。<br>（アイコンだけは反映される。）</p>
                 <form id="form_userUpdate">
                     <input type="hidden" name="url" value="{% url 'user_update' %}">
-                    <div class="mb-3">
-                        <label class="form-label">アイコン</label>
-                        <input class="form-control" type="file" name="icon" accept="image/*">
+                    <ul class="account_icon">
+                        {% if request.user.icon %}
+                        <img class="account-icon" src="{{ MEDIA_URL }}{{ request.user.icon }}" alt="">
+                        {% else %}
+                        <img class="account-icon" src="{% static 'home/images/account_circle.svg' %}">
+                        {% endif %}
+                        <!-- 確認ボタン -->
+                        <label class="file-label" for="account_iconUpload">アイコンを選択</label>
+                        <input class="file-button" type="file" name="icon" accept="image/*" id="account_iconUpload">
+                    </ul>
+
+                    <!-- ユーザ名 -->
+                    <ul class="user_name">
+                        <td>
+                            <input type="text" class="form-control" name="username" placeholder="ユーザ名">
+                        </td>
+                    </ul>
+
+                    <!-- メールアドレス -->
+                    <ul class="mail_address">
+                        <td>
+                            <input type="text" class="form-control" name="email" placeholder="メールアドレス">
+                        </td>
+                    </ul>
+
+                    <!-- メールアドレス -->
+                    <ul class="password">
+                        <td>
+                            <input type="password" class="form-control" name="password" placeholder="パスワード">
+                        </td>
+                    </ul>
+                    <hr>
+                    <div class="d-flex justify-content-between" style="padding-left: 2rem;padding-right: 2rem;">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
+                        <button type="submit" class="btn btn-primary">確定</button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">ユーザ名</label>
-                        <input type="text" name="username" autofocus class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">メールアドレス</label>
-                        <input type="email" name="email" autofocus class="form-control">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">パスワード</label>
-                        <input type="password" name="password" autocomplete="new-password" class="form-control">
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modal_accountSetting" data-bs-dismiss="modal">戻る</button>
-                    <button type="submit" class="btn btn-primary">確定</button>
                 </form>
             </div>
         </div>
@@ -408,7 +426,11 @@
 <div class="header text-center border-bottom pb-2 pt-3">
     <h1>自分のタスク</h1>
     <div id="btn_iconLogo" class="iconLogo" data-bs-toggle="modal" data-bs-target="#modal_accountSetting">
+        {% if request.user.icon %}
+        <img src="{{ MEDIA_URL }}{{ request.user.icon }}" alt="">
+        {% else %}
         <img src="{% static 'home/images/icon_human.jpeg' %}" alt="">
+        {% endif %}
     </div>
 </div>
 
