@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 
 from .models import CustomUser
+from django.conf import settings
 
 app_name = 'account'
 
@@ -96,40 +97,37 @@ def checkPassword(request):
 @require_http_methods(['POST'])
 @login_required
 def update(request):
-    context = {
-        'result': True,
-        'message': 'アカウント編集は保留'
-    }
-    return JsonResponse(context)
-    # user = CustomUser.objects.get(userid=request.user.userid)
+
+    user = CustomUser.objects.get(userid=request.user.userid)
     
-    # user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
+    user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
     
-    # if user_data.is_valid():
+    if user_data.is_valid():
         
-    #     if user_data.cleaned_data["icon"] is not None:
-    #         user.icon = user_data.cleaned_data["icon"]
-    #     if user_data.cleaned_data["username"] != '':
-    #         user.username = user_data.cleaned_data["username"]
-    #     if user_data.cleaned_data["email"] != '':
-    #         user.email = user_data.cleaned_data["email"]
-    #     if user_data.cleaned_data["password"] != '':
-    #         user.set_password(user_data.cleaned_data["password"])
-    #     user.save()
+        if user_data.cleaned_data["icon"] is not None:
+            user.icon = user_data.cleaned_data["icon"]
+        # if user_data.cleaned_data["username"] != '':
+        #     user.username = user_data.cleaned_data["username"]
+        # if user_data.cleaned_data["email"] != '':
+        #     user.email = user_data.cleaned_data["email"]
+        # if user_data.cleaned_data["password"] != '':
+        #     user.set_password(user_data.cleaned_data["password"])
+        user.save()
 
-    #     context = {
-    #         'result': True
-    #     }
-    #     return JsonResponse(context)
+        context = {
+            'result': True,
+            'message': 'アイコン以外は変わってません。'
+        }
+        return JsonResponse(context)
 
-    # else:
+    else:
         
-    #     context = {
-    #         'result': False,
-    #         'error': dict(user_data.errors.items())
-    #     }
+        context = {
+            'result': False,
+            'error': dict(user_data.errors.items())
+        }
 
-    #     return JsonResponse(context)
+        return JsonResponse(context)
 
 @require_http_methods(['POST'])
 @login_required
@@ -147,3 +145,27 @@ def delete(request):
             'message': 'エラーが発生しました。'
         }
         return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def find(request):
+    searchname = request.POST.get('searchname')
+    finduser = CustomUser.objects.findByUsername(request.user, searchname)
+
+    result = []
+    for user in finduser:
+        if user.icon:
+            iconpath = str(settings.MEDIA_URL) + str(user.icon)
+        else:
+            iconpath = ''
+
+        result.append({ 
+            'username': user.username,
+            'iconpath': iconpath
+        })
+
+    context = {
+        'finduser': result
+    }
+    return JsonResponse(context)

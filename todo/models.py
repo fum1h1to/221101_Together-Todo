@@ -25,6 +25,10 @@ class TaskManager(models.Manager):
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
+        
+    def showUserTasks(self, user):
+        tasks = Task.objects.filter(userid=user).all()
+        return list(tasks)
 
 class Task(models.Model):
     
@@ -55,7 +59,7 @@ class Task(models.Model):
     
     note=models.TextField(
         verbose_name= _("メモ欄"),
-        max_length=300,)
+        max_length=300, blank=True)
     
     isBocchi=models.BooleanField(verbose_name= _("ぼっち"),default=False)
 

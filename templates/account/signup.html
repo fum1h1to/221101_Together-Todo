@@ -17,6 +17,12 @@
             <!-- 入力フォーム -->
             <form action="{% url 'signup' %}" method="post">
                 {% csrf_token %}
+
+                <div class="mb-3">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
                 
                 <div class="mb-3">
                     <label for="id_username" class="form-label">ユーザ名</label>

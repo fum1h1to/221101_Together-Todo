@@ -1,4 +1,3 @@
-
 .header { 
     position: relative;
 }
@@ -14,6 +13,14 @@
     border: solid 2px #000;
     overflow: hidden;
     cursor: pointer;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.modal-backdrop:nth-child(even) {
+    z-index: 1080!important;
 }
 
 /* ----------------------------
@@ -177,4 +184,179 @@ taskPlusButton
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* ----------------------------
+modal_accountEdit
+----------------------------- */
+#modal_accountEdit .file-button {
+    display: none;
+}
+#modal_accountEdit .account-icon {
+    width: 48px;
+}
+#modal_accountEdit .file-label {
+    /* ブラウザ特有のスタイルを無効に */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+  
+    /* 整える */
+    margin: 1em 0; /* 前後の隙間 */
+    padding: 0.6em 1em; /* 塗りの余白 */
+    font-size: 1em; /* フォントサイズ */
+    background-color: #FFF; /* 背景色 */
+    color: #000; /* テキストカラー */
+    cursor: pointer; /* カーソルを指マークに */
+    border-radius: 3px; /* 角の丸み */
+    border: 0; /* 枠線を消す */
+    transition: 0.3s; /* ホバーの変化を滑らかに */
+    margin-left: auto;
+  }
+  
+  /* ホバー時（カーソルをのせた時）の見た目 */
+  #modal_accountEdit .file-label:hover {
+    background-color: #064fda; /* 背景色 */
+    color: #FFF; /* テキストカラー */
+  }
+
+/* ----------------------------
+modal_todoCreate
+----------------------------- */
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+#modal_todoCreate .table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+#modal_todoCreate .table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+#modal_todoCreate .table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+#modal_todoCreate .table-res-form tr:nth-child(2n+1) {
+    background: #eee;
+}
+
+#modal_todoCreate .table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+#modal_todoCreate .table-res-form th, .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+#modal_todoCreate .table-res-form th {
+    width: 25%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+#modal_todoCreate .date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+#modal_todoCreate .table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+#modal_todoCreate .input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+    #modal_todoCreate table {
+        width: 100%;
+    }
+ 
+    #modal_todoCreate table th,
+    #modal_todoCreate table td {
+        display: block;
+    }
+}
+
+
+/* ----------------------------
+modal_todoCreate_failed,
+modal_todoCreate_success,
+modal_todoCreate_numCheck
+----------------------------- */
+#modal_todoCreate_failed,
+#modal_todoCreate_success,
+#modal_todoCreate_numCheck {
+    z-index: 1081!important;
+}
+#modal_todoCreate_failed .dialog-text,
+#modal_todoCreate_success .dialog-text,
+#modal_todoCreate_numCheck .dialog-text {
+    padding-top: 2rem;
+    font-size: large;
+}
+
+/* ----------------------------
+modal_todoSelectBocchi
+----------------------------- */
+#modal_todoSelectBocchi .dialog-text{
+    text-align: center;
+    font-size: large;
+}
+
+
+/* ----------------------------
+modal_todoSelectRequest,
+modal_todoListRequest
+----------------------------- */
+#modal_todoSelectRequest section ol,
+#modal_todoListRequest section ol {
+	margin: 0;
+	padding: 0;
+	font-size: 86%;
+	list-style: none;
+    padding-top: 1rem;
+}
+#modal_todoSelectRequest section ol li,
+#modal_todoListRequest section ol li {
+    padding-top: 1.2rem;
+	padding-left: 2.5rem;
+	line-height: 2.5em;
+	background: left top no-repeat;
+	background-size: 30px auto;
+    border-bottom: 1px solid;
+}
+#modal_todoSelectRequest section ol li,
+#modal_todoListRequest section ol li {
+	background-image: url(/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png);
+    background-size: 35px;
+    background-position-y: bottom;
+}
+
+#modal_todoSelectRequest section ol li .addPlus,
+#modal_todoListRequest section ol li .addPlus {
+    width: 35px;
+    height: 35px;
+    float: right;
+    background-repeat: no-repeat;
+}
+
+#modal_todoSelectRequest .error,
+#modal_todoListRequest .error {
+    padding-left: 1.5rem;
+    padding-top: 0;
+}
+
+#modal_todoSelectRequest .modal-buttons,
+#modal_todoListRequest .modal-buttons {
+    border-top: 1px solid rgba(0,0,0,0.1);
+    padding-left: 3rem;
+    padding-right: 3rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
 }

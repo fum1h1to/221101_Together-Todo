@@ -23,6 +23,12 @@
                 {% csrf_token %}
 
                 <div class="mb-3">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
                     <label for="id_username" class="form-label">メールアドレス</label>
                     <input type="text" name="username" autofocus class="form-control" autocomplete="email" id="id_username">
                     <div class="form-text">{{ form.username.errors.0 }}</div>
