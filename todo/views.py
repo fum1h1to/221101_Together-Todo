@@ -6,10 +6,12 @@ from django.views.decorators.http import require_http_methods
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from todo.forms import TaskCreateForm
+from todo.forms import TaskCreateForm, firstCheckForm
 from .models import Task
 from account.models import CustomUser
 from django.conf import settings
+
+from django.views.generic import ListView, DetailView
 
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
@@ -19,6 +21,25 @@ class Home(LoginRequiredMixin, TemplateView):
             'MEDIA_URL': settings.MEDIA_URL
         }
         return context
+
+### test用のview ###
+class test_todoListView(LoginRequiredMixin, ListView):
+    template_name = 'test/todolist_test.html'
+    model = Task
+    context_object_name = "tasks"
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs) # Task.objects.all() と同じ結果
+
+        return queryset
+
+@require_http_methods(['GET'])
+@login_required
+def test_update(request, taskid):
+    task = Task.objects.get(taskid=taskid)
+    return render(request, 'test/update_test.html', {'task': task})
+
+### test用のviewここまで ###
 
 ##処理内容 
 ##viewsはhtmlからもらったあとどうするかの処理を書いている。
@@ -103,3 +124,78 @@ def show(request):
     }
 
     return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def update(request):
+    '''
+    updateに成功したらresult: Trueで返す
+    updateに失敗したらresult: Falseとerrorの内容を送信する。
+    ※49行目からのcreateの処理を参考に、、
+
+    postされてくるもの
+    - taskName
+    - deadline
+    - importance
+    - note
+    '''
+
+
+    context = {
+        'result': False,
+    }
+
+    return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def delete(request):
+    '''
+    deleteに成功したらresult: Trueで返す
+    deleteに失敗したらresult: Falseとerrorの内容を送信する。
+    ※49行目からのcreateの処理を参考に、、
+
+    postされてくるもの
+    - taskid
+    '''
+
+
+    context = {
+        'result': False,
+    }
+
+    return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def firstCheck(request):
+    '''
+    一次チェックをする。
+    '''
+    taskid = request.POST.get('taskid')
+
+    task_data=firstCheckForm(data=request.POST, files=request.FILES)
+    if task_data.is_valid():
+        img = task_data.cleaned_data['img']
+        movie = task_data.cleaned_data['movie']
+        description = task_data.cleaned_data['description']
+
+        Task.objects.insertFirstCheckData(taskid, img, movie, description)
+
+        context = {
+            'result': True,
+        }
+
+        return JsonResponse(context)
+
+    else:
+        error = dict(task_data.errors.items())
+        context = {
+            'result': False,
+            'error': error,
+        }
+
+        return JsonResponse(context)

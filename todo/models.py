@@ -1,4 +1,5 @@
 import uuid
+import os
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
@@ -30,18 +31,48 @@ class TaskManager(models.Manager):
         tasks = Task.objects.filter(userid=user).all()
         return list(tasks)
 
+    def insertFirstCheckData(self, taskid, img, movie, description):
+        task = Task.objects.get(taskid=taskid)
+        task.img = img
+        task.movie = movie
+        task.description = description
+        task.save()
+
 class Task(models.Model):
+    def get_image_path(self, filename):
+        """カスタマイズした画像パスを取得する.
+
+        :param self: インスタンス (models.Model)
+        :param filename: 元ファイル名
+        :return: カスタマイズしたファイル名を含む画像パス
+        """
+        prefix = 'task/img/'
+        name = str(uuid.uuid4()).replace('-', '')
+        extension = os.path.splitext(filename)[-1]
+        return prefix + name + extension
+    
+    def get_movie_path(self, filename):
+        """カスタマイズした画像パスを取得する.
+
+        :param self: インスタンス (models.Model)
+        :param filename: 元ファイル名
+        :return: カスタマイズしたファイル名を含む画像パス
+        """
+        prefix = 'task/movie/'
+        name = str(uuid.uuid4()).replace('-', '')
+        extension = os.path.splitext(filename)[-1]
+        return prefix + name + extension
     
     def moviefile_size(value): ##動画サイズを設定する
 
         limit=536870912 ##512MBをbyteに変換
-        if value.size>limit:
+        if value.size > limit:
             raise ValidationError('動画のサイズが512MBを超えています。')
 
     def imagefile_size(value):##画像サイズを設定する
 
-        limit=5242880##5MBをbyteに変換
-        if value.size>limit:
+        limit=5242880 ##5MBをbyteに変換
+        if value.size > limit:
 
             raise ValidationError('画像のサイズが5MBを超えています。')
 
@@ -65,9 +96,9 @@ class Task(models.Model):
 
     
     ###ここら辺の処理はまた違うときに作成される。
-    img = models.ImageField(upload_to='task',validators=[FileExtensionValidator(['jpg','png', ],imagefile_size)],verbose_name= _("画像"),)  ###画像ファイル
+    img = models.ImageField(upload_to=get_image_path, validators=[FileExtensionValidator(['jpg','png']), imagefile_size],verbose_name= _("画像"),)  ###画像ファイル
     
-    movie=models.FileField( upload_to='task',verbose_name= _("動画"),validators=[FileExtensionValidator(['mp4','MPEG4','MOV', ],moviefile_size)],)
+    movie=models.FileField( upload_to=get_movie_path ,verbose_name= _("動画"),validators=[FileExtensionValidator(['mp4','MPEG4','MOV']), moviefile_size],)
     #動画ファイル 動画の時間を制限する方法を探してみたけどなかなか見つからなかったのでまた探してみます。
     description=models.TextField( verbose_name= _("説明"),)
 

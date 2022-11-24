@@ -11,3 +11,8 @@ class TaskCreateForm(forms.ModelForm):
         model=Task
         fields=['taskName','deadline','importance','note','isBocchi']
 
+class firstCheckForm(forms.ModelForm):
+  
+  class Meta:
+    model = Task
+    fields=['img', 'movie', 'description']
