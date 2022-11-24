@@ -78,6 +78,22 @@ class UserManager(UserManager):
     '''
     return user.check_password(password)
 
+  def update(self, user, icon, username, email, password):
+    '''
+    ユーザを更新する。
+    '''
+    l_user = CustomUser.objects.get(userid=user.userid)
+    if icon is not None:
+      l_user.icon = icon
+    if username != '':
+      l_user.username = username
+    if email != '':
+      l_user.email = email
+    if password != '':
+      l_user.set_password(password)
+      
+    l_user.save()
+
   def delete(self, user):
     '''
     ユーザを削除する。(ユーザのステータスを2にする。)
