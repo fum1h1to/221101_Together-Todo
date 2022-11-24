@@ -31,7 +31,7 @@
         crossorigin="anonymous"></script>
 
 
-    <!-- このHTMLは依頼者が0人の時に表示されるダイアログです -->
+    <!-- このHTMLは登録内容が不正の時に表示されるダイアログです -->
 
     <!-- モーダルを開くボタン・リンク -->
     <div class="container">
@@ -52,14 +52,13 @@
             <div class="modal-content">
                 <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
                     <div class="dialog-text ">
-                        本当に削除してよろしいですか？
+                        完了済みにしてよろしいですか？
                     </div>
                 </div>
 
                 <!-- 閉じるボタン -->
-                <div class="modal-body d-flex justify-content-between"style="padding-left: 2rem;padding-right: 2rem;">
-                    <button type="button" class="btn btn-outline-primary aria-label="Close" data-dismiss="modal">戻る</button>
-                    <button type="button" class="btn btn-danger">はい</button>     
+                <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                    <button type="button" class="btn btn-primary"data-dismiss="modal">閉じる</button>     
                 </div>
             </div>
         </div>
