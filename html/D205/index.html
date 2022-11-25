@@ -30,45 +30,37 @@
         integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
         crossorigin="anonymous"></script>
 
-    <!-- このHTMLはタスク作成画面のダイアログです -->
+
+    <!-- このHTMLは登録内容が不正の時に表示されるダイアログです -->
 
     <!-- モーダルを開くボタン・リンク -->
     <div class="container">
         <div class="row my-3">
-            <h1>D101</h1>
+            <h1>モーダルを開く</h1>
         </div>
         <div class="row mb-5">
             <div class="col-2">
                 <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
-                    data-target="#testModal">ボタン</button>
+                    data-target="#testModal">押すといいよ</button>
             </div>
         </div>
     </div>
 
-     <!-- ボタン・リンククリック後に表示される画面の内容 -->
-     <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <!-- ボタン・リンククリック後に表示される画面の内容 -->
+    <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <div style="margin-right: auto; width: 1rem;"></div>
-                    <h3 class="modal-title">パスワード入力</h3>
-                    <!-- 閉じるボタン -->
-                    <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal"></button>
+                <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                    <div class="dialog-text ">
+                        完了済みにしてよろしいですか？
+                    </div>
                 </div>
 
-                <div class="modal-body" border-radius: 2px;>
-                    <td><input type="password" class="form-control" id="recipient-name" placeholder="password"></td>
+                <!-- 閉じるボタン -->
+                <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                    <button type="button" class="btn btn-primary"data-dismiss="modal">閉じる</button>     
                 </div>
-
-                <!-- ボタン -->
-                <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem;padding-right: 2rem;">
-                    <!-- 戻るボタン -->
-                    <button type="button" class="btn btn-outline-primary aria-label=" Close"
-                        data-dismiss="modal">戻る</button>
-            
-                    <!-- 削除ボタン -->
-                    <button type="button" class="btn btn-primary">削除</button>
             </div>
         </div>
-    </div>
+
 </body>

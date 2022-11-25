@@ -35,39 +35,75 @@
     <!-- モーダルを開くボタン・リンク -->
     <div class="container">
         <div class="row my-3">
-            <h1>D101</h1>
+            <h1>モーダルを開く</h1>
         </div>
         <div class="row mb-5">
             <div class="col-2">
                 <button type="button" class="btn btn-primary mb-12" data-toggle="modal"
-                    data-target="#testModal">ボタン</button>
+                    data-target="#testModal">押すといいよ</button>
             </div>
         </div>
     </div>
 
-     <!-- ボタン・リンククリック後に表示される画面の内容 -->
-     <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <!-- ボタン・リンククリック後に表示される画面の内容 -->
+    <div class="modal fade" id="testModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <div style="margin-right: auto; width: 1rem;"></div>
-                    <h3 class="modal-title">パスワード入力</h3>
+                    <h3 class="modal-title">タスク名</h3>
                     <!-- 閉じるボタン -->
                     <button type="button" class="btn-close" aria-label="Close" data-dismiss="modal"></button>
                 </div>
+                <div class="modal-body" style="padding: 1.5rem;">
+                    <table class="table-res-form">
+                        <!-- タスク名 -->
+                        <tr>
+                            <th>作成者</th>
+                            <!-- 入力フォーム -->
+                            <td class="userName"> あざらしくんz<img class="human" src="./images/icon_human.jpeg"></td>
+                            </td>
+                        </tr>
 
-                <div class="modal-body" border-radius: 2px;>
-                    <td><input type="password" class="form-control" id="recipient-name" placeholder="password"></td>
+                        <!-- 期限日 -->
+                        <tr>
+                            <th>期限日</th>
+                            <td class="date">2022/10月1日(土)</td>
+                        </tr>
+
+                        <!-- 重要度 -->
+                        <tr>
+                            <th>重要度</th>
+                            <td class="importance">〇です</td>
+                        </tr>
+
+                        <!-- メモ -->
+                        <tr>
+                            <th>メモ</th>
+                            <td>メモメモメモメモ</td>
+                        </tr>
+
+                        <!-- 一次チェック -->
+                        <tr>
+                            <th>1次チェック</th>
+                            <td>1次チェック送信済</td>
+                        </tr>
+
+                        <!-- 動画 -->
+                        <tr>
+                            <td><video src='movie-dummy.mp4' controls></video>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
-                <!-- ボタン -->
-                <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem;padding-right: 2rem;">
-                    <!-- 戻るボタン -->
-                    <button type="button" class="btn btn-outline-primary aria-label=" Close"
-                        data-dismiss="modal">戻る</button>
-            
-                    <!-- 削除ボタン -->
-                    <button type="button" class="btn btn-primary">削除</button>
+                <div class="taskCheckButton">
+                    <div class="taskCheckButton__inner">
+                        <div class="taskCheckButton__btn"><img src="./images/done_FILL0_wght400_GRAD0_opsz48.png"
+                                alt="">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
