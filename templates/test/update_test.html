@@ -4,6 +4,7 @@
 <div>
     <form action="{% url 'todo_update' %}" method="POST">
         {% csrf_token %}
+        <input type="hidden" name="taskid" value="{{ task.taskid }}">
         <div>
             <label class="form-label">タスク名</label>
             <input type="text" class="form-control" name="taskName" value="{{ task.taskName }}">

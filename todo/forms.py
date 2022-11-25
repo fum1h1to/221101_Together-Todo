@@ -11,3 +11,15 @@ class TaskCreateForm(forms.ModelForm):
         model=Task
         fields=['taskName','deadline','importance','note','isBocchi']
 
+
+
+class TaskUpdateForm(forms.ModelForm):
+
+
+  ##userid以外の
+    class Meta:
+        model=Task
+        fields=['taskName','deadline','importance','note',]
+
+
+

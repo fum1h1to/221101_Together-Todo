@@ -104,14 +104,13 @@ class UserManager(UserManager):
     qs = alluser.filter(username__icontains=username)
     return list(qs)
 
-  def send_email(self, userid, subject, message):
+  def send_email(self, user, subject, message):
     '''
     ユーザに対して何かしらのメールを送る関数
     '''
     subject = subject
     message = message
     from_email = settings.DEFAULT_FROM_EMAIL
-    user = self.filter(userid=userid).first()
     to = [ user.email ]
     send_mail(subject, message, from_email, to)
 
@@ -224,7 +223,7 @@ class UserActivateTokensManager(models.Manager):
     subject = 'Please Activate Your Account'
     message = f'URLにアクセスしてユーザーアクティベーション。\n {settings.HOST_URL}user/{user_activate_token.activate_token}/activation/'
 
-    CustomUser.objects.send_email(user.userid, subject, message)
+    CustomUser.objects.send_email(user, subject, message)
 
   def activate_user_by_token(self, activate_token):
     '''
@@ -252,7 +251,7 @@ class UserActivateTokensManager(models.Manager):
     subject = 'Activated! Your Account!'
     message = 'ユーザーが使用できるようになりました'
 
-    CustomUser.objects.send_email(user.userid, subject, message)
+    CustomUser.objects.send_email(user, subject, message)
 
 
 class UserActivateTokens(models.Model):

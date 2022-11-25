@@ -21,14 +21,57 @@ class TaskManager(models.Manager):
         task = Task(userid=user,taskName=taskName,deadline=deadline,importance=importance,
                                  note=note,isBocchi=isBocchi,)
         task.save()
-        
+        subject='タスクチェックの依頼'
+
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
+            message='タスクチェックの依頼が届きましたアプリを開いて確認しましょう！'
+            CustomUser.objects.send_email(user, subject, message)
         
+        
+    
     def showUserTasks(self, user):
         tasks = Task.objects.filter(userid=user).all()
         return list(tasks)
+    
+    
+    def update(self,taskid,taskName,deadline,importance,note):
+        task = Task.objects.get(taskid=taskid)
+        task.taskName = taskName
+        task.deadline = deadline
+        task.importance = importance
+        task.note = note
+        task.save()
+
+        
+        
+        subject='タスクが編集されました。'
+        message='タスクを編集しました。アプリを開いて確認しましょう！'
+        
+        # for userid in requestUsers:
+        #     otheruserid = CustomUser.objects.get(userid=userid) ##メールを送る人たちのID
+            
+        #     CustomUser.objects.send_email(otheruserid, subject, message)
+           
+
+
+
+    def delete(self,taskid,):
+        
+        subject='タスクが削除されました。'   
+        Task.objects.filter(taskid=taskid).delete()
+
+        message='タスクを削除しました。タスクの依頼がなくなりました.'
+
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
+
+        # for userid in requestUsers:
+        #     otheruserid = CustomUser.objects.get(userid=userid) ##メールを送る人たちのID
+            
+        #     CustomUser.object.send_email(otheruserid, subject, message)
+           
+
 
 class Task(models.Model):
     
@@ -53,13 +96,13 @@ class Task(models.Model):
         verbose_name= _("タスクの名前"),
         blank=False, max_length=50,)##50文字までの文字の入力が可能
     
-    deadline = models.DateTimeField(default=timezone.now,)##締切日 
+    deadline = models.DateTimeField(default=timezone.now, )##締切日 調べる。
     
     importance=models.IntegerField(default=0,validators= [MinValueValidator(0), MaxValueValidator(2)]) ##重要度  0,1,2で重要度の大きさを決める。 validatorsで指定 
     
     note=models.TextField(
         verbose_name= _("メモ欄"),
-        max_length=300, blank=True)
+        max_length=300, blank=True,)
     
     isBocchi=models.BooleanField(verbose_name= _("ぼっち"),default=False)
 
@@ -89,6 +132,13 @@ class CommissionManager(models.Manager):
         commission=Commission(userid=userid, taskid=taskid)
         commission.save()
             ##クリエイトをするための処理を書く
+    
+    def sendEmailToTaskIdRelatingUserId(self, taskid, subject, message):
+        # ここをやる
+        # requestUsers = Commission.objects.filter(taskid=taskid)
+        
+        pass
+
 
 
 class Commission(models.Model):
