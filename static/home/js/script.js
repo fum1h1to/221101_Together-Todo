@@ -46,6 +46,13 @@ const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
 let todoCreate_requestUsers = {} // 選択した依頼者のiconを管理する。
 const myTaskList = [] // タスクを保持する配列
 
+// アカウント編集フォームの初期化処理
+let userUpdateForm_originalIconSrc = form_userUpdate.querySelector('.account-icon').src;
+const userUpdateFormReset = () => {
+    form_userUpdate.querySelector('.account-icon').src = userUpdateForm_originalIconSrc;
+    form_userUpdate.reset();
+}
+
 // passwordチェックフォームの初期化処理
 const passwordCheckFormReset = () => {
     form_ceckPassword.reset();
@@ -67,6 +74,7 @@ const todoCreateFormReset = () => {
 document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
     passwordCheckFormReset();
     userDeleteFormReset();
+    userUpdateFormReset();
 })
 
 document.getElementById('btn_taskPlusButton').addEventListener('click', function(e) {
@@ -196,10 +204,8 @@ form_ceckPassword.addEventListener("submit", function (e) {
 
 
 /* ----------------------------
-ユーザ編集の処理（未完成）
+ユーザ編集の処理
 ----------------------------- */
-// アイコンを取得してくる。
-
 // formでアイコンが選択されたら表示する処理
 document.getElementById('account_iconUpload').addEventListener('change', (e) => {
     let fileList = e.target.files;
@@ -210,8 +216,6 @@ document.getElementById('account_iconUpload').addEventListener('change', (e) => 
     fileReader.onload = function(e) {
 
         imageOutputElement.src = e.target.result;
-        
-        console.log(e.target.result)
     }
     fileReader.readAsDataURL( file );
 });
@@ -245,9 +249,16 @@ form_userUpdate.addEventListener("submit", function (e) {
             if (res.result) {
                 location.reload();
             } else {
-
+                accountUpdate_inputError(res.error)
             }
         })
+    
+    const accountUpdate_inputError = (error) => {
+        error.icon ? form_userUpdate.querySelector('.icon-error').textContent = error.icon : form_userUpdate.querySelector('.icon-error').textContent = "";
+        error.username ? form_userUpdate.querySelector('.username-error').textContent = error.username : form_userUpdate.querySelector('.username-error').textContent = "";
+        error.email ? form_userUpdate.querySelector('.email-error').textContent = error.email : form_userUpdate.querySelector('.email-error').textContent = "";
+        error.password ? form_userUpdate.querySelector('.password-error').textContent = error.password : form_userUpdate.querySelector('.password-error').textContent = "";
+    }
 });
 
 
@@ -459,7 +470,6 @@ const todoCreate_sendData = (isBocchi) => {
             return res.json();
         })
         .then((res) => {
-            console.log(res);
             if (res.result) {
                 modal_todoSelectBocchi.hide();
                 modal_todoSelectRequest.hide();

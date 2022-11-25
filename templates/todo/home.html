@@ -70,7 +70,7 @@
                 <h5 class="modal-title" id="modal_accountEditLabel">アカウント編集</h5>
             </div>
             <div class="modal-body">
-                <p>よく分からないエラーが出てくるため、まだ実装できていない。<br>（アイコンだけは反映される。）</p>
+                <p>パスワードを変更する場合、再度ログインが必要になります。<br>※何も入力しなければ、変更はされません。</p>
                 <form id="form_userUpdate">
                     <input type="hidden" name="url" value="{% url 'user_update' %}">
                     <ul class="account_icon">
@@ -82,19 +82,22 @@
                         <!-- 確認ボタン -->
                         <label class="file-label" for="account_iconUpload">アイコンを選択</label>
                         <input class="file-button" type="file" name="icon" accept="image/*" id="account_iconUpload">
+                        <p class="error icon-error"></p>
                     </ul>
 
                     <!-- ユーザ名 -->
                     <ul class="user_name">
                         <td>
-                            <input type="text" class="form-control" name="username" placeholder="ユーザ名">
+                            <input type="text" class="form-control" name="username" placeholder="ユーザ名" value="{{ request.user.username }}">
+                            <p class="error username-error"></p>
                         </td>
                     </ul>
 
                     <!-- メールアドレス -->
                     <ul class="mail_address">
                         <td>
-                            <input type="text" class="form-control" name="email" placeholder="メールアドレス">
+                            <input type="text" class="form-control" name="email" placeholder="メールアドレス" value="{{ request.user.email }}">
+                            <p class="error email-error"></p>
                         </td>
                     </ul>
 
@@ -102,6 +105,7 @@
                     <ul class="password">
                         <td>
                             <input type="password" class="form-control" name="password" placeholder="パスワード">
+                            <p class="error password-error"></p>
                         </td>
                     </ul>
                     <hr>

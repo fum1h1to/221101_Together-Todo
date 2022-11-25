@@ -96,27 +96,19 @@ def checkPassword(request):
 
 @require_http_methods(['POST'])
 @login_required
-def update(request):
-
-    user = CustomUser.objects.get(userid=request.user.userid)
-    
-    user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=user)
+def update(request):    
+    user_data = UserChangeForm(data=request.POST, files=request.FILES, instance=request.user)
     
     if user_data.is_valid():
         
-        if user_data.cleaned_data["icon"] is not None:
-            user.icon = user_data.cleaned_data["icon"]
-        # if user_data.cleaned_data["username"] != '':
-        #     user.username = user_data.cleaned_data["username"]
-        # if user_data.cleaned_data["email"] != '':
-        #     user.email = user_data.cleaned_data["email"]
-        # if user_data.cleaned_data["password"] != '':
-        #     user.set_password(user_data.cleaned_data["password"])
-        user.save()
+        icon = user_data.cleaned_data["icon"]
+        username = user_data.cleaned_data["username"]
+        email = user_data.cleaned_data["email"]
+        password = user_data.cleaned_data["password"]
+        CustomUser.objects.update(request.user, icon, username, email, password)
 
         context = {
-            'result': True,
-            'message': 'アイコン以外は変わってません。'
+            'result': True
         }
         return JsonResponse(context)
 
