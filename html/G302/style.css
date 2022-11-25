@@ -33,11 +33,13 @@
   font-size: large;
 }
 
-.calendar{
+/* カレンダー */
+/* .calendar{
     width: 60%;
     height: 20%;
-}
+} */
 
+/* 重要度 */
 .importance{
     font-size: large;
 }
@@ -71,20 +73,20 @@
 }
 
 /* ----------------------------
-taskPlusButton
+taskCheckButton
 ----------------------------- */
-.taskPlusButton {
+.taskCheckButton {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
 }
-.taskPlusButton__inner {
+.taskCheckButton__inner {
     max-width: 560px;
     margin: 0 auto;
     position: relative;
 }
-.taskPlusButton__btn {
+.taskCheckButton__btn {
     position: absolute;
     bottom: 65px;
     right: 4%;
@@ -98,6 +100,7 @@ taskPlusButton
     align-items: center;
 }
 
+/* ダミーアイコン */
 .human{
     width: 25px;
     height: 25px;

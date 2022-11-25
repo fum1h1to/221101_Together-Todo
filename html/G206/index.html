@@ -59,13 +59,12 @@
                 <div class="modal-body" style="padding: 1.5rem;">
                     <div class="information">依頼者に送る画像、または動画を選択してください</div>
                     <table class="table-res-form">
-                        <!-- タスク名 -->
+                        <!-- 画像選択 -->
                         <tr>
                             <th>画像</th>
                             <!-- 入力フォーム -->
-                            <td> <input type="image" src="./images/photo_library_FILL0_wght400_GRAD0_opsz48.png"
-                                class="photo"></img>
-                            jpg、又はpng形式(5MBまで)
+                            <td> <img src="./images/photo_library_FILL0_wght400_GRAD0_opsz48.png" class="photo"></img>
+                                jpg、又はpng形式(5MBまで)
                             </td>
                         </tr>
                         <!-- エラーダイアログ -->
@@ -73,20 +72,19 @@
                             <th class="error">ここにエラーダイアログ</th>
                         </tr>
 
-                         <!-- タスク名 -->
-                         <tr>
+                        <!-- 動画選択 -->
+                        <tr>
                             <th>動画</th>
                             <!-- 入力フォーム -->
-                            <td> <input type="image" src="./images/slideshow_FILL0_wght400_GRAD0_opsz48.png"
-                                class="photo"></img>
-                            2分20秒以下、かつ512MB以下まで
+                            <td> <img src="./images/slideshow_FILL0_wght400_GRAD0_opsz48.png" class="photo"></img>
+                                2分20秒以下、かつ512MB以下まで
                             </td>
                         </tr>
                         <!-- エラーダイアログ -->
                         <tr>
                             <th class="error">ここにエラーダイアログ</th>
                         </tr>
-                    
+
                         <!-- メモ -->
                         <tr>
                             <th>説明</th>
@@ -104,7 +102,7 @@
                     </table>
                 </div>
 
-                <!-- 作成ボタン -->
+                <!-- 送信ボタン -->
                 <div class="modal-footer d-flex justify-content-center">
                     <button type="button" class="btn btn-primary">送信</button>
                 </div>
