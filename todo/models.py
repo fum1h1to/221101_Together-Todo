@@ -39,7 +39,7 @@ class TaskManager(models.Manager):
         task.description = description
         task.save()
 
-    def complete(self, taskid):
+    def complete_one(self, taskid):
         requestUsers = Commission.objects.listRequestedUserByTask(taskid)
         if len(requestUsers) != 0:
             return False
@@ -142,11 +142,28 @@ class CommissionManager(models.Manager):
         return list(data)
 
     def listUserRequestedTask(self, user):
-        tasks = Commission.objects.filter(userid=user).all().values_list('taskid', flat=True)
+        tasks = Commission.objects.filter(userid=user).exclude(completed=True).values_list('taskid', flat=True)
         data = []
         for taskid in tasks:
             data.append(Task.objects.get(taskid=taskid))
         return list(data)
+
+    def complete(self, user, taskid):
+        task = Task.objects.get(taskid=taskid)
+        com = Commission.objects.get(userid=user, taskid=task)
+        com.completed = True
+        com.save()
+        self.all_complete(taskid)
+    
+    def all_complete(self, taskid):
+        commissions = Commission.objects.filter(taskid=taskid).all()
+        for com in commissions:
+            if not com.completed:
+                return
+        
+        task = Task.objects.get(taskid=taskid)
+        task.status = 2
+        task.save()
 
 
 class Commission(models.Model):
@@ -155,6 +172,8 @@ class Commission(models.Model):
     taskid=models.ForeignKey(Task, on_delete=models.CASCADE)##タスクIDを外部からもらう
     
     userid=models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    completed = models.BooleanField(default=False)
 
     ###Commisionのデータベースを定義している。
 

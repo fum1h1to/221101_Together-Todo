@@ -1,7 +1,9 @@
-
+// modalの要素取得
+const modal_todoOtherTaskDetail = new bootstrap.Modal(document.getElementById('modal_todoOtherTaskDetail'), modalOption);
 
 // このページ内で使う変数
 const otherTaskList = [] // 他人のタスクを保持する配列
+const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
 
 // 並び替えの選択
 document.querySelector('.js-otherTask_sortMenu').onchange = e => {
@@ -43,8 +45,14 @@ const makeOtherTaskListElement = (sortNum) => {
     // 画面上部のタスク数の初期化
     document.querySelector('.js-otherTaskNum .js-num').textContent = otherTaskList.length;
 
-    // sortNumの値に応じて要素を生成する
     const ele_otherTaskList = document.getElementById('accordion-otherTaskList');
+
+    if (otherTaskList.length == 0) {
+        ele_otherTaskList.innerHTML = '<div class="otherTaskList__titleWrap"><p>チェックを依頼されたタスクはありません。</p></div>';
+        return;
+    }
+
+    // sortNumの値に応じて要素を生成する
     ele_otherTaskList.innerHTML = '';
 
     switch(sortNum) {
@@ -65,7 +73,6 @@ const makeOtherTaskListElement = (sortNum) => {
                 }
 
                 const sortedTime = Array.from(tmpTime).sort((a, b) => a - b);
-                const dayOfWeekStr = [ "日", "月", "火", "水", "木", "金", "土" ]
 
                 for (let time in sortedTime) {
                     let time_str = sortedTime[time].toString()
@@ -93,7 +100,7 @@ const makeOtherTaskListElement = (sortNum) => {
 
                     for (let ori_task in tmpList[sortedTime[time]]) {
                         const task = tmpList[sortedTime[time]][ori_task];
-                        data += '<li class="otherTaskListItem">';
+                        data += '<li class="otherTaskListItem js-btn_otherTaskDetail" data-taskid=' + task.taskid + '>';
                         data += '<div class="otherTaskListItem__icon"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
                         data += '<div class="otherTaskListItem__text">' + task.taskName;
                         data += '<img class="otherTaskListItem__user" src="' + Object.values(task.user) + '" alt="">';
@@ -147,7 +154,7 @@ const makeOtherTaskListElement = (sortNum) => {
 
                     for (let ori_task in tmpList[imp]) {
                         const task = tmpList[imp][ori_task];
-                        data += '<li class="otherTaskListItem">';
+                        data += '<li class="otherTaskListItem js-btn_otherTaskDetail" data-taskid=' + task.taskid + '>';
                         data += '<div class="otherTaskListItem__icon"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
                         data += '<div class="otherTaskListItem__text">' + task.taskName;
                         data += '<img class="otherTaskListItem__user" src="' + Object.values(task.user) + '" alt="">';
@@ -180,7 +187,7 @@ const makeOtherTaskListElement = (sortNum) => {
 
                 for (let ori_task in tmpList) {
                     const task = tmpList[ori_task];
-                    data += '<li class="otherTaskListItem">';
+                    data += '<li class="otherTaskListItem js-btn_otherTaskDetail" data-taskid=' + task.taskid + '>';
                     data += '<div class="otherTaskListItem__icon"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
                     data += '<div class="otherTaskListItem__text">' + task.taskName;
                     data += '<img class="otherTaskListItem__user" src="' + Object.values(task.user) + '" alt="">';
@@ -240,7 +247,7 @@ const makeOtherTaskListElement = (sortNum) => {
 
                     for (let ori_task in tmpList[sortedUsers[username]]) {
                         const task = tmpList[sortedUsers[username]][ori_task];
-                        data += '<li class="otherTaskListItem">';
+                        data += '<li class="otherTaskListItem js-btn_otherTaskDetail" data-taskid=' + task.taskid + '>';
                         data += '<div class="otherTaskListItem__icon"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
                         data += '<div class="otherTaskListItem__text">' + task.taskName;
                         data += '<img class="otherTaskListItem__user" src="' + Object.values(task.user) + '" alt="">';
@@ -262,6 +269,135 @@ const makeOtherTaskListElement = (sortNum) => {
             break;
     }
 
+    const btn_otherTaskDetail = document.querySelectorAll('.js-btn_otherTaskDetail');
+    btn_otherTaskDetail.forEach(ele => {
+        ele.addEventListener('click', (e) => {
+            taskid = ele.dataset.taskid;
+            makeOtherTaskDetailModal(taskid);
+            modal_todoOtherTaskDetail.show()
+        })
+    });
+
 }
 
 getOtherTaskList();
+
+/* ----------------------------
+タスクの詳細画面
+----------------------------- */
+const makeOtherTaskDetailModal = (taskid) => {
+    const task = otherTaskList.find((task) => { return task.taskid === taskid });
+    
+    const ele_todoOtherTaskDetailTable = document.getElementById('js-ele_todoOtherTaskDetailTable');
+    
+    let time_date = new Date(task.deadline);
+
+    let imp = task.importance
+    let impTxt = '';
+    if (imp == 0) {
+        impTxt = '高';
+    } else if (imp == 1) {
+        impTxt = '中'
+    } else if (imp == 2) {
+        impTxt = '低'
+    } 
+
+    data = ''
+    data += '<input id="js-otherTaskDetail_taskid" type="hidden" value="' + task.taskid + '">'
+    data += '<!-- タスク名 -->';
+    data += '<tr>';
+    data += '<th>タスク名</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td class="userName">' + task.taskName + '</td>';
+    data += '</td>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 作成者 -->';
+    data += '<tr>';
+    data += '<th>作成者</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td class="userName">' + Object.keys(task.user) + '<img class="human" src="' + Object.values(task.user) + '"></td>';
+    data += '</td>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 期限日 -->';
+    data += '<tr>';
+    data += '<th>期限日</th>';
+    data += '<td class="date">' + time_date.getFullYear() + '年' + (time_date.getMonth() + 1) + '月' + time_date.getDate() + '日(' + dayOfWeekStr[time_date.getDay()] + ')</td>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 重要度 -->';
+    data += '<tr>';
+    data += '<th>重要度</th>';
+    data += '<td class="importance">' + impTxt +'です</td>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- メモ -->';
+    data += '<tr>';
+    data += '<th>メモ</th>';
+    data += '<td>' + task.description +'</td>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 一次チェック -->';
+    data += '<tr>';
+    data += '<th>1次チェック</th>';
+    data += '<td>1次チェック送信済</td>';
+    data += '</tr>';
+    data += '';
+    if (task.img !== '') {
+        data += '<!-- 画像 -->';
+        data += '<tr>';
+        data += '<th>画像</th>';
+        data += '<td>';
+        data += '<img src="' + task.img +'">';
+        data += '</td>';
+        data += '</tr>';
+        data += '';
+    }
+    if (task.movie !== '') {
+        data += '<!-- 動画 -->';
+        data += '<tr>';
+        data += '<th>動画</th>';
+        data += '<td>';
+        data += '<video src="' + task.movie +'" controls style="width: 100%"></video>';
+        data += '</td>';
+        data += '</tr>';
+    }
+
+    ele_todoOtherTaskDetailTable.innerHTML = data;
+
+}
+
+/* ----------------------------
+タスクのチェック
+----------------------------- */
+document.getElementById('js-btn_todoOtherTaskCheck').addEventListener('click', (e) => {
+    const tasid = document.getElementById('js-otherTaskDetail_taskid').value;
+
+    const body = new URLSearchParams();
+    body.append('taskid', taskid);
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: body
+    };
+
+    fetch('/request/complete/', sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            console.log(res);
+            if (res.result) {
+                getOtherTaskList();
+                modal_todoOtherTaskDetail.hide()
+            } else {
+
+            }
+        })
+})

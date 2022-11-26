@@ -159,6 +159,29 @@
     </div>
 </div>
 
+<!-- modal_todoOtherTaskDetail -->
+<div class="modal fade" id="modal_todoOtherTaskDetail" tabindex="-1" aria-labelledby="modal_todoOtherTaskDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoOtherTaskDetailLabel">タスクの詳細</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <table class="table-res-form" id="js-ele_todoOtherTaskDetailTable">
+                    <!-- 動的に生成する部分 -->
+                </table>
+            </div>
+            <div class="taskCheckButton">
+                <div class="taskCheckButton__btn" id="js-btn_todoOtherTaskCheck">
+                    <img src="/static/other/images/icon_check.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- メイン画面 -->
 <div class="header text-center border-bottom pb-2 pt-3">
     <h1>他人のタスク</h1>
@@ -187,7 +210,7 @@
 <div class="footer">
     <div class="footer__inner">
         <div class="footerTab">
-            <a href="{% url 'home' %}"  class="footerTab__item footerTab__item--home is-new"><img
+            <a href="{% url 'home' %}"  class="footerTab__item footerTab__item--home"><img
                     src="{% static 'common/images/icon_home.svg' %}" alt=""></a>
             <div class="footerTab__item footerTab__item--other"><img
                     src="{% static 'common/images/icon_other_active.svg' %}" alt=""></div>

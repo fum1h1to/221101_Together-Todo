@@ -242,13 +242,13 @@ def firstCheck(request):
 
 @require_http_methods(['POST'])
 @login_required
-def complete(request):
+def task_complete_one(request):
     '''
     依頼者がいないタスクを完了させる。
     '''
     taskid = request.POST.get('taskid')
 
-    result = Task.objects.complete(taskid)
+    result = Task.objects.complete_one(taskid)
     if result:
 
         context = {
@@ -264,6 +264,29 @@ def complete(request):
 
         return JsonResponse(context)
 
+
+@require_http_methods(['POST'])
+@login_required
+def commission_complete(request):
+    '''
+    送られてきたuseridとtaskidに基づいて、チェックをする。
+    '''
+    taskid = request.POST.get('taskid')
+
+    try:
+        Commission.objects.complete(request.user, taskid)
+        context = {
+            'result': True,
+        }
+
+        return JsonResponse(context)
+
+    except:
+        context = {
+            'result': False,
+        }
+
+        return JsonResponse(context)
 
 @require_http_methods(['POST'])
 @login_required
@@ -284,16 +307,23 @@ def commission_list(request):
                 iconpath = '/static/common/images/default_icon.jpeg'
             user = {r_user.username: iconpath}
 
+            imgpath = ''
+            if task['fields']['img']:
+                imgpath = str(settings.MEDIA_URL) + str(task['fields']['img'])
+
+            moviepath = ''
+            if task['fields']['movie']:
+                moviepath = str(settings.MEDIA_URL) + str(task['fields']['movie'])
+
             return_data.append({
                 'taskid': task['pk'],
                 'user': user,
                 'taskName': task['fields']['taskName'],
                 'deadline': task['fields']['deadline'],
                 'importance': task['fields']['importance'],
-                'note': task['fields']['note'],
                 'status': task['fields']['status'],
-                'img': task['fields']['img'],
-                'movie': task['fields']['movie'],
+                'img': imgpath,
+                'movie': moviepath,
                 'description': task['fields']['description'],
             })
 

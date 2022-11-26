@@ -9,9 +9,10 @@ urlpatterns = [
     path('todo/update/', views.update, name='todo_update'),
     path('todo/delete/', views.delete, name='todo_delete'),
     path('todo/firstCheck/', views.firstCheck, name='todo_first_check'),
-    path('todo/complete/', views.complete, name='todo_complete'),
+    path('todo/complete/', views.task_complete_one, name='todo_complete'),
 
     path('request/list/', views.commission_list, name='request_list'),
+    path('request/complete/', views.commission_complete, name='request_complete'),
 
     # テスト用
     path('todo/test_todolist/', views.test_todoListView.as_view(), name='test_todolist'),

@@ -87,7 +87,7 @@ const getMyTaskList_and_disp = () => {
 
         for(let task in myTaskList) {
             if(myTaskList[task].status == 0) {
-                data = '<li class="myTaskListItem js-myTaskListItem" data-taskid=' + myTaskList[task].taskid +  '>';
+                data = '<li class="myTaskListItem js-myTaskListItem" data-taskid=' + myTaskList[task].taskid + '>';
                 data += '<div class="myTaskListItem__icon js-btn_taskCheck"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
                 data += '<div class="myTaskListItem__text js-btn_taskUpdate">' + myTaskList[task].taskName + '</div>';
                 data += '</li>';
