@@ -263,3 +263,50 @@ def complete(request):
         }
 
         return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def commission_list(request):
+    '''
+    userIdに基づいたチェックを依頼されたタスクを抽出し結果を返す。
+    '''
+    try:
+        tasks = Commission.objects.listUserRequestedTask(request.user)
+        json_tasks = json.loads(serializers.serialize("json", tasks))
+        return_data = []
+        for task in json_tasks:
+            r_userid = task['fields']['userid']
+            r_user = CustomUser.objects.get(userid=r_userid)
+            if r_user.icon:
+                iconpath = str(settings.MEDIA_URL) + str(r_user.icon)
+            else:
+                iconpath = '/static/common/images/default_icon.jpeg'
+            user = {r_user.username: iconpath}
+
+            return_data.append({
+                'taskid': task['pk'],
+                'user': user,
+                'taskName': task['fields']['taskName'],
+                'deadline': task['fields']['deadline'],
+                'importance': task['fields']['importance'],
+                'note': task['fields']['note'],
+                'status': task['fields']['status'],
+                'img': task['fields']['img'],
+                'movie': task['fields']['movie'],
+                'description': task['fields']['description'],
+            })
+
+        context = {
+            'result': True,
+            'tasks': return_data
+        }
+
+        return JsonResponse(context)
+    
+    except:
+        context = {
+            'result': False,
+        }
+
+        return JsonResponse(context)

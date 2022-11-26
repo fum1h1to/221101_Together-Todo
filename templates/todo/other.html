@@ -167,55 +167,22 @@
     </div>
 </div>
 
-<div class="accordion" id="accordion-myTaskList">
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="myTaskList-headingOne">
-            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseOne"
-                aria-expanded="true" aria-controls="myTaskList-collapseOne">
-                作成済みのタスク (<span class="task-num">0</span>)
-            </div>
-        </h2>
-        <div id="myTaskList-collapseOne" class="accordion-collapse collapse show no-click"
-            aria-labelledby="myTaskList-headingOne">
-            <div class="accordion-body">
-                <ul class="myTaskList myTaskList--1">
-                    
-                </ul>
-            </div>
-        </div>
+<div class="sortButtonAndTaskNum d-flex justify-content-between">
+    <div class="taskNum js-otherTaskNum">
+        <span class="js-num">0</span>個のタスク
     </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="myTaskList-headingTwo">
-            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseTwo"
-                aria-expanded="true" aria-controls="myTaskList-collapseTwo">
-                一次チェック済み (<span class="task-num">0</span>)
-            </div>
-        </h2>
-        <div id="myTaskList-collapseTwo" class="accordion-collapse collapse show"
-            aria-labelledby="myTaskList-headingTwo">
-            <div class="accordion-body">
-                <ul class="myTaskList myTaskList--2">
-                    
-                </ul>
-            </div>
-        </div>
+    <div>
+        <select class="sortMenu js-otherTask_sortMenu">
+            <option>日付順</option>
+            <option>重要度</option>
+            <option>タイトル順</option>
+            <option>依頼者</option>
+        </select>
     </div>
-    <div class="accordion-item">
-        <h2 class="accordion-header" id="myTaskList-headingThree">
-            <div class="accordion-button" data-bs-toggle="collapse" data-bs-target="#myTaskList-collapseThree"
-                aria-expanded="true" aria-controls="myTaskList-collapseThree">
-                完了済み (<span class="task-num">0</span>)
-            </div>
-        </h2>
-        <div id="myTaskList-collapseThree" class="accordion-collapse collapse show"
-            aria-labelledby="myTaskList-headingThree">
-            <div class="accordion-body">
-                <ul class="myTaskList myTaskList--3">
-                    
-                </ul>
-            </div>
-        </div>
-    </div>
+</div>
+
+<div class="accordion" id="accordion-otherTaskList">
+    <!-- 動的に生成する部分 -->
 </div>
 <div class="footer">
     <div class="footer__inner">

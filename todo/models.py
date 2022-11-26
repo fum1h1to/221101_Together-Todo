@@ -141,6 +141,13 @@ class CommissionManager(models.Manager):
             data.append(CustomUser.objects.get(userid=userid))
         return list(data)
 
+    def listUserRequestedTask(self, user):
+        tasks = Commission.objects.filter(userid=user).all().values_list('taskid', flat=True)
+        data = []
+        for taskid in tasks:
+            data.append(Task.objects.get(taskid=taskid))
+        return list(data)
+
 
 class Commission(models.Model):
     commissionid=models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
