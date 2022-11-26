@@ -1,10 +1,10 @@
 /* ----------------------------
 otherTaskList
 ----------------------------- */
-.accordion-button .date.is-red {
+.accordion-button span.is-red {
     color: #dc3545;
 }
-.accordion-button .date.is-blue {
+.accordion-button span.is-blue {
     color: #0d6efd;
 }
 .no-click {
@@ -38,6 +38,10 @@ otherTaskList
     height: 25px;
     float: right;
     margin-right: 5%;
+}
+
+.otherTaskList__titleWrap {
+    padding: 1rem 1.25rem;
 }
 
 .sortButtonAndTaskNum{
