@@ -21,12 +21,12 @@ class TaskManager(models.Manager):
         task = Task(userid=user,taskName=taskName,deadline=deadline,importance=importance,
                                  note=note,isBocchi=isBocchi,)
         task.save()
-        subject='タスクチェックの依頼'
+        subject=f'{user.username}さんからタスクチェックの依頼が届きました.'
 
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
-            message='タスクチェックの依頼が届きましたアプリを開いて確認しましょう！'
+            message=f'アプリを開いてタスクを確認しましょう！\nタスク名{taskName}\n期限日{deadline}'
             CustomUser.objects.send_email(user, subject, message)
         
         
@@ -36,43 +36,25 @@ class TaskManager(models.Manager):
         return list(tasks)
     
     
-    def update(self,taskid,taskName,deadline,importance,note):
+    def update(self,taskid,taskName,deadline,importance,note,):
         task = Task.objects.get(taskid=taskid)
         task.taskName = taskName
         task.deadline = deadline
         task.importance = importance
         task.note = note
-        task.save()
-
-        
-        
+        task.save()        
         subject='タスクが編集されました。'
         message='タスクを編集しました。アプリを開いて確認しましょう！'
-        
-        # for userid in requestUsers:
-        #     otheruserid = CustomUser.objects.get(userid=userid) ##メールを送る人たちのID
-            
-        #     CustomUser.objects.send_email(otheruserid, subject, message)
-           
-
-
-
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
+       
     def delete(self,taskid,):
         
-        subject='タスクが削除されました。'   
-        Task.objects.filter(taskid=taskid).delete()
-
         message='タスクを削除しました。タスクの依頼がなくなりました.'
-
-        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
-
-        # for userid in requestUsers:
-        #     otheruserid = CustomUser.objects.get(userid=userid) ##メールを送る人たちのID
-            
-        #     CustomUser.object.send_email(otheruserid, subject, message)
+        subject='タスクが削除されました。'            
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, 
+        subject, message)   ##タスクIDが先に消されてしまうため、こっちを先に書かないとメールが送信できない。   
+        Task.objects.filter(taskid=taskid).delete()
            
-
-
 class Task(models.Model):
     
     def moviefile_size(value): ##動画サイズを設定する
@@ -134,11 +116,13 @@ class CommissionManager(models.Manager):
             ##クリエイトをするための処理を書く
     
     def sendEmailToTaskIdRelatingUserId(self, taskid, subject, message):
-        # ここをやる
-        # requestUsers = Commission.objects.filter(taskid=taskid)
+       
+        requestUsers = Commission.objects.filter(taskid_id=taskid)
         
-        pass
-
+        for username in requestUsers:           
+            user = CustomUser.objects.get(userid=username.userid_id)
+            CustomUser.objects.send_email(user, subject, message)
+        
 
 
 class Commission(models.Model):
