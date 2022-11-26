@@ -150,7 +150,7 @@ def find(request):
         if user.icon:
             iconpath = str(settings.MEDIA_URL) + str(user.icon)
         else:
-            iconpath = ''
+            iconpath = '/static/common/images/default_icon.jpeg'
 
         result.append({ 
             'username': user.username,

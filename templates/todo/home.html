@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block head %}
+<link rel="stylesheet" href="{% static 'common/css/todo_style.css' %}">
 <link rel="stylesheet" href="{% static 'home/css/style.css' %}">
 {% endblock %}
 
@@ -20,13 +21,13 @@
                 <!-- アカウントの編集 -->
                 <ul class="account_edit">
                     <div class="accountEdit__icon cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_checkPassword" data-bs-dismiss="modal">
-                        <img src="{% static 'home/images/settings_image.svg' %}" alt="">アカウントの編集
+                        <img src="{% static 'common/images/settings_image.svg' %}" alt="">アカウントの編集
                     </div>
                 </ul>
                 <hr>
                 <ul class="account_delete">
                     <div class="accountDelete__icon cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_accountDelete" data-bs-dismiss="modal">
-                        <img src="{% static 'home/images/error_image.svg' %}" alt="">
+                        <img src="{% static 'common/images/error_image.svg' %}" alt="">
                         <span style="color: red">アカウントを削除</span>
                     </div>
                 </ul>
@@ -74,11 +75,7 @@
                 <form id="form_userUpdate">
                     <input type="hidden" name="url" value="{% url 'user_update' %}">
                     <ul class="account_icon">
-                        {% if request.user.icon %}
-                        <img class="account-icon" src="{{ MEDIA_URL }}{{ request.user.icon }}" alt="">
-                        {% else %}
-                        <img class="account-icon" src="{% static 'home/images/account_circle.svg' %}">
-                        {% endif %}
+                        <img class="account-icon" src="{{ iconpath }}" alt="">
                         <!-- 確認ボタン -->
                         <label class="file-label" for="account_iconUpload">アイコンを選択</label>
                         <input class="file-button" type="file" name="icon" accept="image/*" id="account_iconUpload">
@@ -173,7 +170,6 @@
             </div>
             <div class="modal-body" style="padding: 1.5rem;">
                 <form id="form_todoCreate">
-                    <input type="hidden" name="url" value="{% url 'todo_create' %}">
                     <table class="table-res-form mb-4">
                         <!-- タスク名 -->
                         <tr>
@@ -375,7 +371,70 @@
     </div>
 </div>
 
+<!-- modal_todoUpdate -->
+<div class="modal fade" id="modal_todoUpdate" tabindex="-1" aria-labelledby="modal_todoUpdateLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoUpdateLabel">タスクの編集</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form id="form_todoUpdate">
+                    <table class="table-res-form mb-4 js-ele_todoUpdateTable">
+                        <!-- 動的に生成する部分 -->
+                    </table>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_todoDelete_check" data-bs-dismiss="modal">削除</button>
+                        <button id="js-btn_todoUpdate" type="button" class="btn btn-primary">更新</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- modal_todoFirstCheck -->
+<div class="modal fade" id="modal_todoFirstCheck" tabindex="-1" aria-labelledby="modal_todoFirstCheckLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoFirstCheckLabel">一次チェック</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form id="form_todoFirstCheck">
+                    <div class="information">依頼者に送る画像、または動画を選択してください</div>
+                    <table class="table-res-form js-ele_todoFirstCheckTable">
+                        <!-- 動的に生成する部分 -->
+                    </table>
+                    <div class="d-flex justify-content-center mt-3">
+                        <button id="js-btn_todoFirstCheck" type="button" class="btn btn-primary">送信</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_commonError -->
+<div class="modal fade" id="modal_commonError" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    エラーが起きました。
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding-left: 2rem;padding-right: 2rem;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">閉じる</button>     
+            </div>
+        </div>
+    </div>
+</div>
 <!-- modal_todoCreate_success -->
 <div class="modal fade" id="modal_todoCreate_success" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -403,8 +462,8 @@
             </div>
             <!-- 閉じるボタン -->
             <div class="modal-body d-flex justify-content-between" style="padding: 1.5rem;">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">戻る</button>    
-                <button id="btn_todoSelectRequest_numCollect" type="button" class="btn btn-primary">はい</button>    
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_todoSelectRequest" data-bs-dismiss="modal">戻る</button>    
+                <button id="btn_todoSelectRequest_numCollect" type="button" class="btn btn-primary">はい</button>
             </div>
         </div>
     </div>
@@ -425,16 +484,95 @@
         </div>
     </div>
 </div>
+<!-- modal_todoUpdate_completeCheck -->
+<div class="modal fade" id="modal_todoUpdate_completeCheck" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    完了済みにしてよろしいですか？
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem; padding-right: 2rem;">
+                <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">戻る</button>
+                <button id="js-btn_todoCompleteOne" type="button" class="btn btn-primary">はい</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoUpdate_success -->
+<div class="modal fade" id="modal_todoUpdate_success" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    更新されました。
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding-left: 2rem;padding-right: 2rem;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">はい</button>     
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoUpdate_send -->
+<div class="modal fade" id="modal_todoUpdate_send" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    送信しました！
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding-left: 2rem;padding-right: 2rem;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">はい</button>     
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoDelete_check -->
+<div class="modal fade" id="modal_todoDelete_check" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    本当に削除してもよろしいですか？
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem; padding-right: 2rem;">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoUpdate" data-bs-dismiss="modal">いいえ</button>
+                <button id="js-btn_todoDelete" type="button" class="btn btn-primary">はい</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- modal_todoDelete_success -->
+<div class="modal fade" id="modal_todoDelete_success" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body d-flex justify-content-center" style="padding: 1.5rem;">
+                <div class="dialog-text">
+                    削除しました。
+                </div>
+            </div>
+            <!-- 閉じるボタン -->
+            <div class="modal-body d-flex justify-content-center" style="padding-left: 2rem;padding-right: 2rem;">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">はい</button>     
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- メイン画面 -->
 <div class="header text-center border-bottom pb-2 pt-3">
     <h1>自分のタスク</h1>
     <div id="btn_iconLogo" class="iconLogo" data-bs-toggle="modal" data-bs-target="#modal_accountSetting">
-        {% if request.user.icon %}
-        <img src="{{ MEDIA_URL }}{{ request.user.icon }}" alt="">
-        {% else %}
-        <img src="{% static 'home/images/icon_human.jpeg' %}" alt="">
-        {% endif %}
+        <img class="account-icon" src="{{ iconpath }}" alt="">
     </div>
 </div>
 
@@ -446,11 +584,11 @@
                 作成済みのタスク (<span class="task-num">0</span>)
             </div>
         </h2>
-        <div id="myTaskList-collapseOne" class="accordion-collapse collapse show no-click"
+        <div id="myTaskList-collapseOne" class="accordion-collapse collapse show"
             aria-labelledby="myTaskList-headingOne">
             <div class="accordion-body">
                 <ul class="myTaskList myTaskList--1">
-                    
+                    <!-- 動的に生成する部分 -->
                 </ul>
             </div>
         </div>
@@ -466,7 +604,7 @@
             aria-labelledby="myTaskList-headingTwo">
             <div class="accordion-body">
                 <ul class="myTaskList myTaskList--2">
-                    
+                    <!-- 動的に生成する部分 -->
                 </ul>
             </div>
         </div>
@@ -482,7 +620,7 @@
             aria-labelledby="myTaskList-headingThree">
             <div class="accordion-body">
                 <ul class="myTaskList myTaskList--3">
-                    
+                    <!-- 動的に生成する部分 -->
                 </ul>
             </div>
         </div>
@@ -497,9 +635,9 @@
     <div class="footer__inner">
         <div class="footerTab">
             <div class="footerTab__item footerTab__item--home"><img
-                    src="{% static 'home/images/icon_home_active.svg' %}" alt=""></div>
-            <div class="footerTab__item footerTab__item--other is-new"><img
-                    src="{% static 'home/images/icon_other.svg' %}" alt=""></div>
+                    src="{% static 'common/images/icon_home_active.svg' %}" alt=""></div>
+            <a href="{% url 'other' %}" class="footerTab__item footerTab__item--other is-new"><img
+                    src="{% static 'common/images/icon_other.svg' %}" alt=""></a>
         </div>
     </div>
 </div>
@@ -508,5 +646,6 @@
 
 
 {% block foot %}
+<script type="text/javascript" src="{% static 'common/js/todo_script.js' %}"></script>
 <script type="text/javascript" src="{% static 'home/js/script.js' %}"></script>
 {% endblock %}

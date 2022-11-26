@@ -33,10 +33,23 @@ class TaskManager(models.Manager):
 
     def insertFirstCheckData(self, taskid, img, movie, description):
         task = Task.objects.get(taskid=taskid)
+        task.status = 1
         task.img = img
         task.movie = movie
         task.description = description
         task.save()
+
+    def complete(self, taskid):
+        requestUsers = Commission.objects.listRequestedUserByTask(taskid)
+        if len(requestUsers) != 0:
+            return False
+
+        task = Task.objects.get(taskid=taskid)
+        task.status = 2
+        task.save()
+
+        return True
+
 
 class Task(models.Model):
     def get_image_path(self, filename):
@@ -120,6 +133,13 @@ class CommissionManager(models.Manager):
         commission=Commission(userid=userid, taskid=taskid)
         commission.save()
             ##クリエイトをするための処理を書く
+
+    def listRequestedUserByTask(self, taskid):
+        users = Commission.objects.filter(taskid=taskid).all().values_list('userid', flat=True)
+        data = []
+        for userid in users:
+            data.append(CustomUser.objects.get(userid=userid))
+        return list(data)
 
 
 class Commission(models.Model):

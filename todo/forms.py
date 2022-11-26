@@ -12,6 +12,8 @@ class TaskCreateForm(forms.ModelForm):
         fields=['taskName','deadline','importance','note','isBocchi']
 
 class firstCheckForm(forms.ModelForm):
+  img = forms.ImageField(required=False)
+  movie = forms.FileField(required=False)
   
   class Meta:
     model = Task

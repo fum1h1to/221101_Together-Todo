@@ -1,67 +1,34 @@
 /* ----------------------------
 共通の処理
 ----------------------------- */
-// cookieの取得
-const getCookie = (name) => {
-    if (document.cookie && document.cookie !== '') {
-        for (const cookie of document.cookie.split(';')) {
-            const [key, value] = cookie.trim().split('=')
-            if (key === name) {
-                return decodeURIComponent(value)
-            }
-        }
-    }
-}
-const csrftoken = getCookie('csrftoken')
 
 // modalの要素取得
-const modalOption = {
-    keyboard: false
-}
-const modal_accountSetting = new bootstrap.Modal(document.getElementById('modal_accountSetting'), modalOption);
-const modal_checkPassword = new bootstrap.Modal(document.getElementById('modal_checkPassword'), modalOption);
-const modal_accountEdit = new bootstrap.Modal(document.getElementById('modal_accountEdit'), modalOption);
-const modal_accountDelete = new bootstrap.Modal(document.getElementById('modal_accountDelete'), modalOption);
-const modal_accountLogout = new bootstrap.Modal(document.getElementById('modal_accountLogout'), modalOption);
-
 const modal_todoCreate = new bootstrap.Modal(document.getElementById('modal_todoCreate'), modalOption);
 const modal_todoSelectRequest = new bootstrap.Modal(document.getElementById('modal_todoSelectRequest'), modalOption);
 const modal_todoSelectBocchi = new bootstrap.Modal(document.getElementById('modal_todoSelectBocchi'), modalOption);
+const modal_todoUpdate = new bootstrap.Modal(document.getElementById('modal_todoUpdate'), modalOption);
+const modal_todoFirstCheck = new bootstrap.Modal(document.getElementById('modal_todoFirstCheck'), modalOption);
 
 const modal_todoCreate_success = new bootstrap.Modal(document.getElementById('modal_todoCreate_success'), modalOption);
 const modal_todoCreate_numCheck = new bootstrap.Modal(document.getElementById('modal_todoCreate_numCheck'), modalOption);
 const modal_todoCreate_failed = new bootstrap.Modal(document.getElementById('modal_todoCreate_failed'), modalOption);
+const modal_todoUpdate_completeCheck = new bootstrap.Modal(document.getElementById('modal_todoUpdate_completeCheck'), modalOption);
+const modal_todoUpdate_success = new bootstrap.Modal(document.getElementById('modal_todoUpdate_success'), modalOption);
+const modal_todoUpdate_send = new bootstrap.Modal(document.getElementById('modal_todoUpdate_send'), modalOption);
+const modal_todoDelete_check = new bootstrap.Modal(document.getElementById('modal_todoDelete_check'), modalOption);
+const modal_todoDelete_success = new bootstrap.Modal(document.getElementById('modal_todoDelete_success'), modalOption);
+const modal_commonError = new bootstrap.Modal(document.getElementById('modal_commonError'), modalOption);
 
 
 // formの要素取得
-const form_ceckPassword = document.getElementById("form_checkPassword");
-const form_userUpdate = document.getElementById("form_userUpdate");
-const form_userDelete = document.getElementById("form_userDelete");
-const form_accountFind = document.getElementById("form_accountFind");
-
 const form_todoCreate = document.getElementById("form_todoCreate");
 const form_todoSelectBocchi = document.getElementById('form_todoSelectBocchi');
+const form_todoUpdate = document.getElementById("form_todoUpdate");
+const form_todoFirstCheck = document.getElementById("form_todoFirstCheck");
 
 // このページ内で使う変数
 let todoCreate_requestUsers = {} // 選択した依頼者のiconを管理する。
-const myTaskList = [] // タスクを保持する配列
-
-// アカウント編集フォームの初期化処理
-let userUpdateForm_originalIconSrc = form_userUpdate.querySelector('.account-icon').src;
-const userUpdateFormReset = () => {
-    form_userUpdate.querySelector('.account-icon').src = userUpdateForm_originalIconSrc;
-    form_userUpdate.reset();
-}
-
-// passwordチェックフォームの初期化処理
-const passwordCheckFormReset = () => {
-    form_ceckPassword.reset();
-}
-
-// ユーザ削除フォームの初期化処理
-const userDeleteFormReset = () => {
-    form_userDelete.reset();
-}
+let myTaskList = {} // タスクを保持する配列
 
 // todoのフォーム初期化処理
 const todoCreateFormReset = () => {
@@ -71,16 +38,9 @@ const todoCreateFormReset = () => {
     todoCreate_requestUsers = {};
 }
 
-document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
-    passwordCheckFormReset();
-    userDeleteFormReset();
-    userUpdateFormReset();
-})
-
 document.getElementById('btn_taskPlusButton').addEventListener('click', function(e) {
     todoCreateFormReset();
 })
-
 
 /* ----------------------------
 タスクの表示処理
@@ -103,9 +63,9 @@ const getMyTaskList_and_disp = () => {
         })
         .then((res) => {
             if (res.result) {
-                myTaskList.splice(0);
+                myTaskList = {};
                 for(let task in res.tasks) {
-                    myTaskList.push(res.tasks[task])
+                    myTaskList[res.tasks[task].taskid] = res.tasks[task]
                 }
                 taskDisp();
             } else {
@@ -125,176 +85,49 @@ const getMyTaskList_and_disp = () => {
         let task2count = 0;
         let task3count = 0;
 
-        myTaskList.forEach(task => {
-            if(task['status'] == 0) {
-                data = '<li class="myTaskListItem">';
-                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_noncheck.svg" alt=""></div>';
-                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+        for(let task in myTaskList) {
+            if(myTaskList[task].status == 0) {
+                data = '<li class="myTaskListItem js-myTaskListItem" data-taskid=' + myTaskList[task].taskid +  '>';
+                data += '<div class="myTaskListItem__icon js-btn_taskCheck"><img src="/static/common/images/icon_noncheck.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text js-btn_taskUpdate">' + myTaskList[task].taskName + '</div>';
                 data += '</li>';
                 myTaskList_1.innerHTML += data;
                 task1count += 1;
-            } else if(task['status'] == 1) {
+            } else if(myTaskList[task].status == 1) {
                 data = '<li class="myTaskListItem">';
-                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_send.svg" alt=""></div>';
-                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+                data += '<div class="myTaskListItem__icon"><img src="/static/common/images/icon_send.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text">' + myTaskList[task].taskName + '</div>';
                 data += '<div class="myTaskListItem__users">';
-                // for()
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                for(let user in myTaskList[task].requestUsers) {
+                    data += '<div class="myTaskListItem__user"><img src="' + myTaskList[task].requestUsers[user].iconpath + '" alt=""></div>';
+                }
                 data += '</div>';
                 data += '</li>';
                 myTaskList_2.innerHTML += data;
                 task2count += 1;
-            } else if(task['status'] == 2) {
+            } else if(myTaskList[task].status == 2) {
                 data = '<li class="myTaskListItem">';
-                data += '<div class="myTaskListItem__icon"><img src="/static/home/images/icon_send.svg" alt=""></div>';
-                data += '<div class="myTaskListItem__text">' + task['taskName'] + '</div>';
+                data += '<div class="myTaskListItem__icon"><img src="/static/common/images/icon_check.svg" alt=""></div>';
+                data += '<div class="myTaskListItem__text">' + myTaskList[task].taskName + '</div>';
                 data += '<div class="myTaskListItem__users">';
-                // for()
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
-                data += '<div class="myTaskListItem__user"><img src="/static/home/images/icon_human.jpeg" alt=""></div>';
+                for(let user in myTaskList[task].requestUsers) {
+                    data += '<div class="myTaskListItem__user"><img src="' + myTaskList[task].requestUsers[user].iconpath + '" alt=""></div>';
+                }
                 data += '</div>';
                 data += '</li>';
                 myTaskList_3.innerHTML += data;
                 task3count += 1;
             }
-        })
+        }
 
         document.querySelector('#myTaskList-headingOne .task-num').innerHTML = task1count;
         document.querySelector('#myTaskList-headingTwo .task-num').innerHTML = task2count;
         document.querySelector('#myTaskList-headingThree .task-num').innerHTML = task3count;
+
+        initTaskUpdateBtn();
     }
 }
 getMyTaskList_and_disp();
-
-/* ----------------------------
-パスワードのチェック処理
------------------------------ */
-form_ceckPassword.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const body = new URLSearchParams()
-    body.append('password', form_ceckPassword.password.value)
-
-    const sendOption = {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'X-CSRFToken': csrftoken,
-            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-        },
-        body: body
-    };
-
-    fetch(form_ceckPassword.url.value, sendOption)
-        .then(res => {
-            return res.json();
-        })
-        .then((res) => {
-            if (res.result) {
-                modal_checkPassword.hide();
-                modal_accountEdit.show();
-            } else {
-                form_ceckPassword.querySelector('.form-text').textContent = 'パスワードが一致しませんでした。';
-            }
-        })
-});
-
-
-/* ----------------------------
-ユーザ編集の処理
------------------------------ */
-// formでアイコンが選択されたら表示する処理
-document.getElementById('account_iconUpload').addEventListener('change', (e) => {
-    let fileList = e.target.files;
-    let imageOutputElement = form_userUpdate.querySelector('.account-icon')
-    let fileReader = new FileReader();
-    let file = fileList[0];
-
-    fileReader.onload = function(e) {
-
-        imageOutputElement.src = e.target.result;
-    }
-    fileReader.readAsDataURL( file );
-});
-
-// formの処理
-form_userUpdate.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const body = new FormData()
-    body.append('icon', form_userUpdate.icon.files[0])
-    body.append('username', form_userUpdate.username.value)
-    body.append('email', form_userUpdate.email.value)
-    body.append('password', form_userUpdate.password.value)
-
-    const sendOption = {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-            'X-CSRFToken': csrftoken,
-            'Content-Type': 'multipart/form-data',
-        },
-        body: body
-    };
-    delete sendOption.headers['Content-Type'];
-
-    fetch(form_userUpdate.url.value, sendOption)
-        .then(res => {
-            return res.json();
-        })
-        .then((res) => {
-            if (res.result) {
-                location.reload();
-            } else {
-                accountUpdate_inputError(res.error)
-            }
-        })
-    
-    const accountUpdate_inputError = (error) => {
-        error.icon ? form_userUpdate.querySelector('.icon-error').textContent = error.icon : form_userUpdate.querySelector('.icon-error').textContent = "";
-        error.username ? form_userUpdate.querySelector('.username-error').textContent = error.username : form_userUpdate.querySelector('.username-error').textContent = "";
-        error.email ? form_userUpdate.querySelector('.email-error').textContent = error.email : form_userUpdate.querySelector('.email-error').textContent = "";
-        error.password ? form_userUpdate.querySelector('.password-error').textContent = error.password : form_userUpdate.querySelector('.password-error').textContent = "";
-    }
-});
-
-
-/* ----------------------------
-ユーザ削除の処理
------------------------------ */
-form_userDelete.addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    let collect_username = form_userDelete.collect_username.value;
-    let username = form_userDelete.username.value;
-    if(collect_username === username) {
-        const sendOption = {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'X-CSRFToken': csrftoken,
-                'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
-            },
-        };
-    
-        fetch(form_userDelete.url.value, sendOption)
-            .then(res => {
-                return res.json();
-            })
-            .then((res) => {
-                if (res.result) {
-                    window.location.href = '/';
-                } else {
-    
-                }
-            })
-    }
-
-});
-
 
 /* ----------------------------
 依頼者選択画面での処理
@@ -330,17 +163,12 @@ form_accountFind.addEventListener("submit", function (e) {
             if(res.finduser) {
                 if(res.finduser.length != 0){
                     res.finduser.forEach(finduser => {
-                        userListElement.innerHTML += '<li class="add_finduser cursor-pointer" data-username=' + finduser['username'] + ' data-iconpath=' + finduser['iconpath'] + '>' + finduser['username'] + '<img src="/static/home/images/add_circle_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+                        userListElement.innerHTML += '<li class="add_finduser cursor-pointer" data-username=' + finduser['username'] + ' data-iconpath=' + finduser['iconpath'] + '>' + finduser['username'] + '<img src="/static/home/images/icon_add_circle.png" class="addPlus"></li>'
                     })
                     const finduserElements = document.querySelectorAll('#modal_todoSelectRequest section ol .add_finduser')
                     finduserElements.forEach((ele) => {
                         ele.addEventListener('click', clickFindUser);
-
-                        iconpath = '/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png'
-                        if(ele.dataset.iconpath !== '') {
-                            iconpath = ele.dataset.iconpath;
-                        }
-                        ele.style.cssText = 'background-image: url(' + iconpath + ')'
+                        ele.style.cssText = 'background-image: url(' + ele.dataset.iconpath + ')'
                     })
                 } else {
                     userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
@@ -368,16 +196,12 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
         userlistElement.innerHTML = '';
         if(Object.keys(todoCreate_requestUsers).length != 0) {
             for(let user in todoCreate_requestUsers) {
-                userlistElement.innerHTML += '<li class="remove_finduser cursor-pointer" data-username=' + user + ' data-iconpath=' + todoCreate_requestUsers[user] + '>' + user + '<img src="/static/home/images/do_not_disturb_on_FILL0_wght400_GRAD0_opsz48.png" class="addPlus"></li>'
+                userlistElement.innerHTML += '<li class="remove_finduser cursor-pointer" data-username=' + user + ' data-iconpath=' + todoCreate_requestUsers[user] + '>' + user + '<img src="/static/home/images/icon_do_not_disturb.png" class="addPlus"></li>'
             }
             const userElements = document.querySelectorAll('#modal_todoListRequest section ol .remove_finduser')
             userElements.forEach((ele) => {
                 ele.addEventListener('click', clickUser);
-                iconpath = '/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png'
-                if(ele.dataset.iconpath !== '') {
-                    iconpath = ele.dataset.iconpath;
-                }
-                ele.style.cssText = 'background-image: url(' + iconpath + ')';
+                ele.style.cssText = 'background-image: url(' + ele.dataset.iconpath + ')';
             })
         } else {
             userlistElement.innerHTML = '<p>依頼者はまだ選択されていません。</p>';
@@ -418,12 +242,13 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
     optionLoop(1, 12, '.month', this_month);
     optionLoop(1, 31, '.day', this_day);
 
-    // メモ欄の文字制限
-    form_todoCreate.note.addEventListener('keyup', function() {
-        form_todoCreate.querySelector('.note-limit .num').textContent = 300 - form_todoCreate.note.value.length
-    });
-
+    
 })();
+
+// メモ欄の文字制限
+form_todoCreate.note.addEventListener('keyup', function() {
+    form_todoCreate.querySelector('.note-limit .num').textContent = 300 - form_todoCreate.note.value.length
+});
 
 const todoCreate_sendData = (isBocchi) => {
     const body = new URLSearchParams()
@@ -438,7 +263,7 @@ const todoCreate_sendData = (isBocchi) => {
     body.append('deadline', deadline);
 
     let importance = 1;
-    for(var i=0; i < form_todoCreate.importance.length-1; i++){
+    for(var i=0; i < form_todoCreate.importance.length; i++){
         if(form_todoCreate.importance[i].checked){
             importance = i
         }
@@ -465,7 +290,7 @@ const todoCreate_sendData = (isBocchi) => {
         body: body
     };
 
-    fetch(form_todoCreate.url.value, sendOption)
+    fetch('/todo/create/', sendOption)
         .then(res => {
             return res.json();
         })
@@ -501,20 +326,461 @@ document.getElementById('btn_todoSelectBocchi').addEventListener("click", functi
     e.preventDefault();
 
     todoCreate_sendData(isBochi=true);
-})
+});
 
 // 依頼者を選択する場合
 document.getElementById('btn_todoSelectRequest').addEventListener("click", function(e) {
     e.preventDefault();
 
     if(Object.keys(todoCreate_requestUsers).length == 0) {
+        modal_todoSelectRequest.hide();
         modal_todoCreate_numCheck.show();
     } else {
         todoCreate_sendData(isBochi=false);
     }
-})
+});
 document.getElementById('btn_todoSelectRequest_numCollect').addEventListener("click", function(e) {
     e.preventDefault();
 
     todoCreate_sendData(isBochi=false);
+});
+
+/* ----------------------------
+タスク更新処理
+----------------------------- */
+// 更新フォームの生成処理
+const makeTaskUpdateForm = (taskid) => {
+    const task = myTaskList[taskid];
+
+    data = ''
+    data += '<input type="hidden" name="taskid" value="' + taskid + '">';
+    data += '<!-- タスク名 -->';
+    data += '<tr>';
+    data += '<th>タスク名</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td><input type="text" class="form-control" name="taskName" value="' + task.taskName + '"></td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th class="error task-error"></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 期限日 -->';
+    data += '<tr>';
+    data += '<th>期限日</th>';
+    data += '<td>';
+    data += '<div class="btn-group d-flex justify-content-between mt-2">';
+    data += '<!-- 年 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="year btn btn-light" name="year">';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">年</p>';
+    data += '';
+    data += '<!-- 月 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="month btn btn-light" name="month">';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">月</p>';
+    data += '';
+    data += '<!-- 日 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="day btn btn-light" name="day">';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">日</p>';
+    data += '</div>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th class="error deadline-error"></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 重要度 -->';
+    data += '<tr>';
+    data += '<th>重要度</th>';
+    data += '<td>';
+    data += '<!-- それぞれラジオボタンで実装 -->';
+    data += '<div class="d-flex justify-content-between">';
+    data += '<div class="form-check form-check-inline" style="justify-content:start;">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 0 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">高</label>';
+    data += '</div>';
+    data += '<div class="form-check form-check-inline" style="justify-content: center;">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 1 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">中</label>';
+    data += '</div>';
+    data += '<div class="form-check form-check-inline">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 2 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">低</label>';
+    data += '</div>';
+    data += '</div>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ 重要度にエラーはないので空白-->';
+    data += '<tr>';
+    data += '<th class="error importance-error"></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- メモ -->';
+    data += '<tr>';
+    data += '<th>メモ</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>';
+    data += '<textarea class="input-memo" cols="35" rows="10" name="note">' + task.note + '</textarea>';
+    data += '<!-- 文字数制限 -->';
+    data += '<p class="note-limit">あと<span class="num">' + (300 - task.note.length) + '</span>文字まで入力できます</p>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th class="error note-error"></th>';
+    data += '</tr>';
+    data += '';
+
+    if (task.requestUsers.length <= 0) {
+        data += '<!-- 完了済み -->';
+        data += '<tr>';
+        data += '<th style="word-break: keep-all;">完了済にする</th>';
+        data += '<td>';
+        data += '<div class="form-check">';
+        data += '<input class="form-check-input" type="checkbox" name="check">';
+        data += '<label class="form-check-label">';
+        data += '</label>';
+        data += '</div>';
+        data += '</td>';
+        data += '</tr>';
+    } else {
+        data += '<!-- 一次チェック -->';
+        data += '<tr>';
+        data += '<th style="word-break: keep-all;">1次チェック</th>';
+        data += '<td>';
+        data += '<div class="form-check">';
+        data += '<input class="form-check-input" type="checkbox" name="check">';
+        data += '<label class="form-check-label">';
+        data += '</label>';
+        data += '</div>';
+        data += '</td>';
+        data += '</tr>';
+    }
+
+    form_todoUpdate.querySelector('.js-ele_todoUpdateTable').innerHTML = data;
+
+    // 期限日の処理
+    let optionLoop, this_day, this_month, this_year, update_day;
+    update_day = new Date(task.deadline);
+    this_year = update_day.getFullYear();
+    this_month = update_day.getMonth() + 1;
+    this_day = update_day.getDate();
+
+    optionLoop = function (start, end, d_class, this_day) {
+        var i, opt;
+
+        opt = null;
+        for (i = start; i <= end; i++) {
+            if (i === this_day) {
+                opt += "<option value='" + i + "' selected>" + i + "</option>";
+            } else {
+                opt += "<option value='" + i + "'>" + i + "</option>";
+            }
+        }
+        return form_todoUpdate.querySelector(d_class).innerHTML = opt;
+    };
+
+    optionLoop(2022, this_year + 10, '.year', this_year);
+    optionLoop(1, 12, '.month', this_month);
+    optionLoop(1, 31, '.day', this_day);
+    
+    // メモ欄の文字制限
+    form_todoUpdate.note.addEventListener('keyup', function() {
+        form_todoUpdate.querySelector('.note-limit .num').textContent = 300 - form_todoUpdate.note.value.length
+    });
+}
+
+// 一次チェックをするか、完了済みにするか。
+const todoUpdate_taskCheck = (taskid) => {
+    const task = myTaskList[taskid];
+
+    if (task.requestUsers.length <= 0) {
+        // 依頼者が一人もいない場合
+        modal_todoUpdate_completeCheck.show();
+
+        document.getElementById('js-btn_todoCompleteOne').addEventListener('click', (e) => {
+            const body = new URLSearchParams()
+            body.append('taskid', taskid);
+
+            const sendOption = {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                },
+                body: body
+            };
+
+            fetch('/todo/complete/', sendOption)
+                .then(res => {
+                    return res.json();
+                })
+                .then((res) => {
+                    if (res.result) {
+                        modal_todoUpdate_completeCheck.hide();
+                        getMyTaskList_and_disp();
+                    } else {
+                        modal_todoUpdate_completeCheck.hide();
+                        modal_commonError.show();
+                    }
+                })
+        });
+
+    } else {
+        // 依頼者が複数人いる場合
+        makeFirstCheckForm(taskid);
+        modal_todoFirstCheck.show();
+    }
+}
+
+// 
+const initTaskUpdateBtn = () => {
+    const btn_taskUpdate = document.querySelectorAll('.js-btn_taskUpdate')
+    btn_taskUpdate.forEach(ele => {
+        ele.addEventListener('click', (e) => {
+            taskid = e.target.closest('.js-myTaskListItem').dataset.taskid;
+            makeTaskUpdateForm(taskid);
+            modal_todoUpdate.show();
+        })
+    });
+
+    const btn_taskCheck = document.querySelectorAll('.js-btn_taskCheck');
+    btn_taskCheck.forEach(ele => {
+        ele.addEventListener('click', (e) => {
+            taskid = e.target.closest('.js-myTaskListItem').dataset.taskid;
+            todoUpdate_taskCheck(taskid)
+        })
+    });
+}
+
+// タスク更新のデータを送る
+document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
+    const body = new URLSearchParams()
+
+    let taskid = form_todoUpdate.taskid.value;
+    body.append('taskid', taskid);
+
+    let taskName = form_todoUpdate.taskName.value;
+    body.append('taskName', taskName);
+
+    let year = form_todoUpdate.year.value;
+    let month = form_todoUpdate.month.value;
+    let day = form_todoUpdate.day.value;
+    let deadline = year + '-' + month + '-' + day + ' 00:00:00';
+    body.append('deadline', deadline);
+
+    let importance = 1;
+    for(var i=0; i < form_todoUpdate.importance.length-1; i++){
+        if(form_todoUpdate.importance[i].checked){
+            importance = i
+        }
+    }
+    body.append('importance', importance);
+
+    let note = form_todoUpdate.note.value;
+    body.append('note', note);
+
+    let check = form_todoUpdate.check;
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: body
+    };
+
+    fetch('/todo/update/', sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                modal_todoUpdate.hide();
+                if(check.checked) {
+                    todoUpdate_taskCheck(taskid);
+                } else {
+                    modal_todoUpdate_success.show();
+                    getMyTaskList_and_disp();
+                }
+            } else {
+                todoUpdate_inputError(res.error);
+            }
+        })
+    
+    const todoUpdate_inputError = (error) => {
+        error.taskName ? form_todoUpdate.querySelector('.task-error').textContent = error.taskName : form_todoUpdate.querySelector('.task-error').textContent = "";
+        error.deadline ? form_todoUpdate.querySelector('.deadline-error').textContent = error.deadline : form_todoUpdate.querySelector('.deadline-error').textContent = "";
+        error.importance ? form_todoUpdate.querySelector('.importance-error').textContent = error.importance : form_todoUpdate.querySelector('.importance-error').textContent = "";
+        error.note ? form_todoUpdate.querySelector('.note-error').textContent = error.note : form_todoUpdate.querySelector('.note-error').textContent = "";
+    }
+})
+
+// タスクの削除をする
+document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
+    const body = new URLSearchParams()
+
+    let taskid = form_todoUpdate.taskid.value;
+    body.append('taskid', taskid);
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        },
+        body: body
+    };
+
+    fetch('/todo/delete/', sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            console.log(res)
+            if (res.result) {
+                modal_todoDelete_check.hide();
+                modal_todoDelete_success.show();
+                getMyTaskList_and_disp();
+            } else {
+                modal_todoDelete_check.hide();
+                modal_commonError.show();
+            }
+        })
+})
+
+/* ----------------------------
+一次チェックモーダルでの処理
+----------------------------- */
+// 一次チェックフォームの生成
+const makeFirstCheckForm = (taskid) => {
+    data = '';
+    data += '<input type="hidden" name="taskid" value="' + taskid + '">';
+    data += '<!-- 画像選択 -->';
+    data += '<tr>';
+    data += '<th>画像</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>';
+    data += '<label for="todo_firstCheckImg" class="photo cursor-pointer">';
+    data += '<img src="/static/home/images/icon_photo.png">';
+    data += '</label>';
+    data += '<input type="file" name="img" id="todo_firstCheckImg">';
+    data += '<span class="text-checkImg">jpg、又はpng形式(5MBまで)</span>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th class="error img-error"></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 動画選択 -->';
+    data += '<tr>';
+    data += '<th>動画</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>';
+    data += '<label for="todo_firstCheckMovie" class="photo cursor-pointer">';
+    data += '<img src="/static/home/images/icon_movie.png">';
+    data += '</label>';
+    data += '<input type="file" name="movie" id="todo_firstCheckMovie">';
+    data += '<span class="text-checkMovie">2分20秒以下、かつ512MB以下まで</span>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th class="error movie-error"></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- メモ -->';
+    data += '<tr>';
+    data += '<th>説明</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>';
+    data += '<textarea class="input-memo" cols="35" rows="10" name="description"></textarea>';
+    data += '<!-- 文字数制限 -->';
+    data += '<p class="note-limit">あと<span class="num">300</span>文字まで入力できます</p>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<tr>';
+    data += '<th class="error description-error"></th>';
+    data += '</tr>';
+
+    form_todoFirstCheck.querySelector('.js-ele_todoFirstCheckTable').innerHTML = data;
+
+    // formでアイコンが選択されたら表示する処理
+    document.getElementById('todo_firstCheckImg').addEventListener('change', (e) => {
+        let fileList = e.target.files;
+        let file = fileList[0];
+        form_todoFirstCheck.querySelector('.text-checkImg').textContent = file.name;
+    });
+    document.getElementById('todo_firstCheckMovie').addEventListener('change', (e) => {
+        let fileList = e.target.files;
+        let file = fileList[0];
+        form_todoFirstCheck.querySelector('.text-checkMovie').textContent = file.name;
+    });
+
+    // メモ欄の文字制限
+    form_todoFirstCheck.description.addEventListener('keyup', function() {
+        form_todoFirstCheck.querySelector('.note-limit .num').textContent = 300 - form_todoFirstCheck.description.value.length
+    });
+}
+
+// 一次チェックする
+document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) => {
+    const body = new FormData()
+
+    let taskid = form_todoFirstCheck.taskid.value;
+    body.append('taskid', taskid);
+
+    let img = form_todoFirstCheck.img.files[0];
+    body.append('img', img);
+
+    let movie = form_todoFirstCheck.movie.files[0];
+    body.append('movie', movie);
+    
+    let description = form_todoFirstCheck.description.value;
+    body.append('description', description);
+
+    const sendOption = {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'Content-Type': 'multipart/form-data',
+        },
+        body: body
+    };
+    delete sendOption.headers['Content-Type'];
+
+    fetch('/todo/firstCheck/', sendOption)
+        .then(res => {
+            return res.json();
+        })
+        .then((res) => {
+            if (res.result) {
+                modal_todoFirstCheck.hide();
+                modal_todoUpdate_send.show();
+                getMyTaskList_and_disp();
+            } else {
+                todoFirstCheck_inputError(res.error);
+            }
+        })
+    
+    const todoFirstCheck_inputError = (error) => {
+        error.img ? form_todoFirstCheck.querySelector('.img-error').textContent = error.img : form_todoFirstCheck.querySelector('.img-error').textContent = "";
+        error.movie ? form_todoFirstCheck.querySelector('.movie-error').textContent = error.movie : form_todoFirstCheck.querySelector('.movie-error').textContent = "";
+        error.description ? form_todoFirstCheck.querySelector('.description-error').textContent = error.description : form_todoFirstCheck.querySelector('.description-error').textContent = "";
+    }
 })
