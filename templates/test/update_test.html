@@ -32,6 +32,26 @@
     </form>
 </div>
 <div>
+    <h2>↓一次チェック↓</h2>
+    <form action="{% url 'todo_first_check' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="taskid" value="{{ task.taskid }}">
+        <div>
+            <label class="form-label">画像</label>
+            <input class="form-control" type="file" name="img" accept="image/*">
+        </div>
+        <div>
+            <label class="form-label">動画</label>
+            <input class="form-control" type="file" name="movie" accept="video/*">
+        </div>
+        <div>
+            <label class="form-label">説明</label>
+            <textarea class="form-control" name="description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">一次チェックする</button>
+    </form>
+</div>
+<div>
     <a href="{% url 'test_todolist' %}">戻る</a>
 </div>
 

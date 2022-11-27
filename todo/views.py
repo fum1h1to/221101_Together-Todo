@@ -6,8 +6,8 @@ from django.views.decorators.http import require_http_methods
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from todo.forms import TaskCreateForm,TaskUpdateForm
-from .models import Task
+from todo.forms import TaskCreateForm, firstCheckForm, TaskUpdateForm
+from .models import Task, Commission
 from account.models import CustomUser
 from django.conf import settings
 
@@ -17,7 +17,28 @@ class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
     
     def get_context_data(self, **kwargs):
+        if self.request.user.icon:
+            iconpath = settings.MEDIA_URL + str(self.request.user.icon)
+        else:
+            iconpath = '/static/common/images/default_icon.jpeg'
+
         context = {
+            'iconpath': iconpath,
+            'MEDIA_URL': settings.MEDIA_URL
+        }
+        return context
+
+class Other(LoginRequiredMixin, TemplateView):
+    template_name = 'todo/other.html'
+
+    def get_context_data(self, **kwargs):
+        if self.request.user.icon:
+            iconpath = settings.MEDIA_URL + str(self.request.user.icon)
+        else:
+            iconpath = '/static/common/images/default_icon.jpeg'
+
+        context = {
+            'iconpath': iconpath,
             'MEDIA_URL': settings.MEDIA_URL
         }
         return context
@@ -36,10 +57,9 @@ class test_todoListView(LoginRequiredMixin, ListView):
 @require_http_methods(['GET'])
 @login_required
 def test_update(request, taskid):
-   
     task = Task.objects.get(taskid=taskid)
-
     return render(request, 'test/update_test.html', {'task': task})
+
 ### test用のviewここまで ###
 
 ##処理内容 
@@ -110,12 +130,30 @@ def show(request):
     json_tasks = json.loads(serializers.serialize("json", tasks))
     return_data = []
     for task in json_tasks:
+        requestUsers = Commission.objects.listRequestedUserByTask(task['pk'])
+        return_requestUsers = []
+        for r_user in requestUsers:
+            if r_user.icon:
+                iconpath = str(settings.MEDIA_URL) + str(r_user.icon)
+            else:
+                iconpath = '/static/common/images/default_icon.jpeg'
+            return_requestUsers.append(
+                {
+                    'userid': str(r_user.userid),
+                    'iconpath': iconpath
+                }
+            )
         return_data.append({
+            'taskid': task['pk'],
             'taskName': task['fields']['taskName'],
             'deadline': task['fields']['deadline'],
             'importance': task['fields']['importance'],
             'note': task['fields']['note'],
             'status': task['fields']['status'],
+            'requestUsers': list(return_requestUsers),
+            'img': task['fields']['img'],
+            'movie': task['fields']['movie'],
+            'description': task['fields']['description'],
         })
 
     context = {
@@ -125,11 +163,10 @@ def show(request):
 
     return JsonResponse(context)
 
-''''''
+
 @require_http_methods(['POST'])
 @login_required
-
-def update(request,):
+def update(request):
     '''
     updateに成功したらresult: Trueで返す
     updateに失敗したらresult: Falseとerrorの内容を送信する。
@@ -198,10 +235,136 @@ def delete(request, ):
                 
         }
         return JsonResponse(context)        
-    
-    
-    
-   
 
-        
+
+@require_http_methods(['POST'])
+@login_required
+def firstCheck(request):
+    '''
+    一次チェックをする。
+    '''
+    taskid = request.POST.get('taskid')
+
+    task_data=firstCheckForm(data=request.POST, files=request.FILES)
+    if task_data.is_valid():
+        img = task_data.cleaned_data['img']
+        movie = task_data.cleaned_data['movie']
+        description = task_data.cleaned_data['description']
+
+        Task.objects.insertFirstCheckData(taskid, img, movie, description)
+
+        context = {
+            'result': True,
+        }
+
+        return JsonResponse(context)
+
+    else:
+        error = dict(task_data.errors.items())
+        context = {
+            'result': False,
+            'error': error,
+        }
+
+        return JsonResponse(context)
+
+@require_http_methods(['POST'])
+@login_required
+def task_complete_one(request):
+    '''
+    依頼者がいないタスクを完了させる。
+    '''
+    taskid = request.POST.get('taskid')
+
+    result = Task.objects.complete_one(taskid)
+    if result:
+
+        context = {
+            'result': True,
+        }
+
+        return JsonResponse(context)
+
+    else:
+        context = {
+            'result': False,
+        }
+
+        return JsonResponse(context)
+
+
+@require_http_methods(['POST'])
+@login_required
+def commission_complete(request):
+    '''
+    送られてきたuseridとtaskidに基づいて、チェックをする。
+    '''
+    taskid = request.POST.get('taskid')
+
+    try:
+        Commission.objects.complete(request.user, taskid)
+        context = {
+            'result': True,
+        }
+
+        return JsonResponse(context)
+
+    except:
+        context = {
+            'result': False,
+        }
+
+        return JsonResponse(context)
+
+@require_http_methods(['POST'])
+@login_required
+def commission_list(request):
+    '''
+    userIdに基づいたチェックを依頼されたタスクを抽出し結果を返す。
+    '''
+    try:
+        tasks = Commission.objects.listUserRequestedTask(request.user)
+        json_tasks = json.loads(serializers.serialize("json", tasks))
+        return_data = []
+        for task in json_tasks:
+            r_userid = task['fields']['userid']
+            r_user = CustomUser.objects.get(userid=r_userid)
+            if r_user.icon:
+                iconpath = str(settings.MEDIA_URL) + str(r_user.icon)
+            else:
+                iconpath = '/static/common/images/default_icon.jpeg'
+            user = {r_user.username: iconpath}
+
+            imgpath = ''
+            if task['fields']['img']:
+                imgpath = str(settings.MEDIA_URL) + str(task['fields']['img'])
+
+            moviepath = ''
+            if task['fields']['movie']:
+                moviepath = str(settings.MEDIA_URL) + str(task['fields']['movie'])
+
+            return_data.append({
+                'taskid': task['pk'],
+                'user': user,
+                'taskName': task['fields']['taskName'],
+                'deadline': task['fields']['deadline'],
+                'importance': task['fields']['importance'],
+                'status': task['fields']['status'],
+                'img': imgpath,
+                'movie': moviepath,
+                'description': task['fields']['description'],
+            })
+
+        context = {
+            'result': True,
+            'tasks': return_data
+        }
+
+        return JsonResponse(context)
     
+    except:
+        context = {
+            'result': False,
+        }
+
+        return JsonResponse(context)

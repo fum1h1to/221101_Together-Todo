@@ -1,48 +1,3 @@
-.header { 
-    position: relative;
-}
-
-.iconLogo {
-    position: absolute;
-    top: 50%;
-    right: 7%;
-    transform: translateY(-50%);
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: solid 2px #000;
-    overflow: hidden;
-    cursor: pointer;
-}
-
-.cursor-pointer {
-    cursor: pointer;
-}
-
-.modal-backdrop:nth-child(even) {
-    z-index: 1080!important;
-}
-
-/* ----------------------------
-accordion custom
------------------------------ */
-.accordion-item:last-child {
-    border-bottom: none;
-}
-.accordion-body {
-    padding-bottom: 25px;
-}
-.accordion-button:not(.collapsed) {
-    color: #212529;
-    background-color: #fff;
-    box-shadow: none;
-}
-.accordion-button:not(.collapsed)::after {
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
-    transform: rotate(-180deg);
-}
-
-
 /* ----------------------------
 myTaskList
 ----------------------------- */
@@ -65,9 +20,11 @@ myTaskList
 
 .myTaskListItem__icon {
     width: 24px;
+    cursor: pointer;
 }
 .myTaskListItem__text {
     width: calc(80% - 50px);
+    cursor: pointer;
 }
 .myTaskListItem__users {
     width: 20%;
@@ -110,55 +67,6 @@ myTaskList
 }
 
 /* ----------------------------
-footer
------------------------------ */
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50px;
-}
-.footer__inner {
-    max-width: 560px;
-    height: 100%;
-    margin: 0 auto;
-    border-top: solid 1px rgba(0, 0, 0, .25);
-}
-.footerTab {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-.footerTab__item {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-.footerTab__item--home img {
-    width: 23px;
-    height: 26px;
-}
-.footerTab__item--other img {
-    width: 36px;
-    height: 25px;
-}
-.footerTab__item--other.is-new::before {
-    content: "";
-    position: absolute;
-    top: calc(50% - 15px);
-    left: calc(50% + 17px);
-    transform: translate(-50%, -50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #FF0000;
-}
-
-/* ----------------------------
 taskPlusButton
 ----------------------------- */
 .taskPlusButton {
@@ -185,40 +93,6 @@ taskPlusButton
     justify-content: center;
     align-items: center;
 }
-
-/* ----------------------------
-modal_accountEdit
------------------------------ */
-#modal_accountEdit .file-button {
-    display: none;
-}
-#modal_accountEdit .account-icon {
-    width: 48px;
-}
-#modal_accountEdit .file-label {
-    /* ブラウザ特有のスタイルを無効に */
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-  
-    /* 整える */
-    margin: 1em 0; /* 前後の隙間 */
-    padding: 0.6em 1em; /* 塗りの余白 */
-    font-size: 1em; /* フォントサイズ */
-    background-color: #FFF; /* 背景色 */
-    color: #000; /* テキストカラー */
-    cursor: pointer; /* カーソルを指マークに */
-    border-radius: 3px; /* 角の丸み */
-    border: 0; /* 枠線を消す */
-    transition: 0.3s; /* ホバーの変化を滑らかに */
-    margin-left: auto;
-  }
-  
-  /* ホバー時（カーソルをのせた時）の見た目 */
-  #modal_accountEdit .file-label:hover {
-    background-color: #064fda; /* 背景色 */
-    color: #FFF; /* テキストカラー */
-  }
 
 /* ----------------------------
 modal_todoCreate
@@ -283,20 +157,170 @@ modal_todoCreate
     }
 }
 
+/* ----------------------------
+modal_todoUpdate
+----------------------------- */
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+#modal_todoUpdate .table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+#modal_todoUpdate .table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+#modal_todoUpdate .table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+#modal_todoUpdate .table-res-form tr:nth-child(2n+1) {
+    background: #eee;
+}
+
+#modal_todoUpdate .table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+#modal_todoUpdate .table-res-form th, .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+#modal_todoUpdate .table-res-form th {
+    width: 25%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+#modal_todoUpdate .date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+#modal_todoUpdate .table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+#modal_todoUpdate .input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+    #modal_todoUpdate table {
+        width: 100%;
+    }
+ 
+    #modal_todoUpdate table th,
+    #modal_todoUpdate table td {
+        display: block;
+    }
+}
+
+/* ----------------------------
+modal_todoFirstCheck
+----------------------------- */
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+#modal_todoFirstCheck .table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+#modal_todoFirstCheck .table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+#modal_todoFirstCheck .table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+#modal_todoFirstCheck .table-res-form tr:nth-child(2n+1) {
+    background: #eee;
+}
+
+#modal_todoFirstCheck .table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+#modal_todoFirstCheck .table-res-form th, .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+#modal_todoFirstCheck .table-res-form th {
+    width: 25%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+#modal_todoFirstCheck .date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+#modal_todoFirstCheck .table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+#modal_todoFirstCheck .input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+#modal_todoFirstCheck .photo{
+    width: 30px;
+    height: 30px;
+    float: left;
+    margin-right: 1rem;
+}
+
+#modal_todoFirstCheck .information{
+    text-align: left;
+    font-size: large;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 480px) {
+    #modal_todoFirstCheck table {
+        width: 100%;
+    }
+ 
+    #modal_todoFirstCheck table th,
+    #modal_todoFirstCheck table td {
+        display: block;
+    }
+}
+
+#modal_todoFirstCheck #todo_firstCheckImg {
+    display: none;
+}
+#modal_todoFirstCheck #todo_firstCheckMovie {
+    display: none;
+}
 
 /* ----------------------------
 modal_todoCreate_failed,
 modal_todoCreate_success,
-modal_todoCreate_numCheck
+modal_todoCreate_numCheck,
+modal_todoUpdate_completeCheck,
+modal_todoUpdate_success,
+modal_todoUpdate_send,
+modal_todoDelete_check,
+#modal_todoDelete_success
 ----------------------------- */
-#modal_todoCreate_failed,
-#modal_todoCreate_success,
-#modal_todoCreate_numCheck {
-    z-index: 1081!important;
-}
 #modal_todoCreate_failed .dialog-text,
 #modal_todoCreate_success .dialog-text,
-#modal_todoCreate_numCheck .dialog-text {
+#modal_todoCreate_numCheck .dialog-text,
+#modal_todoUpdate_completeCheck .dialog-text,
+#modal_todoUpdate_success .dialog-text,
+#modal_todoUpdate_send .dialog-text,
+#modal_todoDelete_check .dialog-text,
+#modal_todoDelete_success .dialog-text {
     padding-top: 2rem;
     font-size: large;
 }
@@ -333,7 +357,7 @@ modal_todoListRequest
 }
 #modal_todoSelectRequest section ol li,
 #modal_todoListRequest section ol li {
-	background-image: url(/static/home/images/account_circle_FILL0_wght400_GRAD0_opsz48.png);
+	background-image: url(/static/common/images/default_icon.jpeg);
     background-size: 35px;
     background-position-y: bottom;
 }

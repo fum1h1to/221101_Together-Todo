@@ -1,0 +1,130 @@
+.header { 
+    position: relative;
+}
+
+.iconLogo {
+    position: absolute;
+    top: 50%;
+    right: 7%;
+    transform: translateY(-50%);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: solid 2px #000;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* ----------------------------
+accordion custom
+----------------------------- */
+.accordion-item:last-child {
+    border-bottom: none;
+}
+.accordion-body {
+    padding-bottom: 25px;
+}
+.accordion-button:not(.collapsed) {
+    color: #212529;
+    background-color: #fff;
+    box-shadow: none;
+}
+.accordion-button:not(.collapsed)::after {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23212529'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+    transform: rotate(-180deg);
+}
+
+/* ----------------------------
+footer
+----------------------------- */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+}
+.footer__inner {
+    max-width: 560px;
+    height: 100%;
+    margin: 0 auto;
+    border-top: solid 1px rgba(0, 0, 0, .25);
+}
+.footerTab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.footerTab__item {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.footerTab__item--home img {
+    width: 23px;
+    height: 26px;
+}
+.footerTab__item--other img {
+    width: 36px;
+    height: 25px;
+}
+.footerTab__item.is-new::before {
+    content: "";
+    position: absolute;
+    top: calc(50% - 15px);
+    left: calc(50% + 17px);
+    transform: translate(-50%, -50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #FF0000;
+}
+
+/* ----------------------------
+modal_accountEdit
+----------------------------- */
+#modal_accountEdit .file-button {
+    display: none;
+}
+#modal_accountEdit .account-icon {
+    width: 48px;
+}
+#modal_accountEdit .file-label {
+    /* ブラウザ特有のスタイルを無効に */
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+  
+    /* 整える */
+    margin: 1em 0; /* 前後の隙間 */
+    padding: 0.6em 1em; /* 塗りの余白 */
+    font-size: 1em; /* フォントサイズ */
+    background-color: #FFF; /* 背景色 */
+    color: #000; /* テキストカラー */
+    cursor: pointer; /* カーソルを指マークに */
+    border-radius: 3px; /* 角の丸み */
+    border: 0; /* 枠線を消す */
+    transition: 0.3s; /* ホバーの変化を滑らかに */
+    margin-left: auto;
+  }
+  
+  /* ホバー時（カーソルをのせた時）の見た目 */
+  #modal_accountEdit .file-label:hover {
+    background-color: #064fda; /* 背景色 */
+    color: #FFF; /* テキストカラー */
+  }
+
+/* ----------------------------
+modal_commonError,
+----------------------------- */
+#modal_commonError .dialog-text {
+    padding-top: 2rem;
+    font-size: large;
+}

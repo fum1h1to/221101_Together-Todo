@@ -23,3 +23,10 @@ class TaskUpdateForm(forms.ModelForm):
 
 
 
+class firstCheckForm(forms.ModelForm):
+  img = forms.ImageField(required=False)
+  movie = forms.FileField(required=False)
+  
+  class Meta:
+    model = Task
+    fields=['img', 'movie', 'description']
