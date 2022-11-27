@@ -6,10 +6,12 @@ from django.views.decorators.http import require_http_methods
 from django.core import serializers
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from todo.forms import TaskCreateForm
+from todo.forms import TaskCreateForm,TaskUpdateForm
 from .models import Task
 from account.models import CustomUser
 from django.conf import settings
+
+from django.views.generic import ListView, DetailView
 
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
@@ -19,6 +21,26 @@ class Home(LoginRequiredMixin, TemplateView):
             'MEDIA_URL': settings.MEDIA_URL
         }
         return context
+
+### test用のview ###
+class test_todoListView(LoginRequiredMixin, ListView):
+    template_name = 'test/todolist_test.html'
+    model = Task
+    context_object_name = "tasks"
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs) # Task.objects.all() と同じ結果
+
+        return queryset
+
+@require_http_methods(['GET'])
+@login_required
+def test_update(request, taskid):
+   
+    task = Task.objects.get(taskid=taskid)
+
+    return render(request, 'test/update_test.html', {'task': task})
+### test用のviewここまで ###
 
 ##処理内容 
 ##viewsはhtmlからもらったあとどうするかの処理を書いている。
@@ -78,7 +100,6 @@ def create(request):
 
         return JsonResponse(context)
 
-
 @require_http_methods(['POST'])
 @login_required
 def show(request):
@@ -103,3 +124,84 @@ def show(request):
     }
 
     return JsonResponse(context)
+
+''''''
+@require_http_methods(['POST'])
+@login_required
+
+def update(request,):
+    '''
+    updateに成功したらresult: Trueで返す
+    updateに失敗したらresult: Falseとerrorの内容を送信する。
+    ※49行目からのcreateの処理を参考に、、
+
+    postされてくるもの
+    - taskid
+    - taskName
+    - deadline
+    - importance
+    - note
+    '''
+    taskid = request.POST.get('taskid')
+    taskName = request.POST.get('taskName')
+    deadline = request.POST.get('deadline')
+    importance = request.POST.get('importance')
+    note = request.POST.get('note')
+
+    task_data=TaskUpdateForm(data=request.POST)##フォーマットを判定
+
+    if task_data.is_valid(): 
+
+        Task.objects.update( taskid, taskName,deadline,importance,note,) 
+        
+        context = {
+            'result':True,
+        }
+        return JsonResponse(context)
+        
+    else:
+        context = {
+            'result':False,
+            'error': dict(task_data.errors.items())
+        }
+
+        return JsonResponse(context)
+
+@require_http_methods(['POST'])
+@login_required
+def delete(request, ):
+    '''
+    deleteに成功したらresult: Trueで返す
+    deleteに失敗したらresult: Falseとerrorの内容を送信する。
+    ※49行目からのcreateの処理を参考に、、
+
+    postされてくるもの
+    - taskid
+    '''
+    taskid=request.POST.get('taskid') ##Postでtaskidをもらう
+    task = Task.objects.get(taskid=taskid)##もらったtaskidでtaskidを取得する。
+    try:    
+        
+
+        Task.objects.delete(task.taskid,)
+
+        context = {
+                'result':True,
+        }
+        return JsonResponse(context)
+
+    except:
+
+        context={
+
+                'result':False,
+                
+        }
+        return JsonResponse(context)        
+    
+    
+    
+   
+
+        
+    

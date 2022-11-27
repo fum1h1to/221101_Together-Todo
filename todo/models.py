@@ -21,15 +21,40 @@ class TaskManager(models.Manager):
         task = Task(userid=user,taskName=taskName,deadline=deadline,importance=importance,
                                  note=note,isBocchi=isBocchi,)
         task.save()
-        
+        subject=f'{user.username}さんからタスクチェックの依頼が届きました.'
+
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
+            message=f'アプリを開いてタスクを確認しましょう！\nタスク名{taskName}\n期限日{deadline}'
+            CustomUser.objects.send_email(user, subject, message)
         
+        
+    
     def showUserTasks(self, user):
         tasks = Task.objects.filter(userid=user).all()
         return list(tasks)
-
+    
+    
+    def update(self,taskid,taskName,deadline,importance,note,):
+        task = Task.objects.get(taskid=taskid)
+        task.taskName = taskName
+        task.deadline = deadline
+        task.importance = importance
+        task.note = note
+        task.save()        
+        subject='タスクが編集されました。'
+        message='タスクを編集しました。アプリを開いて確認しましょう！'
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
+       
+    def delete(self,taskid,):
+        
+        message='タスクを削除しました。タスクの依頼がなくなりました.'
+        subject='タスクが削除されました。'            
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, 
+        subject, message)   ##タスクIDが先に消されてしまうため、こっちを先に書かないとメールが送信できない。   
+        Task.objects.filter(taskid=taskid).delete()
+           
 class Task(models.Model):
     
     def moviefile_size(value): ##動画サイズを設定する
@@ -53,13 +78,13 @@ class Task(models.Model):
         verbose_name= _("タスクの名前"),
         blank=False, max_length=50,)##50文字までの文字の入力が可能
     
-    deadline = models.DateTimeField(default=timezone.now,)##締切日 
+    deadline = models.DateTimeField(default=timezone.now, )##締切日 調べる。
     
     importance=models.IntegerField(default=0,validators= [MinValueValidator(0), MaxValueValidator(2)]) ##重要度  0,1,2で重要度の大きさを決める。 validatorsで指定 
     
     note=models.TextField(
         verbose_name= _("メモ欄"),
-        max_length=300, blank=True)
+        max_length=300, blank=True,)
     
     isBocchi=models.BooleanField(verbose_name= _("ぼっち"),default=False)
 
@@ -89,6 +114,15 @@ class CommissionManager(models.Manager):
         commission=Commission(userid=userid, taskid=taskid)
         commission.save()
             ##クリエイトをするための処理を書く
+    
+    def sendEmailToTaskIdRelatingUserId(self, taskid, subject, message):
+       
+        requestUsers = Commission.objects.filter(taskid_id=taskid)
+        
+        for username in requestUsers:           
+            user = CustomUser.objects.get(userid=username.userid_id)
+            CustomUser.objects.send_email(user, subject, message)
+        
 
 
 class Commission(models.Model):
