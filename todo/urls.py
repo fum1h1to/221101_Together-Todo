@@ -13,8 +13,4 @@ urlpatterns = [
 
     path('request/list/', views.commission_list, name='request_list'),
     path('request/complete/', views.commission_complete, name='request_complete'),
-
-    # テスト用
-    path('todo/test_todolist/', views.test_todoListView.as_view(), name='test_todolist'),
-    path('todo/test_todolist/<str:taskid>/', views.test_update , name='test_update')
 ]
