@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    {% for task in tasks %}
+    <li><a href="{% url 'test_update' task.taskid %}">{{ task.taskName }}</a></li>
+    {% endfor %}
+</div>
+
+{% endblock %}

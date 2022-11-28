@@ -1,0 +1,170 @@
+/* ----------------------------
+otherTaskList
+----------------------------- */
+.accordion-button span.is-red {
+    color: #dc3545;
+}
+.accordion-button span.is-blue {
+    color: #0d6efd;
+}
+.no-click {
+    pointer-events: none!important;
+}
+.otherTaskList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.otherTaskListItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    cursor: pointer;
+}
+.otherTaskListItem:not(:last-child) {
+    margin-bottom: 30px;
+}
+
+.otherTaskListItem__icon {
+    width: 24px;
+}
+.otherTaskListItem__text {
+    width: calc(100% - 37px);
+}
+
+.otherTaskListItem__user {
+    width: 25px;
+    height: 25px;
+    float: right;
+    margin-right: 5%;
+}
+
+.otherTaskList__titleWrap {
+    padding: 1rem 1.25rem;
+}
+
+.sortButtonAndTaskNum{
+    margin-left: 1rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    margin-right: 1rem;
+}
+
+.taskNum{
+    padding: 0.3rem;
+    background-color: #773bc1;
+    color: white;
+    text-align: center;
+    border-radius: 30px;
+    width: 40%;
+}
+
+.sortMenu{
+    width: 5rem;
+    height: 2rem;
+    border: none;
+    box-shadow: 2px 2px 4px -2px gray 
+}
+
+
+/* ----------------------------
+modal_todoOtherTaskDetail
+----------------------------- */
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+#modal_todoOtherTaskDetail .table-res-form {
+    width: 100%;
+    table-layout: fixed;
+    margin-bottom: 60px;
+}
+/*一行ごとに上ボーダー*/
+#modal_todoOtherTaskDetail .table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+#modal_todoOtherTaskDetail .table-res-form tr:first-child {
+    border-top: none;
+}
+
+
+#modal_todoOtherTaskDetail .table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+#modal_todoOtherTaskDetail .table-res-form th,
+#modal_todoOtherTaskDetail .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+#modal_todoOtherTaskDetail .table-res-form th {
+    width: 35%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+#modal_todoOtherTaskDetail .date{
+  font-size: large;
+}
+
+/* カレンダー */
+/* .calendar{
+    width: 60%;
+    height: 20%;
+} */
+
+/* 重要度 */
+#modal_todoOtherTaskDetail .importance{
+    font-size: large;
+}
+
+/* エラーダイアログのテキスト */
+#modal_todoOtherTaskDetail .table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* userName */
+#modal_todoOtherTaskDetail .userName{
+    font-size: large;
+}
+
+/* メモ入力フォーム */
+#modal_todoOtherTaskDetail .input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+@media (max-width: 480px) {
+    #modal_todoOtherTaskDetail table {
+        width: 100%;
+    }
+ 
+    #modal_todoOtherTaskDetail table th,
+    #modal_todoOtherTaskDetail table td {
+        display: block;
+    }
+}
+
+#modal_todoOtherTaskDetail .taskCheckButton {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+}
+#modal_todoOtherTaskDetail .taskCheckButton__btn {
+    width: 56px;
+    height: 56px;
+    background: #03DAC5;
+    border-radius: 50%;
+    box-shadow: 0px 2px 6px 2px rgba(0, 0, 0, .25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+/* ダミーアイコン */
+#modal_todoOtherTaskDetail .human{
+    width: 25px;
+    height: 25px;
+    float: right;
+}

@@ -78,6 +78,22 @@ class UserManager(UserManager):
     '''
     return user.check_password(password)
 
+  def update(self, user, icon, username, email, password):
+    '''
+    ユーザを更新する。
+    '''
+    l_user = CustomUser.objects.get(userid=user.userid)
+    if icon is not None:
+      l_user.icon = icon
+    if username != '':
+      l_user.username = username
+    if email != '':
+      l_user.email = email
+    if password != '':
+      l_user.set_password(password)
+      
+    l_user.save()
+
   def delete(self, user):
     '''
     ユーザを削除する。(ユーザのステータスを2にする。)
@@ -104,14 +120,13 @@ class UserManager(UserManager):
     qs = alluser.filter(username__icontains=username)
     return list(qs)
 
-  def send_email(self, userid, subject, message):
+  def send_email(self, user, subject, message):
     '''
     ユーザに対して何かしらのメールを送る関数
     '''
     subject = subject
     message = message
     from_email = settings.DEFAULT_FROM_EMAIL
-    user = self.filter(userid=userid).first()
     to = [ user.email ]
     send_mail(subject, message, from_email, to)
 
@@ -224,7 +239,7 @@ class UserActivateTokensManager(models.Manager):
     subject = 'Please Activate Your Account'
     message = f'URLにアクセスしてユーザーアクティベーション。\n {settings.HOST_URL}user/{user_activate_token.activate_token}/activation/'
 
-    CustomUser.objects.send_email(user.userid, subject, message)
+    CustomUser.objects.send_email(user, subject, message)
 
   def activate_user_by_token(self, activate_token):
     '''
@@ -252,7 +267,7 @@ class UserActivateTokensManager(models.Manager):
     subject = 'Activated! Your Account!'
     message = 'ユーザーが使用できるようになりました'
 
-    CustomUser.objects.send_email(user.userid, subject, message)
+    CustomUser.objects.send_email(user, subject, message)
 
 
 class UserActivateTokens(models.Model):
