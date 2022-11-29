@@ -127,10 +127,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-if DEBUG:
-    STATIC_DIR = os.path.join(BASE_DIR, "static")
-else:
-    STATIC_DIR = '/usr/share/nginx/html/together-todo/static'
+
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = '/usr/share/nginx/html/together-todo/static'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
