@@ -29,6 +29,7 @@ myTaskList
 .myTaskListItem__users {
     width: 20%;
     position: relative;
+    z-index: 0;
 }
 .myTaskList.myTaskList--1 .myTaskListItem__text {
     width: calc(100% - 37px);
