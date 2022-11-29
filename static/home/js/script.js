@@ -148,11 +148,6 @@ form_accountFind.addEventListener("submit", function (e) {
         body: body
     };
 
-    // ユーザがクリックされたときの処理
-    const clickFindUser = (e) => {
-        todoCreate_requestUsers[e.target.dataset.username] = e.target.dataset.iconpath;
-    }
-
     fetch(form_accountFind.url.value, sendOption)
         .then(res => {
             return res.json();
@@ -167,7 +162,9 @@ form_accountFind.addEventListener("submit", function (e) {
                     })
                     const finduserElements = document.querySelectorAll('#modal_todoSelectRequest section ol .add_finduser')
                     finduserElements.forEach((ele) => {
-                        ele.addEventListener('click', clickFindUser);
+                        ele.addEventListener('click', (e) => {
+                            todoCreate_requestUsers[ele.dataset.username] = ele.dataset.iconpath;
+                        });
                         ele.style.cssText = 'background-image: url(' + ele.dataset.iconpath + ')'
                     })
                 } else {
@@ -186,11 +183,6 @@ form_accountFind.addEventListener("submit", function (e) {
 document.getElementById('btn_todoRequestUserList').addEventListener('click', (e) => {
     e.preventDefault();
     
-    // ユーザがクリックされたときの処理
-    const clickUser = (e) => {
-        delete todoCreate_requestUsers[e.target.dataset.username];
-        disp();
-    }
     const disp = () => {
         const userlistElement = document.querySelector('#modal_todoListRequest section ol');
         userlistElement.innerHTML = '';
@@ -200,7 +192,10 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
             }
             const userElements = document.querySelectorAll('#modal_todoListRequest section ol .remove_finduser')
             userElements.forEach((ele) => {
-                ele.addEventListener('click', clickUser);
+                ele.addEventListener('click', (e) => {
+                    delete todoCreate_requestUsers[ele.dataset.username];
+                    disp();
+                });
                 ele.style.cssText = 'background-image: url(' + ele.dataset.iconpath + ')';
             })
         } else {

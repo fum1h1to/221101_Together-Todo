@@ -41,6 +41,10 @@ accordion custom
 /* ----------------------------
 footer
 ----------------------------- */
+.footerMargin{
+    margin-bottom: 50px;
+}
+
 .footer {
     position: fixed;
     bottom: 0;
@@ -56,9 +60,11 @@ footer
 }
 .footerTab {
     display: flex;
+    background-color: white;
     justify-content: center;
     align-items: center;
     height: 100%;
+    z-index: 9999;
 }
 .footerTab__item {
     width: 50%;
