@@ -132,7 +132,7 @@ if DEBUG:
 else:
     STATIC_DIR = '/usr/share/nginx/html/together-todo/static'
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     STATIC_DIR
 ]
