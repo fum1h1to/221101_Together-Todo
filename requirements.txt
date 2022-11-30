@@ -1,3 +1,4 @@
 Django==4.0.5
 psycopg2-binary==2.9.3
+python-dotenv==0.20.0
 Pillow==9.3.0
