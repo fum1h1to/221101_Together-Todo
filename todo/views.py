@@ -11,6 +11,8 @@ from .models import Task, Commission
 from account.models import CustomUser
 from django.conf import settings
 
+from django.views.generic import ListView, DetailView
+
 class Home(LoginRequiredMixin, TemplateView):
     template_name = 'todo/home.html'
     
@@ -41,6 +43,24 @@ class Other(LoginRequiredMixin, TemplateView):
         }
         return context
 
+### test用のview ###
+class test_todoListView(LoginRequiredMixin, ListView):
+    template_name = 'test/todolist_test.html'
+    model = Task
+    context_object_name = "tasks"
+
+    def get_queryset(self, **kwargs):
+        queryset = super().get_queryset(**kwargs) # Task.objects.all() と同じ結果
+
+        return queryset
+
+@require_http_methods(['GET'])
+@login_required
+def test_update(request, taskid):
+    task = Task.objects.get(taskid=taskid)
+    return render(request, 'test/update_test.html', {'task': task})
+
+### test用のviewここまで ###
 
 ##処理内容 
 ##viewsはhtmlからもらったあとどうするかの処理を書いている。

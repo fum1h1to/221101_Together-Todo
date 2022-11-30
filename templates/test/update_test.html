@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div>
+    <form action="{% url 'todo_update' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="taskid" value="{{ task.taskid }}">
+        <div>
+            <label class="form-label">タスク名</label>
+            <input type="text" class="form-control" name="taskName" value="{{ task.taskName }}">
+        </div>
+        <div>
+            <label class="form-label">期限日</label>
+            <input type="text" class="form-control" name="deadline" value="{{ task.deadline|date:'Y-m-j H:i:s' }}">
+        </div>
+        <div>
+            <label class="form-label">重要度</label>
+            <input type="number" class="form-control" name="importance" value="{{ task.importance }}">
+        </div>
+        <div>
+            <label class="form-label">メモ</label>
+            <textarea class="form-control" name="note">{{ task.note }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">更新</button>
+    </form>
+</div>
+<div>
+    <form action="{% url 'todo_delete' %}" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="taskid" value="{{ task.taskid }}">
+        <button type="submit" class="btn btn-danger">削除する</button>
+    </form>
+</div>
+<div>
+    <h2>↓一次チェック↓</h2>
+    <form action="{% url 'todo_first_check' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="taskid" value="{{ task.taskid }}">
+        <div>
+            <label class="form-label">画像</label>
+            <input class="form-control" type="file" name="img" accept="image/*">
+        </div>
+        <div>
+            <label class="form-label">動画</label>
+            <input class="form-control" type="file" name="movie" accept="video/*">
+        </div>
+        <div>
+            <label class="form-label">説明</label>
+            <textarea class="form-control" name="description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">一次チェックする</button>
+    </form>
+</div>
+<div>
+    <a href="{% url 'test_todolist' %}">戻る</a>
+</div>
+
+{% endblock %}

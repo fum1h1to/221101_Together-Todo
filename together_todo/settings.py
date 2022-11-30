@@ -21,6 +21,9 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
+STATIC_DIR = os.path.join(BASE_DIR, "static")
+
+HOST_URL = "http://localhost:8888/"
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
@@ -29,20 +32,10 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, "templates")
 SECRET_KEY = os.environ['DJANGO_SECRET_KEY'],
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.environ.get('MODE') == 'product':
-    DEBUG = False
-else:
-    DEBUG = True
+DEBUG = True
 
-if DEBUG:
-    ALLOWED_HOSTS = []
-else:
-    ALLOWED_HOSTS = ['wsp-a5.mlab.im.dendai.ac.jp']
+ALLOWED_HOSTS = []
 
-if DEBUG:
-    HOST_URL = "http://localhost:8888/"
-else:
-    HOST_URL = "http://wsp-a5.mlab.im.dendai.ac.jp/"
 
 # Application definition
 
@@ -137,11 +130,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-
-STATIC_DIR = os.path.join(BASE_DIR, "static")
-STATIC_ROOT = '/usr/share/nginx/html/together-todo/static'
-
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     STATIC_DIR
 ]
@@ -172,7 +161,7 @@ LOGIN_REDIRECT_URL = 'home'
 if DEBUG:
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 else:
-    MEDIA_ROOT = '/usr/share/nginx/html/together-todo/media'
+    MEDIA_ROOT = '/usr/share/nginx/html/media'
 
 MEDIA_URL = '/media/'
     
