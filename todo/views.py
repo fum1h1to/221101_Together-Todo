@@ -1,4 +1,6 @@
 import json
+import html
+from django.db import transaction
 from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -65,9 +67,24 @@ def test_update(request, taskid):
 ##処理内容 
 ##viewsはhtmlからもらったあとどうするかの処理を書いている。
 
+##################################
+# ↓ APIのような挙動をするもの
+##################################
+
 @require_http_methods(['POST'])
 @login_required
 def create(request):
+    '''
+    タスクを作成する
+
+    postされてくるもの
+    - taskName: タスクの名前
+    - deadline: 期限日
+    - importance: 重要度
+    - note: メモ
+    - requestUsers: チェックを依頼するユーザ
+    - bocchi: ボッチモードであればその人数。でなければ、0
+    '''
     create_user=request.user
     taskName = request.POST.get('taskName')
     deadline = request.POST.get('deadline')
@@ -85,6 +102,7 @@ def create(request):
         requestUsers = []
         for user in randomUsers:
             requestUsers.append(user.username)
+
     else:
         bocchi_valid = False
     
@@ -95,16 +113,26 @@ def create(request):
     task_data=TaskCreateForm(data=request.POST)
 
     if task_data.is_valid() and bocchi_valid and requestUser_valid: ##フォーマットをチェックする
-    # if False:
     
         ###タスクを作成する処理  無理ならエラーを返す。
-        Task.objects.create(create_user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
-        
-        context = {
-            'result':True,
-        }
-        return JsonResponse(context)
-        
+        try:   
+            with transaction.atomic():
+                Task.objects.create(create_user, taskName,deadline,importance,note,isBocchi,requestUsers) ##TaskManager()のcreate()が呼び出される。
+
+            context = {
+                'result': True,
+            }
+            return JsonResponse(context)
+
+        except:
+            # サーバに何かエラーが起きた場合
+            context = {
+                'result': False,
+                'status': 2,
+                'error': {}
+            }
+            return JsonResponse(context)
+
     else:
         error = dict(task_data.errors.items())
         if not bocchi_valid:
@@ -113,8 +141,10 @@ def create(request):
         if not requestUser_valid:
             error['requestUsers'] = '依頼者は10人までです。'
 
+        # フォーマットエラーの場合
         context = {
             'result':False,
+            'status': 1,
             'error': error
         }
 
@@ -123,38 +153,51 @@ def create(request):
 @require_http_methods(['POST'])
 @login_required
 def show(request):
-
+    '''
+    ユーザIDに紐づくタスクを取得する
+    '''
     user = request.user
 
-    tasks = Task.objects.showUserTasks(user)
-    json_tasks = json.loads(serializers.serialize("json", tasks))
-    return_data = []
-    for task in json_tasks:
-        requestUsers = Commission.objects.listRequestedUserByTask(task['pk'])
-        return_requestUsers = []
-        for r_user in requestUsers:
-            if r_user.icon:
-                iconpath = str(settings.MEDIA_URL) + str(r_user.icon)
-            else:
-                iconpath = '/static/common/images/default_icon.jpeg'
-            return_requestUsers.append(
-                {
-                    'userid': str(r_user.userid),
-                    'iconpath': iconpath
-                }
-            )
-        return_data.append({
-            'taskid': task['pk'],
-            'taskName': task['fields']['taskName'],
-            'deadline': task['fields']['deadline'],
-            'importance': task['fields']['importance'],
-            'note': task['fields']['note'],
-            'status': task['fields']['status'],
-            'requestUsers': list(return_requestUsers),
-            'img': task['fields']['img'],
-            'movie': task['fields']['movie'],
-            'description': task['fields']['description'],
-        })
+    try:
+        tasks = Task.objects.showUserTasks(user)
+        json_tasks = json.loads(serializers.serialize("json", tasks))
+        return_data = []
+        for task in json_tasks:
+            requestUsers = Commission.objects.listRequestedUserByTask(task['pk'])
+            return_requestUsers = []
+            for r_user in requestUsers:
+                if r_user.icon:
+                    iconpath = str(settings.MEDIA_URL) + str(r_user.icon)
+                else:
+                    iconpath = '/static/common/images/default_icon.jpeg'
+                return_requestUsers.append(
+                    {
+                        'userid': str(r_user.userid),
+                        'iconpath': iconpath
+                    }
+                )
+            return_data.append({
+                'taskid': task['pk'],
+                'taskName': html.escape(task['fields']['taskName']),
+                'deadline': task['fields']['deadline'],
+                'importance': task['fields']['importance'],
+                'note': html.escape(task['fields']['note']),
+                'status': task['fields']['status'],
+                'requestUsers': list(return_requestUsers),
+                'img': task['fields']['img'],
+                'movie': task['fields']['movie'],
+                'description': html.escape(task['fields']['description']),
+            })
+
+    except:
+        # サーバに何かエラーが起きた場合
+        context = {
+            'result': False,
+            'status': 2,
+            'error': {}
+        }
+
+        return JsonResponse(context)
 
     context = {
         'result': True,
@@ -168,9 +211,7 @@ def show(request):
 @login_required
 def update(request):
     '''
-    updateに成功したらresult: Trueで返す
-    updateに失敗したらresult: Falseとerrorの内容を送信する。
-    ※49行目からのcreateの処理を参考に、、
+    タスクをupdateする処理
 
     postされてくるもの
     - taskid
@@ -189,16 +230,29 @@ def update(request):
 
     if task_data.is_valid(): 
 
-        Task.objects.update( taskid, taskName,deadline,importance,note,) 
+        try:
+            with transaction.atomic():
+                Task.objects.update( taskid, taskName,deadline,importance,note,) 
         
-        context = {
-            'result':True,
-        }
-        return JsonResponse(context)
+            context = {
+                'result': True,
+            }
+            return JsonResponse(context)
+
+        except:
+            # サーバに何かエラーが起きた場合
+            context = {
+                'result': False,
+                'status': 2,
+                'error': {}
+            }
+            return JsonResponse(context)
         
     else:
+        # フォーマットエラーの場合
         context = {
-            'result':False,
+            'result': False,
+            'status': 1,
             'error': dict(task_data.errors.items())
         }
 
@@ -208,9 +262,7 @@ def update(request):
 @login_required
 def delete(request, ):
     '''
-    deleteに成功したらresult: Trueで返す
-    deleteに失敗したらresult: Falseとerrorの内容を送信する。
-    ※49行目からのcreateの処理を参考に、、
+    タスクの削除処理
 
     postされてくるもの
     - taskid
@@ -219,20 +271,20 @@ def delete(request, ):
     task = Task.objects.get(taskid=taskid)##もらったtaskidでtaskidを取得する。
     try:    
         
-
-        Task.objects.delete(task.taskid,)
+        with transaction.atomic():
+            Task.objects.delete(task.taskid,)
 
         context = {
-                'result':True,
+            'result': True,
         }
         return JsonResponse(context)
 
     except:
-
+        # サーバに何かエラーが起きた場合
         context={
-
-                'result':False,
-                
+            'result': False,
+            'status': 2,
+            'error': {}
         }
         return JsonResponse(context)        
 
@@ -242,27 +294,56 @@ def delete(request, ):
 def firstCheck(request):
     '''
     一次チェックをする。
+
+    postされてくるもの
+    - taskid
+    - img
+    - movie
+    - description
     '''
     taskid = request.POST.get('taskid')
+    img = request.POST.get('img')
+    movie = request.POST.get('movie')
+
+    imgmovie_valid = True
+    if img == '' and movie == '':
+        imgmovie_valid = False
 
     task_data=firstCheckForm(data=request.POST, files=request.FILES)
-    if task_data.is_valid():
+    if task_data.is_valid() and imgmovie_valid:
         img = task_data.cleaned_data['img']
         movie = task_data.cleaned_data['movie']
         description = task_data.cleaned_data['description']
 
-        Task.objects.insertFirstCheckData(taskid, img, movie, description)
+        try:    
+            with transaction.atomic():
+                Task.objects.insertFirstCheckData(taskid, img, movie, description)
 
-        context = {
-            'result': True,
-        }
+            context = {
+                'result': True,
+            }
 
-        return JsonResponse(context)
+            return JsonResponse(context)
+        except:
+            # サーバに何かエラーが起きた場合
+            context={
+                'result': False,
+                'status': 2,
+                'error': {}
+            }
+            return JsonResponse(context) 
 
     else:
+        # フォーマットエラーの場合
         error = dict(task_data.errors.items())
+
+        if not imgmovie_valid:
+            error['img'] = "画像、動画はどちらか一方必ず必要です。"
+            error['movie'] = "画像、動画はどちらか一方必ず必要です。"
+
         context = {
             'result': False,
+            'status': 1,
             'error': error,
         }
 
@@ -273,10 +354,25 @@ def firstCheck(request):
 def task_complete_one(request):
     '''
     依頼者がいないタスクを完了させる。
+
+    postされてくるもの
+    - taskid
     '''
     taskid = request.POST.get('taskid')
 
-    result = Task.objects.complete_one(taskid)
+    try:
+        with transaction.atomic():
+            result = Task.objects.complete_one(taskid)
+    
+    except:
+        context = {
+            'result': False,
+            'status': 2,
+            'error': {}
+        }
+
+        return JsonResponse(context)
+
     if result:
 
         context = {
@@ -288,6 +384,8 @@ def task_complete_one(request):
     else:
         context = {
             'result': False,
+            'status': 1,
+            'error': {}
         }
 
         return JsonResponse(context)
@@ -298,11 +396,16 @@ def task_complete_one(request):
 def commission_complete(request):
     '''
     送られてきたuseridとtaskidに基づいて、チェックをする。
+
+    postされてくるもの
+    - taskid
     '''
     taskid = request.POST.get('taskid')
 
     try:
-        Commission.objects.complete(request.user, taskid)
+        with transaction.atomic():
+            Commission.objects.complete(request.user, taskid)
+
         context = {
             'result': True,
         }
@@ -312,6 +415,8 @@ def commission_complete(request):
     except:
         context = {
             'result': False,
+            'status': 2,
+            'error': {}
         }
 
         return JsonResponse(context)
@@ -346,13 +451,13 @@ def commission_list(request):
             return_data.append({
                 'taskid': task['pk'],
                 'user': user,
-                'taskName': task['fields']['taskName'],
+                'taskName': html.escape(task['fields']['taskName']),
                 'deadline': task['fields']['deadline'],
                 'importance': task['fields']['importance'],
                 'status': task['fields']['status'],
                 'img': imgpath,
                 'movie': moviepath,
-                'description': task['fields']['description'],
+                'description': html.escape(task['fields']['description']),
             })
 
         context = {
@@ -363,8 +468,9 @@ def commission_list(request):
         return JsonResponse(context)
     
     except:
+        # サーバに何かエラーが起きた場合
         context = {
             'result': False,
+            'status': 2,
+            'error': {}
         }
-
-        return JsonResponse(context)

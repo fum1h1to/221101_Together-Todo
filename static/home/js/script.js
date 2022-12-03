@@ -17,7 +17,6 @@ const modal_todoUpdate_success = new bootstrap.Modal(document.getElementById('mo
 const modal_todoUpdate_send = new bootstrap.Modal(document.getElementById('modal_todoUpdate_send'), modalOption);
 const modal_todoDelete_check = new bootstrap.Modal(document.getElementById('modal_todoDelete_check'), modalOption);
 const modal_todoDelete_success = new bootstrap.Modal(document.getElementById('modal_todoDelete_success'), modalOption);
-const modal_commonError = new bootstrap.Modal(document.getElementById('modal_commonError'), modalOption);
 
 
 // formの要素取得
@@ -41,6 +40,23 @@ const todoCreateFormReset = () => {
 document.getElementById('btn_taskPlusButton').addEventListener('click', function(e) {
     todoCreateFormReset();
 })
+
+/* ----------------------------
+loadingの処理
+----------------------------- */
+const todo_loadingVisualBtns = document.querySelectorAll('.js-todo_loadingVisual');
+todo_loadingVisualBtns.forEach(ele => {
+    ele.addEventListener('click', (e) => {
+        ele.classList.add('is-load');
+    })
+})
+
+const todo_offLadingVisual = () => {
+    todo_loadingVisualBtns.forEach(ele => {
+        ele.classList.remove('is-load');
+    })
+}
+
 
 /* ----------------------------
 タスクの表示処理
@@ -69,9 +85,17 @@ const getMyTaskList_and_disp = () => {
                 }
                 taskDisp();
             } else {
-
+                if(res.status === 2) {
+                    modal_commonError_moreInfoUpdate('タスクを取得できませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを取得できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
     
     const taskDisp = () => {
         const myTaskList_1 = document.querySelector('#myTaskList-collapseOne .myTaskList');
@@ -174,6 +198,11 @@ form_accountFind.addEventListener("submit", function (e) {
                 userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
             }
         })
+        .catch(error => {
+            const userListElement = document.querySelector('#modal_todoSelectRequest section ol');
+            userListElement.innerHTML = '<p>サーバーでエラーが起きたためユーザを見つけられませんでした。</p>';
+            console.error(error);
+        });
 });
 
 
@@ -211,6 +240,11 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
 /* ----------------------------
 タスク作成処理
 ----------------------------- */
+// btn
+const btn_todoSelectBocchi = document.getElementById('btn_todoSelectBocchi');
+const btn_todoSelectRequest = document.getElementById('btn_todoSelectRequest');
+const btn_todoSelectRequest_numCollect = document.getElementById('btn_todoSelectRequest_numCollect');
+
 (function () {
     // 期限日の処理
     let optionLoop, this_day, this_month, this_year, today;
@@ -237,7 +271,7 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
     optionLoop(1, 12, '.month', this_month);
     optionLoop(1, 31, '.day', this_day);
 
-    
+
 })();
 
 // メモ欄の文字制限
@@ -287,25 +321,51 @@ const todoCreate_sendData = (isBocchi) => {
 
     fetch('/todo/create/', sendOption)
         .then(res => {
+            offLoadingVisual();
+
             return res.json();
         })
         .then((res) => {
             if (res.result) {
-                modal_todoSelectBocchi.hide();
-                modal_todoSelectRequest.hide();
-                modal_todoCreate_numCheck.hide();
+                todoCreate_modalClose();
                 modal_todoCreate_success.show();
                 todoCreateFormReset();
                 getMyTaskList_and_disp();
             } else {
-                modal_todoSelectBocchi.hide();
-                modal_todoSelectRequest.hide();
-                modal_todoCreate_numCheck.hide();
-                modal_todoCreate_failed.show();
-                todoCreate_inputError(res.error);
+                if (res.status == 1) {
+                    todoCreate_modalClose();
+                    modal_todoCreate_failed.show();
+                    todoCreate_inputError(res.error);
+                } else if (res.status == 2) {
+                    todoCreate_modalClose();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを作成できませんでした。');
+                    modal_commonError.show();
+                    todoCreateFormReset();
+                }
             }
         })
+        .catch(error => {
+            todoCreate_modalClose();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを作成できませんでした。');
+            modal_commonError.show();
+            todoCreateFormReset();
+            console.error(error);
+
+            offLoadingVisual();
+        });
     
+    const todoCreate_modalClose = () => {
+        modal_todoSelectBocchi.hide();
+        modal_todoSelectRequest.hide();
+        modal_todoCreate_numCheck.hide();
+    }
+
+    const offLoadingVisual = () => {
+        btn_todoSelectBocchi.classList.remove('is-load');
+        btn_todoSelectRequest.classList.remove('is-load');
+        btn_todoSelectRequest_numCollect.classList.remove('is-load');
+    }
+
     const todoCreate_inputError = (error) => {
         error.taskName ? form_todoCreate.querySelector('.task-error').textContent = error.taskName : form_todoCreate.querySelector('.task-error').textContent = "";
         error.deadline ? form_todoCreate.querySelector('.deadline-error').textContent = error.deadline : form_todoCreate.querySelector('.deadline-error').textContent = "";
@@ -317,32 +377,40 @@ const todoCreate_sendData = (isBocchi) => {
 }
 
 // ボッチモードの場合
-document.getElementById('btn_todoSelectBocchi').addEventListener("click", function(e) {
+btn_todoSelectBocchi.addEventListener("click", function(e) {
     e.preventDefault();
+    btn_todoSelectBocchi.classList.add('is-load');
 
     todoCreate_sendData(isBochi=true);
 });
 
 // 依頼者を選択する場合
-document.getElementById('btn_todoSelectRequest').addEventListener("click", function(e) {
+btn_todoSelectRequest.addEventListener("click", function(e) {
     e.preventDefault();
 
     if(Object.keys(todoCreate_requestUsers).length == 0) {
         modal_todoSelectRequest.hide();
         modal_todoCreate_numCheck.show();
     } else {
+        btn_todoSelectRequest.classList.add('is-load');
         todoCreate_sendData(isBochi=false);
     }
 });
-document.getElementById('btn_todoSelectRequest_numCollect').addEventListener("click", function(e) {
+btn_todoSelectRequest_numCollect.addEventListener("click", function(e) {
     e.preventDefault();
 
+    btn_todoSelectRequest_numCollect.classList.add('is-load');
     todoCreate_sendData(isBochi=false);
 });
 
 /* ----------------------------
 タスク更新処理
 ----------------------------- */
+// btn
+const btn_todoUpdate = document.getElementById('js-btn_todoUpdate');
+const btn_todoDelete = document.getElementById('js-btn_todoDelete');
+
+
 // 更新フォームの生成処理
 const makeTaskUpdateForm = (taskid) => {
     const task = myTaskList[taskid];
@@ -501,8 +569,12 @@ const todoUpdate_taskCheck = (taskid) => {
     if (task.requestUsers.length <= 0) {
         // 依頼者が一人もいない場合
         modal_todoUpdate_completeCheck.show();
+        
+        const btn_todoCompleteOne = document.getElementById('js-btn_todoCompleteOne')
+        btn_todoCompleteOne.addEventListener('click', (e) => {
+            e.preventDefault();
+            btn_todoCompleteOne.classList.add('is-load');
 
-        document.getElementById('js-btn_todoCompleteOne').addEventListener('click', (e) => {
             const body = new URLSearchParams()
             body.append('taskid', taskid);
 
@@ -518,6 +590,7 @@ const todoUpdate_taskCheck = (taskid) => {
 
             fetch('/todo/complete/', sendOption)
                 .then(res => {
+                    btn_todoCompleteOne.classList.remove('is-load');
                     return res.json();
                 })
                 .then((res) => {
@@ -526,9 +599,17 @@ const todoUpdate_taskCheck = (taskid) => {
                         getMyTaskList_and_disp();
                     } else {
                         modal_todoUpdate_completeCheck.hide();
+                        modal_commonError_moreInfoUpdate('エラーが起きたため、タスクを完了できませんでした。');
                         modal_commonError.show();
                     }
                 })
+                .catch(error => {
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを完了できませんでした。');
+                    modal_commonError.show();
+                    console.error(error);
+
+                    btn_todoCompleteOne.classList.remove('is-load');
+                });
         });
 
     } else {
@@ -559,7 +640,10 @@ const initTaskUpdateBtn = () => {
 }
 
 // タスク更新のデータを送る
-document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
+btn_todoUpdate.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoUpdate.classList.add('is-load');
+
     const body = new URLSearchParams()
 
     let taskid = form_todoUpdate.taskid.value;
@@ -599,6 +683,7 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
 
     fetch('/todo/update/', sendOption)
         .then(res => {
+            btn_todoUpdate.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -611,9 +696,23 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
                     getMyTaskList_and_disp();
                 }
             } else {
-                todoUpdate_inputError(res.error);
+                if (res.status == 1) {
+                    todoUpdate_inputError(res.error);
+                } else if (res.status == 2) {     
+                    modal_todoUpdate.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを更新できませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_todoUpdate.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを更新できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+
+            btn_todoUpdate.classList.remove('is-load');
+        });
     
     const todoUpdate_inputError = (error) => {
         error.taskName ? form_todoUpdate.querySelector('.task-error').textContent = error.taskName : form_todoUpdate.querySelector('.task-error').textContent = "";
@@ -624,7 +723,10 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
 })
 
 // タスクの削除をする
-document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
+btn_todoDelete.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoDelete.classList.add('is-load');
+
     const body = new URLSearchParams()
 
     let taskid = form_todoUpdate.taskid.value;
@@ -642,24 +744,36 @@ document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
 
     fetch('/todo/delete/', sendOption)
         .then(res => {
+            btn_todoDelete.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
-            console.log(res)
             if (res.result) {
                 modal_todoDelete_check.hide();
                 modal_todoDelete_success.show();
                 getMyTaskList_and_disp();
             } else {
                 modal_todoDelete_check.hide();
+                modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
                 modal_commonError.show();
             }
         })
+        .catch(error => {
+            modal_todoDelete_check.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+
+            btn_todoDelete.classList.remove('is-load');
+        });
 })
 
 /* ----------------------------
 一次チェックモーダルでの処理
 ----------------------------- */
+// btn
+const btn_todoFirstCheck = document.getElementById('js-btn_todoFirstCheck');
+
 // 一次チェックフォームの生成
 const makeFirstCheckForm = (taskid) => {
     data = '';
@@ -672,7 +786,7 @@ const makeFirstCheckForm = (taskid) => {
     data += '<label for="todo_firstCheckImg" class="photo cursor-pointer">';
     data += '<img src="/static/home/images/icon_photo.png">';
     data += '</label>';
-    data += '<input type="file" name="img" id="todo_firstCheckImg">';
+    data += '<input type="file" name="img" accept=".jpg, .png" id="todo_firstCheckImg">';
     data += '<span class="text-checkImg">jpg、又はpng形式(5MBまで)</span>';
     data += '</td>';
     data += '</tr>';
@@ -689,7 +803,7 @@ const makeFirstCheckForm = (taskid) => {
     data += '<label for="todo_firstCheckMovie" class="photo cursor-pointer">';
     data += '<img src="/static/home/images/icon_movie.png">';
     data += '</label>';
-    data += '<input type="file" name="movie" id="todo_firstCheckMovie">';
+    data += '<input type="file" name="movie" accept=".mp4, .MPEG4, .MOV" id="todo_firstCheckMovie">';
     data += '<span class="text-checkMovie">2分20秒以下、かつ512MB以下まで</span>';
     data += '</td>';
     data += '</tr>';
@@ -733,17 +847,28 @@ const makeFirstCheckForm = (taskid) => {
 }
 
 // 一次チェックする
-document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) => {
+btn_todoFirstCheck.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoFirstCheck.classList.add('is-load');
+
     const body = new FormData()
 
     let taskid = form_todoFirstCheck.taskid.value;
     body.append('taskid', taskid);
 
     let img = form_todoFirstCheck.img.files[0];
-    body.append('img', img);
+    if (img) { 
+        body.append('img', img); 
+    } else {
+        body.append('img', ''); 
+    }
 
     let movie = form_todoFirstCheck.movie.files[0];
-    body.append('movie', movie);
+    if (movie) { 
+        body.append('movie', movie); 
+    } else {
+        body.append('movie', ''); 
+    }
     
     let description = form_todoFirstCheck.description.value;
     body.append('description', description);
@@ -761,6 +886,7 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
 
     fetch('/todo/firstCheck/', sendOption)
         .then(res => {
+            btn_todoFirstCheck.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -769,9 +895,23 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
                 modal_todoUpdate_send.show();
                 getMyTaskList_and_disp();
             } else {
-                todoFirstCheck_inputError(res.error);
+                if (res.status == 1) {
+                    todoFirstCheck_inputError(res.error);
+                } else if (res.status == 2) {
+                    modal_todoFirstCheck.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、一次チェックできませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_todoFirstCheck.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、一次チェックできませんでした。');
+            modal_commonError.show();
+            console.error(error);
+
+            btn_todoFirstCheck.classList.remove('is-load');
+        });
     
     const todoFirstCheck_inputError = (error) => {
         error.img ? form_todoFirstCheck.querySelector('.img-error').textContent = error.img : form_todoFirstCheck.querySelector('.img-error').textContent = "";

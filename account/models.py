@@ -2,6 +2,7 @@ import os
 from django.db import models
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
+from django.core.validators import FileExtensionValidator
 from django.core.mail import send_mail
 from django.conf import settings
 from django.contrib.auth import login, logout, authenticate
@@ -18,9 +19,9 @@ class UserManager(UserManager):
   ユーザに関わる詳細な処理はここに書いて行く
 
   ※なお、views.pyなどの外部から扱う場合は、このクラスをimportするのではなく。
-  CustomUser.object.{関数名}とする。
+  CustomUser.objects.{関数名}とする。
   ex) send_email()を使いたい場合、
-  CustomUser.object.send_email(userid, subject, message)
+  CustomUser.objects.send_email(userid, subject, message)
   '''
 
   use_in_migrations = True
@@ -96,17 +97,15 @@ class UserManager(UserManager):
 
   def delete(self, user):
     '''
-    ユーザを削除する。(ユーザのステータスを2にする。)
+    ユーザを削除する。
     '''
-    user.status = 2
-    user.is_active = False
-    user.save()
+    user.delete()
 
   def choiceUserRandom(self, myself, limit):
     '''
     ユーザをランダムに選択する。
     '''
-    alluser = CustomUser.objects.all().exclude(userid=myself.userid)
+    alluser = CustomUser.objects.all().filter(status=1).exclude(userid=myself.userid)
     all_user_num = alluser.count()
     if limit <= all_user_num:
       users = alluser.order_by("?")[:limit]
@@ -116,7 +115,7 @@ class UserManager(UserManager):
     return list(users)
 
   def findByUsername(self, myself, username):
-    alluser = CustomUser.objects.all().exclude(userid=myself.userid)
+    alluser = CustomUser.objects.all().filter(status=1).exclude(userid=myself.userid)
     qs = alluser.filter(username__icontains=username)
     return list(qs)
 
@@ -159,6 +158,13 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     extension = os.path.splitext(filename)[-1]
     return prefix + name + extension
 
+  def imagefile_size(value):
+
+    limit=2097152 ##2MBをbyteに変換
+    if value.size > limit:
+
+      raise ValidationError('画像のサイズが2MBを超えています。')
+
   userid = models.UUIDField(
     default=uuid.uuid4,
     primary_key=True,
@@ -180,7 +186,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     #Emailであるかどうかのチェック。
   )
 
-  icon = models.ImageField(upload_to=get_image_path, blank=True)
+  icon = models.ImageField(upload_to=get_image_path, blank=True, validators=[FileExtensionValidator(['jpg','png']), imagefile_size])
 
   status = models.IntegerField(
     _('status'),
