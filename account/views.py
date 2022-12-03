@@ -1,13 +1,12 @@
-import json
+import html
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from account.forms import SignupForm, LoginForm, UserChangeForm
 from .models import UserActivateTokens
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 
 from .models import CustomUser
 from django.conf import settings
@@ -153,7 +152,7 @@ def find(request):
             iconpath = '/static/common/images/default_icon.jpeg'
 
         result.append({ 
-            'username': user.username,
+            'username': html.escape(user.username),
             'iconpath': iconpath
         })
 

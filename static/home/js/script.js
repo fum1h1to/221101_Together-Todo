@@ -43,6 +43,19 @@ document.getElementById('btn_taskPlusButton').addEventListener('click', function
 })
 
 /* ----------------------------
+modal_commonError
+----------------------------- */
+document.getElementById('modal_commonError').addEventListener('hidden.bs.modal', (e) => {
+    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
+    moreinfo.textContent = ''
+})
+
+const modal_commonError_moreInfoUpdate = (updateTxt) => {
+    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
+    moreinfo.textContent = updateTxt;
+}
+
+/* ----------------------------
 タスクの表示処理
 ----------------------------- */
 const getMyTaskList_and_disp = () => {
@@ -69,9 +82,17 @@ const getMyTaskList_and_disp = () => {
                 }
                 taskDisp();
             } else {
-
+                if(res.status === 2) {
+                    modal_commonError_moreInfoUpdate('タスクを取得できませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを取得できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
     
     const taskDisp = () => {
         const myTaskList_1 = document.querySelector('#myTaskList-collapseOne .myTaskList');
@@ -174,6 +195,11 @@ form_accountFind.addEventListener("submit", function (e) {
                 userListElement.innerHTML = '<p>ユーザが見つかりませんでした。</p>';
             }
         })
+        .catch(error => {
+            const userListElement = document.querySelector('#modal_todoSelectRequest section ol');
+            userListElement.innerHTML = '<p>サーバーでエラーが起きたためユーザを見つけられませんでした。</p>';
+            console.error(error);
+        });
 });
 
 
@@ -237,7 +263,7 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
     optionLoop(1, 12, '.month', this_month);
     optionLoop(1, 31, '.day', this_day);
 
-    
+
 })();
 
 // メモ欄の文字制限
@@ -291,21 +317,37 @@ const todoCreate_sendData = (isBocchi) => {
         })
         .then((res) => {
             if (res.result) {
-                modal_todoSelectBocchi.hide();
-                modal_todoSelectRequest.hide();
-                modal_todoCreate_numCheck.hide();
+                todoCreate_modalClose();
                 modal_todoCreate_success.show();
                 todoCreateFormReset();
                 getMyTaskList_and_disp();
             } else {
-                modal_todoSelectBocchi.hide();
-                modal_todoSelectRequest.hide();
-                modal_todoCreate_numCheck.hide();
-                modal_todoCreate_failed.show();
-                todoCreate_inputError(res.error);
+                if (res.status == 1) {
+                    todoCreate_modalClose();
+                    modal_todoCreate_failed.show();
+                    todoCreate_inputError(res.error);
+                } else if (res.status == 2) {
+                    todoCreate_modalClose();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを作成できませんでした。');
+                    modal_commonError.show();
+                    todoCreateFormReset();
+                }
             }
         })
+        .catch(error => {
+            todoCreate_modalClose();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを作成できませんでした。');
+            modal_commonError.show();
+            todoCreateFormReset();
+            console.error(error);
+        });
     
+    const todoCreate_modalClose = () => {
+        modal_todoSelectBocchi.hide();
+        modal_todoSelectRequest.hide();
+        modal_todoCreate_numCheck.hide();
+    }
+
     const todoCreate_inputError = (error) => {
         error.taskName ? form_todoCreate.querySelector('.task-error').textContent = error.taskName : form_todoCreate.querySelector('.task-error').textContent = "";
         error.deadline ? form_todoCreate.querySelector('.deadline-error').textContent = error.deadline : form_todoCreate.querySelector('.deadline-error').textContent = "";
@@ -526,9 +568,15 @@ const todoUpdate_taskCheck = (taskid) => {
                         getMyTaskList_and_disp();
                     } else {
                         modal_todoUpdate_completeCheck.hide();
+                        modal_commonError_moreInfoUpdate('エラーが起きたため、タスクを完了できませんでした。');
                         modal_commonError.show();
                     }
                 })
+                .catch(error => {
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを完了できませんでした。');
+                    modal_commonError.show();
+                    console.error(error);
+                });
         });
 
     } else {
@@ -611,9 +659,21 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
                     getMyTaskList_and_disp();
                 }
             } else {
-                todoUpdate_inputError(res.error);
+                if (res.status == 1) {
+                    todoUpdate_inputError(res.error);
+                } else if (res.status == 2) {     
+                    modal_todoUpdate.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを更新できませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_todoUpdate.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを更新できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
     
     const todoUpdate_inputError = (error) => {
         error.taskName ? form_todoUpdate.querySelector('.task-error').textContent = error.taskName : form_todoUpdate.querySelector('.task-error').textContent = "";
@@ -645,16 +705,22 @@ document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
             return res.json();
         })
         .then((res) => {
-            console.log(res)
             if (res.result) {
                 modal_todoDelete_check.hide();
                 modal_todoDelete_success.show();
                 getMyTaskList_and_disp();
             } else {
                 modal_todoDelete_check.hide();
+                modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
                 modal_commonError.show();
             }
         })
+        .catch(error => {
+            modal_todoDelete_check.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
 })
 
 /* ----------------------------
@@ -672,7 +738,7 @@ const makeFirstCheckForm = (taskid) => {
     data += '<label for="todo_firstCheckImg" class="photo cursor-pointer">';
     data += '<img src="/static/home/images/icon_photo.png">';
     data += '</label>';
-    data += '<input type="file" name="img" id="todo_firstCheckImg">';
+    data += '<input type="file" name="img" accept=".jpg, .png" id="todo_firstCheckImg">';
     data += '<span class="text-checkImg">jpg、又はpng形式(5MBまで)</span>';
     data += '</td>';
     data += '</tr>';
@@ -689,7 +755,7 @@ const makeFirstCheckForm = (taskid) => {
     data += '<label for="todo_firstCheckMovie" class="photo cursor-pointer">';
     data += '<img src="/static/home/images/icon_movie.png">';
     data += '</label>';
-    data += '<input type="file" name="movie" id="todo_firstCheckMovie">';
+    data += '<input type="file" name="movie" accept=".mp4, .MPEG4, .MOV" id="todo_firstCheckMovie">';
     data += '<span class="text-checkMovie">2分20秒以下、かつ512MB以下まで</span>';
     data += '</td>';
     data += '</tr>';
@@ -769,9 +835,21 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
                 modal_todoUpdate_send.show();
                 getMyTaskList_and_disp();
             } else {
-                todoFirstCheck_inputError(res.error);
+                if (res.status == 1) {
+                    todoFirstCheck_inputError(res.error);
+                } else if (res.status == 2) {
+                    modal_todoFirstCheck.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、一次チェックできませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_todoFirstCheck.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、一次チェックできませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
     
     const todoFirstCheck_inputError = (error) => {
         error.img ? form_todoFirstCheck.querySelector('.img-error').textContent = error.img : form_todoFirstCheck.querySelector('.img-error').textContent = "";

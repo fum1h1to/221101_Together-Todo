@@ -15,22 +15,22 @@ class TaskManager(models.Manager):
     '''
     タスクのマネージャー
     '''
+
     def create(self, user, taskName, deadline, importance, note, isBocchi, requestUsers):
         '''
         タスクの作成をする
         '''
         task = Task(userid=user,taskName=taskName,deadline=deadline,importance=importance,
-                                 note=note,isBocchi=isBocchi,)
+                                note=note,isBocchi=isBocchi,)
         task.save()
         subject=f'{user.username}さんからタスクチェックの依頼が届きました.'
+        message=f'アプリを開いてタスクを確認しましょう！\nタスク名: {taskName}\n期限日: {deadline}'
 
         for username in requestUsers:
             user = CustomUser.objects.get(username=username)
             Commission.objects.create(user, task)
-            message=f'アプリを開いてタスクを確認しましょう！\nタスク名{taskName}\n期限日{deadline}'
             CustomUser.objects.send_email(user, subject, message)
-        
-        
+
     
     def showUserTasks(self, user):
         tasks = Task.objects.filter(userid=user).all()
@@ -48,11 +48,12 @@ class TaskManager(models.Manager):
         message='タスクを編集しました。アプリを開いて確認しましょう！'
         Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
        
+       
     def delete(self,taskid,):
         
         message='タスクを削除しました。タスクの依頼がなくなりました.'
         subject='タスクが削除されました。'            
-        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)   ##タスクIDが先に消されてしまうため、こっちを先に書かないとメールが送信できない。   
+        Commission.objects.sendEmailToTaskIdRelatingUserId(taskid, subject, message)
         Task.objects.filter(taskid=taskid).delete()
            
 
@@ -137,7 +138,7 @@ class Task(models.Model):
     img = models.ImageField(upload_to=get_image_path, validators=[FileExtensionValidator(['jpg','png']), imagefile_size],verbose_name= _("画像"),)  ###画像ファイル
     
     movie=models.FileField( upload_to=get_movie_path ,verbose_name= _("動画"),validators=[FileExtensionValidator(['mp4','MPEG4','MOV']), moviefile_size],)
-    #動画ファイル 動画の時間を制限する方法を探してみたけどなかなか見つからなかったのでまた探してみます。
+    
     description=models.TextField( verbose_name= _("説明"),)
 
     status=models.IntegerField(default=0,validators= [MinValueValidator(0), MaxValueValidator(2)])
@@ -154,11 +155,10 @@ class CommissionManager(models.Manager):
         ##データベースを作ってあげる。
         
         ##さっきの関数の引数でIsert INTO の処理を保存する。
-        
+
         commission=Commission(userid=userid, taskid=taskid)
         commission.save()
-            ##クリエイトをするための処理を書く
-    
+
     def sendEmailToTaskIdRelatingUserId(self, taskid, subject, message):
        
         requestUsers = Commission.objects.filter(taskid_id=taskid)
@@ -179,7 +179,9 @@ class CommissionManager(models.Manager):
         tasks = Commission.objects.filter(userid=user).exclude(completed=True).values_list('taskid', flat=True)
         data = []
         for taskid in tasks:
-            data.append(Task.objects.get(taskid=taskid))
+            task = Task.objects.get(taskid=taskid)
+            if task.status == 1:
+                data.append(Task.objects.get(taskid=taskid))
         return list(data)
 
     def complete(self, user, taskid):

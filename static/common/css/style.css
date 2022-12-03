@@ -2,6 +2,12 @@ img {
     max-width: 100%;
 }
 
+textarea {
+    resize: vertical;
+    width: 100%;
+    min-height: 10em;
+}
+
 .sp-limit {
     max-width: 560px;
     margin: 0 auto;
