@@ -302,9 +302,15 @@ def firstCheck(request):
     - description
     '''
     taskid = request.POST.get('taskid')
+    img = request.POST.get('img')
+    movie = request.POST.get('movie')
+
+    imgmovie_valid = True
+    if img == '' and movie == '':
+        imgmovie_valid = False
 
     task_data=firstCheckForm(data=request.POST, files=request.FILES)
-    if task_data.is_valid():
+    if task_data.is_valid() and imgmovie_valid:
         img = task_data.cleaned_data['img']
         movie = task_data.cleaned_data['movie']
         description = task_data.cleaned_data['description']
@@ -330,6 +336,11 @@ def firstCheck(request):
     else:
         # フォーマットエラーの場合
         error = dict(task_data.errors.items())
+
+        if not imgmovie_valid:
+            error['img'] = "画像、動画はどちらか一方必ず必要です。"
+            error['movie'] = "画像、動画はどちらか一方必ず必要です。"
+
         context = {
             'result': False,
             'status': 1,

@@ -17,7 +17,6 @@ const modal_todoUpdate_success = new bootstrap.Modal(document.getElementById('mo
 const modal_todoUpdate_send = new bootstrap.Modal(document.getElementById('modal_todoUpdate_send'), modalOption);
 const modal_todoDelete_check = new bootstrap.Modal(document.getElementById('modal_todoDelete_check'), modalOption);
 const modal_todoDelete_success = new bootstrap.Modal(document.getElementById('modal_todoDelete_success'), modalOption);
-const modal_commonError = new bootstrap.Modal(document.getElementById('modal_commonError'), modalOption);
 
 
 // formの要素取得
@@ -42,18 +41,6 @@ document.getElementById('btn_taskPlusButton').addEventListener('click', function
     todoCreateFormReset();
 })
 
-/* ----------------------------
-modal_commonError
------------------------------ */
-document.getElementById('modal_commonError').addEventListener('hidden.bs.modal', (e) => {
-    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
-    moreinfo.textContent = ''
-})
-
-const modal_commonError_moreInfoUpdate = (updateTxt) => {
-    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
-    moreinfo.textContent = updateTxt;
-}
 
 /* ----------------------------
 タスクの表示処理
@@ -806,10 +793,18 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
     body.append('taskid', taskid);
 
     let img = form_todoFirstCheck.img.files[0];
-    body.append('img', img);
+    if (img) { 
+        body.append('img', img); 
+    } else {
+        body.append('img', ''); 
+    }
 
     let movie = form_todoFirstCheck.movie.files[0];
-    body.append('movie', movie);
+    if (movie) { 
+        body.append('movie', movie); 
+    } else {
+        body.append('movie', ''); 
+    }
     
     let description = form_todoFirstCheck.description.value;
     body.append('description', description);

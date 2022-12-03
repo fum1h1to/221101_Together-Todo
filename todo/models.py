@@ -139,7 +139,7 @@ class Task(models.Model):
     
     movie=models.FileField( upload_to=get_movie_path ,verbose_name= _("動画"),validators=[FileExtensionValidator(['mp4','MPEG4','MOV']), moviefile_size],)
     
-    description=models.TextField( verbose_name= _("説明"),)
+    description=models.TextField( verbose_name= _("説明"), blank=True)
 
     status=models.IntegerField(default=0,validators= [MinValueValidator(0), MaxValueValidator(2)])
     

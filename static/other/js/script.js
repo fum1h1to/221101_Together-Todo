@@ -36,9 +36,21 @@ const getOtherTaskList = () => {
                 }
                 makeOtherTaskListElement(0);
             } else {
+                const ele_otherTaskList = document.getElementById('accordion-otherTaskList');
+                ele_otherTaskList.innerHTML = '<div class="otherTaskList__titleWrap"><p>エラーが起きたため、タスクを取得できませんでした。</p></div>';
 
+                modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを取得できませんでした。');
+                modal_commonError.show();
             }
         })
+        .catch(error => {
+            const ele_otherTaskList = document.getElementById('accordion-otherTaskList');
+            ele_otherTaskList.innerHTML = '<div class="otherTaskList__titleWrap"><p>エラーが起きたため、タスクを取得できませんでした。</p></div>';
+
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを取得できませんでした。');
+            modal_commonError.show();
+            console.error(error);
+        });
 }
 
 const makeOtherTaskListElement = (sortNum) => {
@@ -397,7 +409,13 @@ document.getElementById('js-btn_todoOtherTaskCheck').addEventListener('click', (
                 getOtherTaskList();
                 modal_todoOtherTaskDetail.hide()
             } else {
-
+                modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、完了できませんでした。');
+                modal_commonError.show();
             }
+        })
+        .catch(error => { 
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、完了できませんでした。');
+            modal_commonError.show();
+            console.error(error);
         })
 })

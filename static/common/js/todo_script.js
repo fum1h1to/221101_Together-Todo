@@ -24,6 +24,8 @@ const modal_accountEdit = new bootstrap.Modal(document.getElementById('modal_acc
 const modal_accountDelete = new bootstrap.Modal(document.getElementById('modal_accountDelete'), modalOption);
 const modal_accountLogout = new bootstrap.Modal(document.getElementById('modal_accountLogout'), modalOption);
 
+const modal_commonError = new bootstrap.Modal(document.getElementById('modal_commonError'), modalOption);
+
 // formの要素取得
 const form_ceckPassword = document.getElementById("form_checkPassword");
 const form_userUpdate = document.getElementById("form_userUpdate");
@@ -52,6 +54,19 @@ document.getElementById('btn_iconLogo').addEventListener('click', function(e) {
     userDeleteFormReset();
     userUpdateFormReset();
 })
+
+/* ----------------------------
+modal_commonError
+----------------------------- */
+document.getElementById('modal_commonError').addEventListener('hidden.bs.modal', (e) => {
+    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
+    moreinfo.textContent = ''
+})
+
+const modal_commonError_moreInfoUpdate = (updateTxt) => {
+    const moreinfo = document.getElementById('modal_commonError').querySelector('.more-info');
+    moreinfo.textContent = updateTxt;
+}
 
 /* ----------------------------
 パスワードのチェック処理
