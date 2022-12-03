@@ -73,6 +73,8 @@ const modal_commonError_moreInfoUpdate = (updateTxt) => {
 ----------------------------- */
 form_ceckPassword.addEventListener("submit", function (e) {
     e.preventDefault();
+    const btn_loading = document.getElementById('btn_checkPassword');
+    btn_loading.classList.add('is-load');
 
     const body = new URLSearchParams()
     body.append('password', form_ceckPassword.password.value)
@@ -89,6 +91,7 @@ form_ceckPassword.addEventListener("submit", function (e) {
 
     fetch(form_ceckPassword.url.value, sendOption)
         .then(res => {
+            btn_loading.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -98,6 +101,14 @@ form_ceckPassword.addEventListener("submit", function (e) {
             } else {
                 form_ceckPassword.querySelector('.form-text').textContent = 'パスワードが一致しませんでした。';
             }
+        })
+        .catch(error => {
+            modal_checkPassword.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、パスワードのチェックを行えませんでした。');
+            modal_commonError.show();
+            console.log(error);
+
+            btn_loading.classList.remove('is-load');
         })
 });
 
@@ -121,6 +132,8 @@ document.getElementById('account_iconUpload').addEventListener('change', (e) => 
 // formの処理
 form_userUpdate.addEventListener("submit", function (e) {
     e.preventDefault();
+    const btn_loading = document.getElementById('btn_userUpdate');
+    btn_loading.classList.add('is-load');
 
     const body = new FormData()
     body.append('icon', form_userUpdate.icon.files[0])
@@ -141,15 +154,31 @@ form_userUpdate.addEventListener("submit", function (e) {
 
     fetch(form_userUpdate.url.value, sendOption)
         .then(res => {
+            btn_loading.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
             if (res.result) {
                 location.reload();
             } else {
-                accountUpdate_inputError(res.error)
+                if(res.status == 1) {
+                    accountUpdate_inputError(res.error)
+                } else if(res.status == 2) {
+                    modal_accountEdit.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、ユーザの更新を行えませんでした。');
+                    modal_commonError.show();
+                }
             }
         })
+        .catch(error => {
+            modal_accountEdit.hide();
+            modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、ユーザの更新を行えませんでした。');
+            modal_commonError.show();
+            console.log(error);
+
+            btn_loading.classList.remove('is-load');
+        })
+        
     
     const accountUpdate_inputError = (error) => {
         error.icon ? form_userUpdate.querySelector('.icon-error').textContent = error.icon : form_userUpdate.querySelector('.icon-error').textContent = "";
@@ -166,6 +195,9 @@ form_userUpdate.addEventListener("submit", function (e) {
 form_userDelete.addEventListener("submit", function (e) {
     e.preventDefault();
 
+    const btn_loading = document.getElementById('btn_userDelete');
+    btn_loading.classList.add('is-load');
+
     let collect_username = form_userDelete.collect_username.value;
     let username = form_userDelete.username.value;
     if(collect_username === username) {
@@ -180,14 +212,25 @@ form_userDelete.addEventListener("submit", function (e) {
     
         fetch(form_userDelete.url.value, sendOption)
             .then(res => {
+                btn_loading.classList.remove('is-load');
                 return res.json();
             })
             .then((res) => {
                 if (res.result) {
                     window.location.href = '/';
                 } else {
-    
+                    modal_accountDelete.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、ユーザの削除を行えませんでした。');
+                    modal_commonError.show();
                 }
+            })
+            .catch(error => {
+                modal_accountDelete.hide();
+                modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、ユーザの削除を行えませんでした。');
+                modal_commonError.show();
+                console.log(error);
+                
+                btn_loading.classList.remove('is-load');
             })
     }
 

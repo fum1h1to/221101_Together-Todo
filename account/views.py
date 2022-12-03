@@ -1,4 +1,5 @@
 import html
+from django.db import transaction
 from django.views.generic import TemplateView
 from django.shortcuts import render, redirect
 from account.forms import SignupForm, LoginForm, UserChangeForm
@@ -100,11 +101,20 @@ def update(request):
     
     if user_data.is_valid():
         
-        icon = user_data.cleaned_data["icon"]
-        username = user_data.cleaned_data["username"]
-        email = user_data.cleaned_data["email"]
-        password = user_data.cleaned_data["password"]
-        CustomUser.objects.update(request.user, icon, username, email, password)
+        try:
+            with transaction.atomic():
+                icon = user_data.cleaned_data["icon"]
+                username = user_data.cleaned_data["username"]
+                email = user_data.cleaned_data["email"]
+                password = user_data.cleaned_data["password"]
+                CustomUser.objects.update(request.user, icon, username, email, password)
+        
+        except:
+            context = {
+                'result': False,
+                'status': 2,
+                'error': {}
+            }
 
         context = {
             'result': True
@@ -115,6 +125,7 @@ def update(request):
         
         context = {
             'result': False,
+            'status': 1,
             'error': dict(user_data.errors.items())
         }
 

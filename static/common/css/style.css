@@ -15,3 +15,18 @@ textarea {
     border-right: solid 1px #333;
     min-height: 100vh;
 }
+
+.spinner-border{
+    display: none!important;
+}
+.btn.is-load {
+    pointer-events: none;
+}
+.btn.is-load .spinner-border {
+    display: inline-block!important;
+    margin-right: .5em;
+}
+
+.modal-open { 
+    padding: 0!important;
+}

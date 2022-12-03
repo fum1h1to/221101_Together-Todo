@@ -41,6 +41,22 @@ document.getElementById('btn_taskPlusButton').addEventListener('click', function
     todoCreateFormReset();
 })
 
+/* ----------------------------
+loadingの処理
+----------------------------- */
+const todo_loadingVisualBtns = document.querySelectorAll('.js-todo_loadingVisual');
+todo_loadingVisualBtns.forEach(ele => {
+    ele.addEventListener('click', (e) => {
+        ele.classList.add('is-load');
+    })
+})
+
+const todo_offLadingVisual = () => {
+    todo_loadingVisualBtns.forEach(ele => {
+        ele.classList.remove('is-load');
+    })
+}
+
 
 /* ----------------------------
 タスクの表示処理
@@ -224,6 +240,11 @@ document.getElementById('btn_todoRequestUserList').addEventListener('click', (e)
 /* ----------------------------
 タスク作成処理
 ----------------------------- */
+// btn
+const btn_todoSelectBocchi = document.getElementById('btn_todoSelectBocchi');
+const btn_todoSelectRequest = document.getElementById('btn_todoSelectRequest');
+const btn_todoSelectRequest_numCollect = document.getElementById('btn_todoSelectRequest_numCollect');
+
 (function () {
     // 期限日の処理
     let optionLoop, this_day, this_month, this_year, today;
@@ -300,6 +321,8 @@ const todoCreate_sendData = (isBocchi) => {
 
     fetch('/todo/create/', sendOption)
         .then(res => {
+            offLoadingVisual();
+
             return res.json();
         })
         .then((res) => {
@@ -327,12 +350,20 @@ const todoCreate_sendData = (isBocchi) => {
             modal_commonError.show();
             todoCreateFormReset();
             console.error(error);
+
+            offLoadingVisual();
         });
     
     const todoCreate_modalClose = () => {
         modal_todoSelectBocchi.hide();
         modal_todoSelectRequest.hide();
         modal_todoCreate_numCheck.hide();
+    }
+
+    const offLoadingVisual = () => {
+        btn_todoSelectBocchi.classList.remove('is-load');
+        btn_todoSelectRequest.classList.remove('is-load');
+        btn_todoSelectRequest_numCollect.classList.remove('is-load');
     }
 
     const todoCreate_inputError = (error) => {
@@ -346,32 +377,40 @@ const todoCreate_sendData = (isBocchi) => {
 }
 
 // ボッチモードの場合
-document.getElementById('btn_todoSelectBocchi').addEventListener("click", function(e) {
+btn_todoSelectBocchi.addEventListener("click", function(e) {
     e.preventDefault();
+    btn_todoSelectBocchi.classList.add('is-load');
 
     todoCreate_sendData(isBochi=true);
 });
 
 // 依頼者を選択する場合
-document.getElementById('btn_todoSelectRequest').addEventListener("click", function(e) {
+btn_todoSelectRequest.addEventListener("click", function(e) {
     e.preventDefault();
 
     if(Object.keys(todoCreate_requestUsers).length == 0) {
         modal_todoSelectRequest.hide();
         modal_todoCreate_numCheck.show();
     } else {
+        btn_todoSelectRequest.classList.add('is-load');
         todoCreate_sendData(isBochi=false);
     }
 });
-document.getElementById('btn_todoSelectRequest_numCollect').addEventListener("click", function(e) {
+btn_todoSelectRequest_numCollect.addEventListener("click", function(e) {
     e.preventDefault();
 
+    btn_todoSelectRequest_numCollect.classList.add('is-load');
     todoCreate_sendData(isBochi=false);
 });
 
 /* ----------------------------
 タスク更新処理
 ----------------------------- */
+// btn
+const btn_todoUpdate = document.getElementById('js-btn_todoUpdate');
+const btn_todoDelete = document.getElementById('js-btn_todoDelete');
+
+
 // 更新フォームの生成処理
 const makeTaskUpdateForm = (taskid) => {
     const task = myTaskList[taskid];
@@ -530,8 +569,12 @@ const todoUpdate_taskCheck = (taskid) => {
     if (task.requestUsers.length <= 0) {
         // 依頼者が一人もいない場合
         modal_todoUpdate_completeCheck.show();
+        
+        const btn_todoCompleteOne = document.getElementById('js-btn_todoCompleteOne')
+        btn_todoCompleteOne.addEventListener('click', (e) => {
+            e.preventDefault();
+            btn_todoCompleteOne.classList.add('is-load');
 
-        document.getElementById('js-btn_todoCompleteOne').addEventListener('click', (e) => {
             const body = new URLSearchParams()
             body.append('taskid', taskid);
 
@@ -547,6 +590,7 @@ const todoUpdate_taskCheck = (taskid) => {
 
             fetch('/todo/complete/', sendOption)
                 .then(res => {
+                    btn_todoCompleteOne.classList.remove('is-load');
                     return res.json();
                 })
                 .then((res) => {
@@ -563,6 +607,8 @@ const todoUpdate_taskCheck = (taskid) => {
                     modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを完了できませんでした。');
                     modal_commonError.show();
                     console.error(error);
+
+                    btn_todoCompleteOne.classList.remove('is-load');
                 });
         });
 
@@ -594,7 +640,10 @@ const initTaskUpdateBtn = () => {
 }
 
 // タスク更新のデータを送る
-document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
+btn_todoUpdate.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoUpdate.classList.add('is-load');
+
     const body = new URLSearchParams()
 
     let taskid = form_todoUpdate.taskid.value;
@@ -634,6 +683,7 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
 
     fetch('/todo/update/', sendOption)
         .then(res => {
+            btn_todoUpdate.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -660,6 +710,8 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
             modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを更新できませんでした。');
             modal_commonError.show();
             console.error(error);
+
+            btn_todoUpdate.classList.remove('is-load');
         });
     
     const todoUpdate_inputError = (error) => {
@@ -671,7 +723,10 @@ document.getElementById('js-btn_todoUpdate').addEventListener('click', (e) => {
 })
 
 // タスクの削除をする
-document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
+btn_todoDelete.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoDelete.classList.add('is-load');
+
     const body = new URLSearchParams()
 
     let taskid = form_todoUpdate.taskid.value;
@@ -689,6 +744,7 @@ document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
 
     fetch('/todo/delete/', sendOption)
         .then(res => {
+            btn_todoDelete.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -707,12 +763,17 @@ document.getElementById('js-btn_todoDelete').addEventListener('click', (e) => {
             modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
             modal_commonError.show();
             console.error(error);
+
+            btn_todoDelete.classList.remove('is-load');
         });
 })
 
 /* ----------------------------
 一次チェックモーダルでの処理
 ----------------------------- */
+// btn
+const btn_todoFirstCheck = document.getElementById('js-btn_todoFirstCheck');
+
 // 一次チェックフォームの生成
 const makeFirstCheckForm = (taskid) => {
     data = '';
@@ -786,7 +847,10 @@ const makeFirstCheckForm = (taskid) => {
 }
 
 // 一次チェックする
-document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) => {
+btn_todoFirstCheck.addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoFirstCheck.classList.add('is-load');
+
     const body = new FormData()
 
     let taskid = form_todoFirstCheck.taskid.value;
@@ -822,6 +886,7 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
 
     fetch('/todo/firstCheck/', sendOption)
         .then(res => {
+            btn_todoFirstCheck.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -844,6 +909,8 @@ document.getElementById('js-btn_todoFirstCheck').addEventListener('click', (e) =
             modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、一次チェックできませんでした。');
             modal_commonError.show();
             console.error(error);
+
+            btn_todoFirstCheck.classList.remove('is-load');
         });
     
     const todoFirstCheck_inputError = (error) => {

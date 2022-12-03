@@ -159,7 +159,7 @@
                 <button id="btn_todoRequestUserList" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoListRequest" data-bs-dismiss="modal">依頼者一覧</button>
 
                 <!-- 依頼決定ボタン -->
-                <button id="btn_todoSelectRequest" type="button" class="btn btn-primary">依頼する</button>
+                <button id="btn_todoSelectRequest" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>依頼する</button>
             </div>
         </div>
     </div>
@@ -216,7 +216,10 @@
                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoCreate" data-bs-dismiss="modal">戻る</button>
                 
                 <!-- 進むボタン -->
-                <button id="btn_todoSelectBocchi" type="button" class="btn btn-primary">依頼する</button>
+                <button id="btn_todoSelectBocchi" type="button" class="btn btn-primary">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    依頼する
+                </button>
             </div>
         </div>
     </div>
@@ -238,7 +241,7 @@
                     </table>
                     <div class="d-flex justify-content-between mt-3">
                         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal_todoDelete_check" data-bs-dismiss="modal">削除</button>
-                        <button id="js-btn_todoUpdate" type="button" class="btn btn-primary">更新</button>
+                        <button id="js-btn_todoUpdate" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>更新</button>
                     </div>
                 </form>
             </div>
@@ -262,7 +265,7 @@
                         <!-- 動的に生成する部分 -->
                     </table>
                     <div class="d-flex justify-content-center mt-3">
-                        <button id="js-btn_todoFirstCheck" type="button" class="btn btn-primary">送信</button>
+                        <button id="js-btn_todoFirstCheck" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>送信</button>
                     </div>
                 </form>
             </div>
@@ -298,7 +301,7 @@
             <!-- 閉じるボタン -->
             <div class="modal-body d-flex justify-content-between" style="padding: 1.5rem;">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_todoSelectRequest" data-bs-dismiss="modal">戻る</button>    
-                <button id="btn_todoSelectRequest_numCollect" type="button" class="btn btn-primary">はい</button>
+                <button id="btn_todoSelectRequest_numCollect" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>はい</button>
             </div>
         </div>
     </div>
@@ -331,7 +334,7 @@
             <!-- 閉じるボタン -->
             <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem; padding-right: 2rem;">
                 <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">戻る</button>
-                <button id="js-btn_todoCompleteOne" type="button" class="btn btn-primary">はい</button>
+                <button id="js-btn_todoCompleteOne" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>はい</button>
             </div>
         </div>
     </div>
@@ -380,7 +383,7 @@
             <!-- 閉じるボタン -->
             <div class="modal-body d-flex justify-content-between" style="padding-left: 2rem; padding-right: 2rem;">
                 <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoUpdate" data-bs-dismiss="modal">いいえ</button>
-                <button id="js-btn_todoDelete" type="button" class="btn btn-primary">はい</button>
+                <button id="js-btn_todoDelete" type="button" class="btn btn-primary"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>はい</button>
             </div>
         </div>
     </div>

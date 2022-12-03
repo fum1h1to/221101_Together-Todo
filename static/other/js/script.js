@@ -383,7 +383,11 @@ const makeOtherTaskDetailModal = (taskid) => {
 /* ----------------------------
 タスクのチェック
 ----------------------------- */
+const btn_todoOtherTaskCheck = document.getElementById('js-btn_todoOtherTaskCheck')
 document.getElementById('js-btn_todoOtherTaskCheck').addEventListener('click', (e) => {
+    e.preventDefault();
+    btn_todoOtherTaskCheck.classList.add('is-load');
+
     const tasid = document.getElementById('js-otherTaskDetail_taskid').value;
 
     const body = new URLSearchParams();
@@ -401,6 +405,7 @@ document.getElementById('js-btn_todoOtherTaskCheck').addEventListener('click', (
 
     fetch('/request/complete/', sendOption)
         .then(res => {
+            btn_todoOtherTaskCheck.classList.remove('is-load');
             return res.json();
         })
         .then((res) => {
@@ -417,5 +422,7 @@ document.getElementById('js-btn_todoOtherTaskCheck').addEventListener('click', (
             modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、完了できませんでした。');
             modal_commonError.show();
             console.error(error);
+
+            btn_todoOtherTaskCheck.classList.remove('is-load');
         })
 })
