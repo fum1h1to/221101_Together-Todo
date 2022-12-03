@@ -24,19 +24,19 @@
 
                 <div class="mb-3">
                     {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
+                    <p class="text-danger">{{ error }}</p>
                     {% endfor %}
                 </div>
 
                 <div class="mb-3">
                     <label for="id_username" class="form-label">メールアドレス</label>
                     <input type="text" name="username" autofocus class="form-control" autocomplete="email" id="id_username">
-                    <div class="form-text">{{ form.username.errors.0 }}</div>
+                    <div class="text-danger form-text">{{ form.username.errors.0 }}</div>
                 </div>
                 <div class="mb-3">
                     <label for="id_password" class="form-label">パスワード</label>
                     <input type="password" name="password" autocomplete="current-password" class="form-control" id="id_password">
-                    <div class="form-text">{{ form.password.errors.0 }}</div>
+                    <div class="text-danger form-text">{{ form.password.errors.0 }}</div>
                 </div>
 
                 <p><input type="hidden" name="next" value="{{ next }}"></p> 

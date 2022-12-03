@@ -2,10 +2,31 @@ img {
     max-width: 100%;
 }
 
+textarea {
+    resize: vertical;
+    width: 100%;
+    min-height: 10em;
+}
+
 .sp-limit {
     max-width: 560px;
     margin: 0 auto;
     border-left: solid 1px #333;
     border-right: solid 1px #333;
     min-height: 100vh;
+}
+
+.spinner-border{
+    display: none!important;
+}
+.btn.is-load {
+    pointer-events: none;
+}
+.btn.is-load .spinner-border {
+    display: inline-block!important;
+    margin-right: .5em;
+}
+
+.modal-open { 
+    padding: 0!important;
 }

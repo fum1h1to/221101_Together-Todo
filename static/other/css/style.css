@@ -162,6 +162,16 @@ modal_todoOtherTaskDetail
     cursor: pointer;
 }
 
+#modal_todoOtherTaskDetail .taskCheckButton__btn.is-load {
+    pointer-events: none;
+}
+#modal_todoOtherTaskDetail .taskCheckButton__btn.is-load .spinner-border {
+    display: inline-block!important;
+}
+#modal_todoOtherTaskDetail .taskCheckButton__btn.is-load img {
+    display: none;
+}
+
 /* ダミーアイコン */
 #modal_todoOtherTaskDetail .human{
     width: 25px;
