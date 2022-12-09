@@ -46,7 +46,7 @@ accordion custom
 footer
 ----------------------------- */
 .footerMargin{
-    margin-bottom: 50px;
+    padding-bottom: 50px;
 }
 
 .footer {
@@ -69,8 +69,6 @@ footer
     align-items: center;
     height: 100%;
     z-index: 9999;
-    border-left: solid 1px #333;
-    border-right: solid 1px #333;
 }
 .footerTab__item {
     width: 50%;
