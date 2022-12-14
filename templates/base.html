@@ -25,10 +25,16 @@
     {% endblock %}
 </head>
 <body>
-    <div class="sp-limit">
-    {% block content %}
-    {% endblock %}
+    <div class="base">
+        <div id="js-snowField" class="snowField">
+             <canvas id="canvas"></canvas>
+        </div>
+        <div class="sp-limit">
+            {% block content %}
+            {% endblock %}
+        </div>
     </div>
+    <script type="text/javascript" src="{% static 'common/js/snow.js' %}"></script>
 
     {% block foot %}
     {% endblock %}

@@ -8,12 +8,28 @@ textarea {
     min-height: 10em;
 }
 
+.base {
+    width: 100%;
+    min-height: 100vh;
+    background: linear-gradient(#8400ff, #bc04a4);  
+    /* background: linear-gradient(#192633, #2149ae) fixed;  */
+    /* background: linear-gradient(red,rgb(248, 207, 2)); */
+    position: relative;
+}
+
 .sp-limit {
+    position: relative;
+    background: #fff;
     max-width: 560px;
     margin: 0 auto;
-    border-left: solid 1px #333;
-    border-right: solid 1px #333;
     min-height: 100vh;
+}
+
+.snowField {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
 }
 
 .spinner-border{
