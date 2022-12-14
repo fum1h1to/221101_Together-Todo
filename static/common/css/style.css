@@ -11,7 +11,7 @@ textarea {
 .base {
     width: 100%;
     min-height: 100vh;
-    background: #252525;
+    background: linear-gradient(#8400ff, #bc04a4);
     position: relative;
 }
 
