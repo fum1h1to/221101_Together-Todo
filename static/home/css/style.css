@@ -338,9 +338,11 @@ modal_todoSelectBocchi
 
 /* ----------------------------
 modal_todoSelectRequest,
-modal_todoListRequest
+modal_todoListRequest,
+modal_todoFirstCheckDetailUsers
 ----------------------------- */
 #modal_todoSelectRequest section ol,
+#modal_todoFirstCheckDetailUsers section ol,
 #modal_todoListRequest section ol {
 	margin: 0;
 	padding: 0;
@@ -349,6 +351,7 @@ modal_todoListRequest
     padding-top: 1rem;
 }
 #modal_todoSelectRequest section ol li,
+#modal_todoFirstCheckDetailUsers section ol li,
 #modal_todoListRequest section ol li {
     padding-top: 1.2rem;
 	padding-left: 2.5rem;
@@ -358,6 +361,7 @@ modal_todoListRequest
     border-bottom: 1px solid;
 }
 #modal_todoSelectRequest section ol li,
+#modal_todoFirstCheckDetailUsers section ol li,
 #modal_todoListRequest section ol li {
 	background-image: url(/static/common/images/default_icon.jpeg);
     background-size: 35px;
@@ -365,6 +369,7 @@ modal_todoListRequest
 }
 
 #modal_todoSelectRequest section ol li .addPlus,
+#modal_todoFirstCheckDetailUsers section ol li .addPlus,
 #modal_todoListRequest section ol li .addPlus {
     width: 35px;
     height: 35px;
@@ -373,12 +378,14 @@ modal_todoListRequest
 }
 
 #modal_todoSelectRequest .error,
+#modal_todoFirstCheckDetailUsers .error,
 #modal_todoListRequest .error {
     padding-left: 1.5rem;
     padding-top: 0;
 }
 
 #modal_todoSelectRequest .modal-buttons,
+#modal_todoFirstCheckDetailUsers .modal-buttons,
 #modal_todoListRequest .modal-buttons {
     border-top: 1px solid rgba(0,0,0,0.1);
     padding-left: 3rem;
@@ -388,3 +395,119 @@ modal_todoListRequest
 }
 
 
+/* ----------------------------
+modal_todoFirstCheckDetail
+----------------------------- */
+/*テーブルを親要素の幅いっぱいに伸ばす*/
+#modal_todoFirstCheckDetail .table-res-form {
+    width: 100%;
+    table-layout: fixed;
+}
+/*一行ごとに上ボーダー*/
+#modal_todoFirstCheckDetail .table-res-form tr {
+    border-top: none;
+}
+/*一番上の行だけボーダーなし*/
+#modal_todoFirstCheckDetail .table-res-form tr:first-child {
+    border-top: none;
+}
+/*背景色つける*/
+#modal_todoFirstCheckDetail .table-res-form tr:nth-child(2n + 3) {
+    background: #eee;
+}
+
+#modal_todoFirstCheckDetail .table-res-form tr .error{
+    word-break: keep-all;
+}
+
+/*thとtd内の余白指定*/
+#modal_todoFirstCheckDetail .table-res-form th, .table-res-form td {
+    padding: 0.7em;
+}
+/*th（項目欄）は30%幅、テキストを左寄せ*/
+#modal_todoFirstCheckDetail .table-res-form th {
+    width: 25%;
+    text-align: left;
+}
+
+/* 期限日の年、月、日のテキスト */
+#modal_todoFirstCheckDetail .date{
+   padding-top: 0.4rem;
+}
+
+/* エラーダイアログのテキスト */
+#modal_todoFirstCheckDetail .table-res-form tr .error{
+    font-size: small;
+    padding: 0.5rem;
+}
+
+/* メモ入力フォーム */
+#modal_todoFirstCheckDetail .input-memo{
+    margin-top: 1rem;
+    border-radius: 3px;
+}
+
+#modal_todoFirstCheckDetail .form-control[readonly] {
+    background-color: #fff;
+}
+
+#modal_todoFirstCheckDetail input[type="radio"] {
+    pointer-events: none;
+}
+
+#modal_todoFirstCheckDetail .requestUsers {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+#modal_todoFirstCheckDetail .requestUsers__text {
+    width: calc(70% - 20px);
+    font-weight: bold;
+}
+
+#modal_todoFirstCheckDetail .requestUsers__users {
+    width: 30%;
+    position: relative;
+    z-index: 0;
+}
+
+#modal_todoFirstCheckDetail .requestUsers__user {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+}
+#modal_todoFirstCheckDetail .requestUsers__user:nth-child(1) {
+    left: 0;
+    z-index: 4;
+}
+#modal_todoFirstCheckDetail .requestUsers__user:nth-child(2) {
+    left: 18px;
+    z-index: 3;
+}
+#modal_todoFirstCheckDetail .requestUsers__user:nth-child(3) {
+    left: 36px;
+    z-index: 2;
+
+}
+#modal_todoFirstCheckDetail .requestUsers__user:nth-child(4) {
+    left: 54px;
+    z-index: 1;
+}
+#modal_todoFirstCheckDetail .requestUsers__user:nth-child(n + 5) {
+    display: none
+}
+
+@media (max-width: 480px) {
+    #modal_todoFirstCheckDetail table {
+        width: 100%;
+    }
+ 
+    #modal_todoFirstCheckDetail table th,
+    #modal_todoFirstCheckDetail table td {
+        display: block;
+    }
+}

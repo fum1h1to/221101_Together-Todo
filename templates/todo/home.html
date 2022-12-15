@@ -273,6 +273,54 @@
     </div>
 </div>
 
+<!-- modal_todoFirstCheckDetail -->
+<div class="modal fade" id="modal_todoFirstCheckDetail" tabindex="-1" aria-labelledby="modal_todoFirstCheckDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoFirstCheckDetailLabel">1次チェック確認画面</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <div id="js-ele_todoFirstCheckDetail">
+                    <!-- 動的に生成する部分 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- modal_todoFirstCheckDetailUsers -->
+<div class="modal fade" id="modal_todoFirstCheckDetailUsers" tabindex="-1" aria-labelledby="modal_todoFirstCheckDetailUsersLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header justify-content-center">
+                <div style="margin-right: auto; width: 1rem;"></div>
+                <h5 class="modal-title" id="modal_todoFirstCheckDetailUsersLabel">1次チェック依頼者画面</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-dismiss="modal" data-bs-target="#modal_todoFirstCheckDetail" aria-label="Close"></button>
+            </div>
+            <div class="container-fluid p-1 m-4"
+                style="background-color:rgb(228, 228, 228,0.3); height: 40rem; width: auto; overflow-y: scroll;">
+                <div class="modal-body" style="padding: 1.5rem;">
+
+                    <!-- 依頼者一覧リスト -->
+                    <section>
+                        <ol>
+                            <p>依頼者は選択されていません。</p>
+                        </ol>
+                    </section>
+                </div>
+            </div>
+
+            <!-- 閉じるボタン -->
+            <div class="modal-buttons d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoFirstCheckDetail" data-bs-dismiss="modal">閉じる</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- modal_todoCreate_success -->
 <div class="modal fade" id="modal_todoCreate_success" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">

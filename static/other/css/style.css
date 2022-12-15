@@ -37,6 +37,7 @@ otherTaskList
     height: 25px;
     float: right;
     margin-right: 5%;
+    border-radius: 50%;
 }
 
 .otherTaskList__titleWrap {

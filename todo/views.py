@@ -153,6 +153,7 @@ def show(request):
                 return_requestUsers.append(
                     {
                         'userid': str(r_user.userid),
+                        'username': r_user.username,
                         'iconpath': iconpath
                     }
                 )

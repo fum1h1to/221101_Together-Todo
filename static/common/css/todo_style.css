@@ -10,7 +10,7 @@
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    border: solid 2px #000;
+    border: solid 1px #000;
     overflow: hidden;
     cursor: pointer;
 }
@@ -105,6 +105,8 @@ modal_accountEdit
 }
 #modal_accountEdit .account-icon {
     width: 48px;
+    border-radius: 50%;
+    border: solid 1px #000;
 }
 #modal_accountEdit .file-label {
     /* ブラウザ特有のスタイルを無効に */
