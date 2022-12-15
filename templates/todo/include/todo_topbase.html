@@ -11,6 +11,7 @@
             </div>
             <div class="modal-body">
                 <!-- アカウントの編集 -->
+                <p style="padding-left: 2em; margin-bottom: 2em">現在<span class="px-2" style="font-weight: bold">{{ request.user.username }}</span>としてログインしています。</p>
                 <ul class="account_edit">
                     <div class="accountEdit__icon cursor-pointer" data-bs-toggle="modal" data-bs-target="#modal_checkPassword" data-bs-dismiss="modal">
                         <img src="{% static 'common/images/settings_image.svg' %}" alt="">アカウントの編集

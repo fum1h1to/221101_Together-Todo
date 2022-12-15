@@ -87,8 +87,8 @@ function initSnow(){
 for(let i = 0; i < NUM; i++) {
 x=getRandom(1, canvas.width);//位置をランダムに
 y=getRandom(1, canvas.height);
-radian=getRandom(1 ,7);//大きさ
-speed=getRandom(2,3);//縦に落ちる速さ
+radian=getRandom(1 ,5);//大きさ
+speed=getRandom(.5,1.5);//縦に落ちる速さ
 wind=getRandom(0, 1.5);//横に揺れる
 
 const snow= new Snow(x, y, radian, speed, wind);

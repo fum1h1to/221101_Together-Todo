@@ -8,6 +8,7 @@ const modal_todoSelectRequest = new bootstrap.Modal(document.getElementById('mod
 const modal_todoSelectBocchi = new bootstrap.Modal(document.getElementById('modal_todoSelectBocchi'), modalOption);
 const modal_todoUpdate = new bootstrap.Modal(document.getElementById('modal_todoUpdate'), modalOption);
 const modal_todoFirstCheck = new bootstrap.Modal(document.getElementById('modal_todoFirstCheck'), modalOption);
+const modal_todoFirstCheckDetail = new bootstrap.Modal(document.getElementById('modal_todoFirstCheckDetail'));
 
 const modal_todoCreate_success = new bootstrap.Modal(document.getElementById('modal_todoCreate_success'), modalOption);
 const modal_todoCreate_numCheck = new bootstrap.Modal(document.getElementById('modal_todoCreate_numCheck'), modalOption);
@@ -118,7 +119,7 @@ const getMyTaskList_and_disp = () => {
                 myTaskList_1.innerHTML += data;
                 task1count += 1;
             } else if(myTaskList[task].status == 1) {
-                data = '<li class="myTaskListItem">';
+                data = '<li class="myTaskListItem js-firstCheckDetailShow" data-taskid=' + myTaskList[task].taskid + '>';
                 data += '<div class="myTaskListItem__icon"><img src="/static/common/images/icon_send.svg" alt=""></div>';
                 data += '<div class="myTaskListItem__text">' + myTaskList[task].taskName + '</div>';
                 data += '<div class="myTaskListItem__users">';
@@ -130,7 +131,7 @@ const getMyTaskList_and_disp = () => {
                 myTaskList_2.innerHTML += data;
                 task2count += 1;
             } else if(myTaskList[task].status == 2) {
-                data = '<li class="myTaskListItem">';
+                data = '<li class="myTaskListItem js-firstCheckCompDetailShow" data-taskid=' + myTaskList[task].taskid + '>';
                 data += '<div class="myTaskListItem__icon"><img src="/static/common/images/icon_check.svg" alt=""></div>';
                 data += '<div class="myTaskListItem__text">' + myTaskList[task].taskName + '</div>';
                 data += '<div class="myTaskListItem__users">';
@@ -149,6 +150,8 @@ const getMyTaskList_and_disp = () => {
         document.querySelector('#myTaskList-headingThree .task-num').innerHTML = task3count;
 
         initTaskUpdateBtn();
+        initFirstCheckDetailBtn();
+        initFirstCheckCompDetailBtn();
     }
 }
 getMyTaskList_and_disp();
@@ -919,3 +922,235 @@ btn_todoFirstCheck.addEventListener('click', (e) => {
         error.description ? form_todoFirstCheck.querySelector('.description-error').textContent = error.description : form_todoFirstCheck.querySelector('.description-error').textContent = "";
     }
 })
+
+/* ----------------------------
+一次チェック後の確認画面
+----------------------------- */
+const initFirstCheckDetailBtn = () => {
+    const btns = document.querySelectorAll('.js-firstCheckDetailShow');
+    btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let taskid = btn.dataset.taskid;
+            createFirstCheckDetail(taskid, false);
+            modal_todoFirstCheckDetail.show();
+        })
+    })
+}
+
+const initFirstCheckCompDetailBtn = () => {
+    const btns = document.querySelectorAll('.js-firstCheckCompDetailShow');
+    btns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            let taskid = btn.dataset.taskid;
+            createFirstCheckDetail(taskid, true);
+            modal_todoFirstCheckDetail.show();
+        })
+    })
+}
+
+
+const createFirstCheckDetail = (taskid, isComplete) => {
+    const task = myTaskList[taskid];
+    const detail_day = new Date(task.deadline);
+    const this_year = detail_day.getFullYear();
+    const this_month = detail_day.getMonth() + 1;
+    const this_day = detail_day.getDate();
+
+    let detailLabel = '';
+    if (isComplete) {
+        detailLabel = '完了タスク確認画面';
+    } else {
+        detailLabel = '1次チェック確認画面';
+    }
+    document.getElementById('modal_todoFirstCheckDetailLabel').textContent = detailLabel;
+
+    let userLabel = '';
+    if (isComplete) {
+        userLabel = '完了タスク依頼者画面';
+    } else {
+        userLabel = '1次チェック依頼者画面';
+    }
+    document.getElementById('modal_todoFirstCheckDetailUsersLabel').textContent = userLabel;
+
+
+    data = '';
+    data += '<table class="table-res-form mb-4">';
+    data += '<tr>';
+    data += '<th class="p-0" style="padding-left: .7em!important">ステータス</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>' + (isComplete ? '<span style="color: red">完了</span>': '一次チェック済み') + '</td>';
+    data += '</tr>';
+    data += '<tr></tr>';
+    data += '<!-- タスク名 -->';
+    data += '<tr>';
+    data += '<th>タスク名</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td><input type="text" class="form-control" name="task" readonly value="' + task.taskName + '"></td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 期限日 -->';
+    data += '<tr>';
+    data += '<th>期限日</th>';
+    data += '<td>';
+    data += '<div class="btn-group d-flex justify-content-between mt-2">';
+    data += '<!-- 年 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="year btn btn-light" readonly>';
+    data += '<option selected>' + this_year + '</option>';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">年</p>';
+    data += '';
+    data += '<!-- 月 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="month btn btn-light" readonly>';
+    data += '<option selected>' + this_month + '</option>';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">月</p>';
+    data += '';
+    data += '<!-- 日 -->';
+    data += '<div class="dropdown">';
+    data += '<select class="day btn btn-light" readonly>';
+    data += '<option selected>' + this_day + '</option>';
+    data += '</select>';
+    data += '</div>';
+    data += '<p class="date">日</p>';
+    data += '</div>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ -->';
+    data += '<tr>';
+    data += '<th></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- 重要度 -->';
+    data += '<tr>';
+    data += '<th>重要度</th>';
+    data += '<td>';
+    data += '<!-- それぞれラジオボタンで実装 -->';
+    data += '<div class="d-flex justify-content-between">';
+    data += '<div class="form-check form-check-inline" style="justify-content:start;">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 0 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">高</label>';
+    data += '</div>';
+    data += '<div class="form-check form-check-inline" style="justify-content: center;">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 1 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">中</label>';
+    data += '</div>';
+    data += '<div class="form-check form-check-inline">';
+    data += '<input class="form-check-input" type="radio" name="importance" ' + (task.importance == 2 ? 'checked' : '') + '>';
+    data += '<label class="form-check-label">低</label>';
+    data += '</div>';
+    data += '</div>';
+    data += '</td>';
+    data += '</tr>';
+    data += '<!-- エラーダイアログ 重要度にエラーはないので空白-->';
+    data += '<tr>';
+    data += '<th></th>';
+    data += '</tr>';
+    data += '';
+    data += '<!-- メモ -->';
+    data += '<tr>';
+    data += '<th>メモ</th>';
+    data += '<!-- 入力フォーム -->';
+    data += '<td>';
+    data += '<textarea class="input-memo" cols="35" rows="10" readonly>' + task.note + '</textarea>';
+    data += '</td>';
+    data += '</tr>';
+    data += '</table>';
+
+    data += '<div class="requestUsers mb-5">';
+    data += '<div class="requestUsers__text">依頼者：' + Object.keys(task.requestUsers).length + '名</div>';
+    data += '<div class="requestUsers__users">';
+    for(let user in task.requestUsers) {
+        data += '<div class="requestUsers__user"><img src="' + task.requestUsers[user].iconpath + '" alt=""></div>';
+    }
+    data += '</div>';
+    data += '</div>';
+
+    data += '<div class="modal-buttons d-flex justify-content-between">';
+    data += '<!-- 依頼者一覧表示ボタン -->';
+    data += '<button id="btn_todoFirstCheckDetailUsers" type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modal_todoFirstCheckDetailUsers" data-bs-dismiss="modal">依頼者一覧</button>';
+    data += '';
+    if (isComplete) {
+        data += '<!-- 削除ボタン -->';
+        data += '<button id="js-completeDelete" type="button" class="btn btn-danger" data-taskid="' + task.taskid + '"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>削除</button>';
+    } else {
+        data += '<!-- 完了ボタン -->';
+        data += '<button type="button" class="btn btn-primary" data-bs-dismiss="modal">閉じる</button>';
+    }
+    data += '</div>';
+
+    document.getElementById('js-ele_todoFirstCheckDetail').innerHTML = data;
+
+
+    // ユーザー一覧を表示
+    const userlistElement = document.querySelector('#modal_todoFirstCheckDetailUsers section ol');
+    userlistElement.innerHTML = '';
+    if(Object.keys(task.requestUsers).length != 0) {
+        for(let user in task.requestUsers) {
+            userlistElement.innerHTML += '<li class="request_user" data-iconpath=' + task.requestUsers[user].iconpath + '>' + task.requestUsers[user].username + '</li>'
+        }
+        const userElements = document.querySelectorAll('#modal_todoFirstCheckDetailUsers section ol .request_user')
+        userElements.forEach((ele) => {
+            ele.style.cssText = 'background-image: url(' + ele.dataset.iconpath + ')';
+        })
+    } else {
+        userlistElement.innerHTML = '<p>依頼者は選択されていません。</p>';
+    }
+
+    if (isComplete) {
+        const btn_completeDelete = document.getElementById('js-completeDelete');
+        btn_completeDelete.addEventListener('click', (e) => {
+            e.preventDefault();
+            btn_completeDelete.classList.add('is-load');
+
+            const body = new URLSearchParams()
+
+            let taskid = btn_completeDelete.dataset.taskid;
+            body.append('taskid', taskid);
+
+            const sendOption = {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+                },
+                body: body
+            };
+
+            fetch('/todo/delete/', sendOption)
+                .then(res => {
+                    btn_completeDelete.classList.remove('is-load');
+                    return res.json();
+                })
+                .then((res) => {
+                    if (res.result) {
+                        modal_todoFirstCheckDetail.hide();
+                        modal_todoDelete_success.show();
+                        getMyTaskList_and_disp();
+                    } else {
+                        modal_todoFirstCheckDetail.hide();
+                        modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
+                        modal_commonError.show();
+                    }
+                })
+                .catch(error => {
+                    modal_todoFirstCheckDetail.hide();
+                    modal_commonError_moreInfoUpdate('サーバで何かエラーが起きたため、タスクを削除できませんでした。');
+                    modal_commonError.show();
+                    console.error(error);
+
+                    btn_completeDelete.classList.remove('is-load');
+                });
+        })
+    }
+}
