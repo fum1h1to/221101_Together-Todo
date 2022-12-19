@@ -1,49 +1,43 @@
-/* パスワード表示非表示のアイコン（目玉）の実装がわからなかった */
-#checkPassword {
-    display: none;
+.navbar-brand {
+    width: 40px;
+}
+@media (max-width: 480px) {
+    .navbar-brand span {
+        display: none;
+    }
 }
 
-.hideText,
-.showText {
-    border: none;
-    outline: none;
+.mainVisual {
+    width: 100%;
+    margin-top: 50px;
+}
+.mainVisual__img {
+    width: 250px;
+    margin: 0 auto;
+}
+.bigTxt {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 32px;
+    font-weight: bold;
 }
 
-.togglePassword {
-    border: 1px solid;
-    border-radius: 2px;
-    width: 205px;
+.meritBoxSlide {
+    margin-top: 40px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
-.showText {
-    display: none;
+.btmCont {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.btmCont .bigTxt{
+    margin-top: 0;
 }
 
-.hideText {
-    display: inline;
+.footer {
+    padding: 1em;
+    text-align: center;
 }
-
-.fa-eye:before {
-    display: inline;
-    margin-left: 0px;
-}
-
-.fa-eye-slash:before {
-    display: none;
-}
-
-#checkPassword:checked+.togglePassword>.fa-eye:before {
-    display: none;
-}
-
-#checkPassword:checked+.togglePassword>.fa-eye-slash:before {
-    display: inline-block;
-}
-
-#checkPassword:checked+.togglePassword>.hideText {
-    display: none;
-}
-
-#checkPassword:checked+.togglePassword>.showText {
-    display: inline-block;
+.footer p {
+    margin: 0;
 }
