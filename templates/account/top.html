@@ -3,25 +3,82 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'top/css/style.css' %}">
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"
+/>
 {% endblock %}
 
 {% block content %}
- <!-- ヘッダ -->
- <div class="header text-center border-bottom pb-2 pt-3">
-    <h1>アプリ紹介画面</h1>
+<!-- ヘッダ -->
+<div class="header">
+    <nav class="navbar navbar-expand navbar-light bg-light">
+        <div class="container-fluid d-flex">
+            <a class="navbar-brand">
+                <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
+                <span>Together Todo</span>
+            </a>
+            <ul class="navbar-nav">
+                <li class="nav-item me-3">
+                    <a class="nav-link" href="{% url 'login' %}">ログイン</a>
+                </li>
+                <li class="nav-item">
+                    <a class="btn btn-outline-primary" href="{% url 'signup' %}">アカウントを作成</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid p-0">
     <!-- 真ん中の文字 -->
-    <div class="Apptext text-center" style="margin-top:15rem">
-        <h2>アプリ紹介画面(仮)</h2>
+    <div class="mainVisual">
+        <div class="mainVisual__img">
+            <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
+        </div>
+        <div class="bigTxt">Together Todoは</div>
+    </div>
+
+    <div class="">
+        <div class="swiper meritBoxSlide" id="js-meritBoxSlide">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="mmeritBoxSlide__img">
+                        <img src="{% static 'top/images/img-merit-box-01.png' %}" alt="">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="meritBoxSlide__img">
+                        <img src="{% static 'top/images/img-merit-box-02.png' %}" alt="">
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="meritBoxSlide__img">
+                        <img src="{% static 'top/images/img-merit-box-03.png' %}" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
     </div>
 
     <!-- ログインorアカウント作成ボタン -->
-    <div class="loginButton text-center" style="margin-top:8rem">
-        <a href="{% url 'login' %}" class="btn btn-primary">ログイン</a>
-        <p class="or mt-3 mb-3">or</p>
-        <a href="{% url 'signup' %}" class="btn btn-primary">アカウントをお持ちでない方</a>
+    <div class="btmCont bg-light">
+        <div class="bigTxt" style="padding-top: 6rem">今すぐタスクを<br>他人と共有しよう</div>
+        <div class="loginButton text-center mt-5" style="padding-bottom: 5rem">
+            <a href="{% url 'signup' %}" class="btn btn-primary">アカウントを作成</a>
+        </div>
     </div>
 </div>
+
+<div class="footer">
+    <div class="container">
+        <p class="text-muted">&copy; TDU サーバープログラミング演習2022<br>A5班 「SUDO」</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block foot %}
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script type="text/javascript" src="{% static 'top/js/script.js' %}"></script>
 {% endblock %}
