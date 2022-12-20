@@ -1,84 +1,104 @@
-{% extends 'base.html' %}
 {% load static %}
 
-{% block head %}
-<link rel="stylesheet" href="{% static 'top/css/style.css' %}">
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"
-/>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Together ToDo</title>
+    <link rel="icon" href="{% static 'common/images/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static 'common/css/style.css' %}">
 
-{% block content %}
-<!-- ヘッダ -->
-<div class="header">
-    <nav class="navbar navbar-expand navbar-light bg-light">
-        <div class="container-fluid d-flex">
-            <a class="navbar-brand">
-                <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
-                <span>Together Todo</span>
-            </a>
-            <ul class="navbar-nav">
-                <li class="nav-item me-3">
-                    <a class="nav-link" href="{% url 'login' %}">ログイン</a>
-                </li>
-                <li class="nav-item">
-                    <a class="btn btn-outline-primary" href="{% url 'signup' %}">アカウントを作成</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-</div>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet">
 
-<div class="container-fluid p-0">
-    <!-- 真ん中の文字 -->
-    <div class="mainVisual">
-        <div class="mainVisual__img">
-            <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
-        </div>
-        <div class="bigTxt">Together Todoは</div>
-    </div>
+    <!-- スクリプト -->
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" 
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" 
+        crossorigin="anonymous"></script>
 
-    <div class="">
-        <div class="swiper meritBoxSlide" id="js-meritBoxSlide">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="mmeritBoxSlide__img">
-                        <img src="{% static 'top/images/img-merit-box-01.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="meritBoxSlide__img">
-                        <img src="{% static 'top/images/img-merit-box-02.png' %}" alt="">
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="meritBoxSlide__img">
-                        <img src="{% static 'top/images/img-merit-box-03.png' %}" alt="">
-                    </div>
-                </div>
+    
+    <link rel="stylesheet" href="{% static 'top/css/style.css' %}">
+    <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"
+    />
+</head>
+<body>
+    <div class="header">
+        <nav class="navbar navbar-expand navbar-light">
+            <div class="container-fluid d-flex">
+                <a class="navbar-brand">
+                    <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
+                    <span>Together Todo</span>
+                </a>
+                <ul class="navbar-nav">
+                    <li class="nav-item me-3">
+                        <a class="nav-link" href="{% url 'login' %}">ログイン</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-outline-primary" href="{% url 'signup' %}">アカウントを作成</a>
+                    </li>
+                </ul>
             </div>
-            <div class="swiper-pagination"></div>
+        </nav>
+    </div>
+    
+    <div class="container-fluid p-0">
+        <!-- 真ん中の文字 -->
+        <!-- <div class="mainVisual">
+            <div class="mainVisual__img">
+                <img src="{% static 'top/images/Together-Todo.png' %}" alt="">
+            </div>
+            <div class="bigTxt">Together Todoは</div>
+        </div> -->
+    
+        <div class="meritBoxSlide">
+            <div class="swiper meritBoxSlide__inner" id="js-meritBoxSlide">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">
+                        <div class="mmeritBoxSlide__img">
+                            <img src="{% static 'top/images/img-merit-box-01.png' %}" alt="" class="pc-only">
+                            <img src="{% static 'top/images/img-merit-box-01-sp.png' %}" alt="" class="sp-only">
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="meritBoxSlide__img">
+                            <img src="{% static 'top/images/img-merit-box-02.png' %}" alt="" class="pc-only">
+                            <img src="{% static 'top/images/img-merit-box-02-sp.png' %}" alt="" class="sp-only">
+                        </div>
+                    </div>
+                    <div class="swiper-slide">
+                        <div class="meritBoxSlide__img">
+                            <img src="{% static 'top/images/img-merit-box-03.png' %}" alt="" class="pc-only">
+                            <img src="{% static 'top/images/img-merit-box-03-sp.png' %}" alt="" class="sp-only">
+                        </div>
+                    </div>
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    
+        <!-- ログインorアカウント作成ボタン -->
+        <div class="btmCont">
+            <div class="bigTxt" style="padding-top: 6rem">Together Todoで<br>今すぐタスクを<br class="sp-only">他人と共有しよう</div>
+            <div class="loginButton text-center mt-5" style="padding-bottom: 5rem">
+                <a href="{% url 'signup' %}" class="btn btn-primary">アカウントを作成</a>
+            </div>
         </div>
     </div>
-
-    <!-- ログインorアカウント作成ボタン -->
-    <div class="btmCont bg-light">
-        <div class="bigTxt" style="padding-top: 6rem">今すぐタスクを<br>他人と共有しよう</div>
-        <div class="loginButton text-center mt-5" style="padding-bottom: 5rem">
-            <a href="{% url 'signup' %}" class="btn btn-primary">アカウントを作成</a>
+    
+    <div class="footer">
+        <div class="container">
+            <p class="text-muted">&copy; TDU サーバープログラミング演習<br class="sp-only">2022A5班 「SUDO」</p>
         </div>
     </div>
-</div>
-
-<div class="footer">
-    <div class="container">
-        <p class="text-muted">&copy; TDU サーバープログラミング演習2022<br>A5班 「SUDO」</p>
-    </div>
-</div>
-{% endblock %}
-
-{% block foot %}
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script type="text/javascript" src="{% static 'top/js/script.js' %}"></script>
-{% endblock %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'top/js/script.js' %}"></script>
+</body>
+</html>
