@@ -1,8 +1,11 @@
 # Members 
 [kuyu0827](https://github.com/kuyu0827)
+
 [foodcourt1](https://github.com/foodcourt1)
+
 [muji1213](https://github.com/muji1213)
-[fum1h1to][https://github.com/fum1h1to)
+
+[fum1h1to](https://github.com/fum1h1to)
 
 # 構築手順マニュアル
 
