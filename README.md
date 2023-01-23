@@ -1,7 +1,5 @@
-# Together Todo ![logo](md_img/logo.ico)
+# <img src="md_img/logo.ico" style="height: 1em; vertical-align: middle"> Together Todo
 ![img-01](md_img/img-01.png)
-![img-02](md_img/img-02.png)
-![img-03](md_img/img-03.png)
 
 # 概要
 アプリ名：「Together Todo」
